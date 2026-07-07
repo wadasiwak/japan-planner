@@ -1,0 +1,236 @@
+import type { CityDef, POI, Pace } from "../data/types";
+import { regionById, poisByCity } from "../data";
+import { haversineKm, transitMinutes } from "./geo";
+import { mulberry32, gumbelScore } from "./rng";
+
+export interface PlanInput {
+  regionId: string;
+  days: number; // 1–10
+  pace: Pace;
+  seed: number; // 重骰 = 換 seed
+}
+
+export interface PlanSlot {
+  kind: "poi" | "meal" | "transit";
+  /** minutes from 00:00 */
+  start: number;
+  end: number;
+  poiId?: string; // poi / meal(有選到店時)
+  note?: string; // transit 說明或「自由覓食」
+}
+
+export interface PlanDay {
+  day: number; // 1-based
+  cityId: string;
+  areas: string[];
+  slots: PlanSlot[];
+}
+
+export interface Plan {
+  input: PlanInput;
+  days: PlanDay[];
+}
+
+const PRIORITY_W = { 1: 3, 2: 2, 3: 1 } as const;
+
+// 節奏參數:活動時間預算(不含移動)、一天的起訖、每天最多幾個分區。
+const PACE_CFG = {
+  relaxed: { budget: 360, dayStart: 9 * 60, dayEnd: 20 * 60, maxAreas: 2 },
+  march: { budget: 600, dayStart: 8.5 * 60, dayEnd: 22 * 60, maxAreas: 3 },
+} as const;
+
+const LUNCH = 12 * 60;
+const DINNER = 18 * 60;
+
+/** 把天數依 POI 份量分給地區內的城市(largest remainder,cap maxDays)。 */
+export function allocateDays(
+  cities: CityDef[],
+  totalDays: number,
+): { city: CityDef; days: number }[] {
+  const weights = cities.map((c) =>
+    poisByCity(c.id).reduce((s, p) => s + PRIORITY_W[p.priority], 0),
+  );
+  const totalW = weights.reduce((a, b) => a + b, 0);
+  if (totalW === 0) return [];
+  const alloc = cities.map((c, i) => ({
+    city: c,
+    exact: (weights[i] / totalW) * totalDays,
+    days: 0,
+  }));
+  // 整數部分,受 maxDays 限制
+  let used = 0;
+  for (const a of alloc) {
+    a.days = Math.min(Math.floor(a.exact), a.city.maxDays);
+    used += a.days;
+  }
+  // 剩餘天數按小數餘額大到小補
+  const byRemainder = [...alloc].sort(
+    (x, y) => y.exact - Math.floor(y.exact) - (x.exact - Math.floor(x.exact)),
+  );
+  let guard = 0;
+  while (used < totalDays && guard++ < 100) {
+    let gave = false;
+    for (const a of byRemainder) {
+      if (used >= totalDays) break;
+      if (a.days < a.city.maxDays) {
+        a.days++;
+        used++;
+        gave = true;
+      }
+    }
+    if (!gave) break; // 全部城市都到上限
+  }
+  return alloc.filter((a) => a.days > 0).map(({ city, days }) => ({ city, days }));
+}
+
+interface AreaGroup {
+  area: string;
+  main: POI[]; // 非 food,照排程順序
+  food: POI[];
+  score: number;
+}
+
+/** 依 bestTime 排一天內的先後:morning 先、evening 殿後。 */
+const TIME_ORDER = { morning: 0, any: 1, afternoon: 2, evening: 3 } as const;
+
+function buildAreaGroups(pois: POI[], rnd: () => number): AreaGroup[] {
+  const byArea = new Map<string, POI[]>();
+  for (const p of pois) {
+    const list = byArea.get(p.area);
+    if (list) list.push(p);
+    else byArea.set(p.area, [p]);
+  }
+  const groups: AreaGroup[] = [];
+  for (const [area, list] of byArea) {
+    const base = list.reduce((s, p) => s + PRIORITY_W[p.priority], 0);
+    const sortKey = (p: POI) =>
+      TIME_ORDER[p.bestTime] * 100 + p.priority * 10 + rnd();
+    const sorted = [...list].sort((a, b) => sortKey(a) - sortKey(b));
+    groups.push({
+      area,
+      main: sorted.filter((p) => p.category !== "food"),
+      food: sorted.filter((p) => p.category === "food"),
+      score: gumbelScore(base, rnd),
+    });
+  }
+  return groups.sort((a, b) => b.score - a.score);
+}
+
+/**
+ * 排單一城市單一天。groups 會被就地消耗(跨天不重複)。
+ * budgetCap:當天活動分鐘上限 —— 內容不夠塞滿整趟時,由呼叫端傳
+ * 「剩餘內容 ÷ 剩餘天數」讓每天分得平均,避免前面塞滿最後一天空白。
+ */
+function planCityDay(
+  pace: Pace,
+  groups: AreaGroup[],
+  budgetCap: number,
+): { areas: string[]; slots: PlanSlot[] } {
+  const cfg = PACE_CFG[pace];
+  const budget = Math.min(cfg.budget, budgetCap);
+  const slots: PlanSlot[] = [];
+  const areas: string[] = [];
+  let cursor = cfg.dayStart;
+  let activity = 0;
+  let lunchDone = false;
+  let dinnerDone = false;
+  let lastPoi: POI | null = null;
+
+  const mealLen = pace === "relaxed" ? 60 : 45;
+
+  const tryMeal = (group: AreaGroup | undefined) => {
+    // 到午/晚餐窗口就插一餐:優先用當前分區的 food POI,沒有就自由覓食。
+    const wantLunch = !lunchDone && cursor >= LUNCH - 30;
+    const wantDinner = !dinnerDone && cursor >= DINNER - 30;
+    if (!wantLunch && !wantDinner) return;
+    const food = group?.food.shift();
+    const len = food ? food.stayMin[pace] : mealLen;
+    slots.push({
+      kind: "meal",
+      start: cursor,
+      end: cursor + len,
+      poiId: food?.id,
+      note: food ? undefined : wantLunch ? "自由覓食(午餐)" : "自由覓食(晚餐)",
+    });
+    cursor += len;
+    if (food) lastPoi = food;
+    if (wantLunch) lunchDone = true;
+    else dinnerDone = true;
+  };
+
+  while (areas.length < cfg.maxAreas && cursor < cfg.dayEnd && activity < budget) {
+    const group = groups.find((g) => g.main.length > 0 || g.food.length > 0);
+    if (!group) break;
+    groups.splice(groups.indexOf(group), 1);
+    areas.push(group.area);
+
+    // 跨分區移動
+    if (lastPoi) {
+      const target = group.main[0] ?? group.food[0];
+      if (target) {
+        const min = transitMinutes(haversineKm(lastPoi.center, target.center));
+        slots.push({
+          kind: "transit",
+          start: cursor,
+          end: cursor + min,
+          note: `移動到「${group.area}」(約 ${min} 分)`,
+        });
+        cursor += min;
+      }
+    }
+
+    while (group.main.length > 0 && cursor < cfg.dayEnd && activity < budget) {
+      tryMeal(group);
+      const poi = group.main.shift()!;
+      const stay = poi.stayMin[pace];
+      if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) break;
+      if (lastPoi && lastPoi.area === poi.area) cursor += 10; // 同分區步行
+      slots.push({ kind: "poi", start: cursor, end: cursor + stay, poiId: poi.id });
+      cursor += stay;
+      activity += stay;
+      lastPoi = poi;
+    }
+    tryMeal(group);
+  }
+  // 收尾:晚餐還沒吃就補一槽
+  if (!dinnerDone && cursor >= DINNER - 60) {
+    slots.push({
+      kind: "meal",
+      start: Math.max(cursor, DINNER),
+      end: Math.max(cursor, DINNER) + mealLen,
+      note: "自由覓食(晚餐)",
+    });
+  }
+  return { areas, slots };
+}
+
+export function buildPlan(input: PlanInput): Plan {
+  const region = regionById(input.regionId);
+  if (!region) return { input, days: [] };
+  const rnd = mulberry32(input.seed);
+  const alloc = allocateDays(region.cities, input.days);
+
+  const days: PlanDay[] = [];
+  let dayNo = 1;
+  for (const { city, days: n } of alloc) {
+    // 這城市的 POI 一次建組,跨這幾天共用消耗,不會重複排
+    const groups = buildAreaGroups(poisByCity(city.id), rnd);
+    for (let d = 0; d < n; d++) {
+      // 公平分配:剩餘內容 ÷ 剩餘天數,內容不夠塞滿時每天分得平均
+      const remainingStay = groups.reduce(
+        (s, g) => s + g.main.reduce((x, p) => x + p.stayMin[input.pace], 0),
+        0,
+      );
+      const fairBudget = Math.ceil(remainingStay / (n - d));
+      const { areas, slots } = planCityDay(input.pace, groups, fairBudget);
+      days.push({ day: dayNo++, cityId: city.id, areas, slots });
+    }
+  }
+  return { input, days };
+}
+
+export function fmtTime(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = Math.round(min % 60);
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
