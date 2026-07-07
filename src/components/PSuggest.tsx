@@ -1,9 +1,15 @@
-import { useMemo, useState } from "react";
-import { CITIES, cityById } from "../data";
+import { lazy, Suspense, useMemo, useState } from "react";
+import { CITIES, cityById, hubById } from "../data";
 import type { Pace } from "../data/types";
 import { suggest, type SuggestInput } from "../lib/suggest";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
+import type { MapPoint } from "./DayMap";
+
+// maplibre 很肥,地圖元件延遲載入,首屏不用扛
+const DayMap = lazy(() =>
+  import("./DayMap").then((m) => ({ default: m.DayMap })),
+);
 
 export function PSuggest() {
   const [cityId, setCityId] = useState<string | null>(null);
@@ -34,6 +40,19 @@ export function PSuggest() {
     };
     return suggest(input);
   }, [cityId, hubId, hoursLeft, pace, rain, seed, excluded, visited]);
+
+  const mapPoints = useMemo<MapPoint[]>(() => {
+    const hub = hubId ? hubById(hubId) : undefined;
+    if (!hub) return [];
+    return [
+      { center: hub.center, label: hub.name, kind: "hub" as const },
+      ...results.map((r) => ({
+        center: r.poi.center,
+        label: r.poi.name,
+        kind: (r.poi.category === "food" ? "food" : "poi") as MapPoint["kind"],
+      })),
+    ];
+  }, [hubId, results]);
 
   const nextBatch = () => {
     setExcluded((prev) => {
@@ -112,6 +131,9 @@ export function PSuggest() {
             </div>
           ) : (
             <>
+              <Suspense fallback={<div className="map-box" />}>
+                <DayMap points={mapPoints} />
+              </Suspense>
               <p className="muted small">等等可以去:</p>
               {results.map((r) => (
                 <PoiCard

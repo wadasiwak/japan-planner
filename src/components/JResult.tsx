@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { cityById, poiById, regionById } from "../data";
 import { buildPlan, fmtTime, type Plan } from "../lib/planner";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
+import type { MapPoint } from "./DayMap";
+
+// maplibre 很肥,地圖元件延遲載入,首屏不用扛
+const DayMap = lazy(() =>
+  import("./DayMap").then((m) => ({ default: m.DayMap })),
+);
 
 const PACE_LABEL = { relaxed: "輕鬆", march: "行軍" } as const;
 
@@ -19,6 +25,22 @@ export function JResult({
   const region = regionById(plan.input.regionId);
   const day = plan.days[dayIdx];
   const title = `${region?.name ?? "?"} ${plan.input.days} 天・${PACE_LABEL[plan.input.pace]}`;
+
+  const mapPoints = useMemo<MapPoint[]>(() => {
+    if (!plan.days[dayIdx]) return [];
+    let order = 0;
+    return plan.days[dayIdx].slots
+      .filter((s) => s.poiId)
+      .map((s) => {
+        const p = poiById(s.poiId!)!;
+        return {
+          center: p.center,
+          label: p.name,
+          kind: (s.kind === "meal" ? "food" : "poi") as MapPoint["kind"],
+          order: ++order,
+        };
+      });
+  }, [plan, dayIdx]);
 
   const reroll = () => {
     setDayIdx(0);
@@ -67,6 +89,10 @@ export function JResult({
         {cityById(day.cityId)?.emoji} {cityById(day.cityId)?.name} —{" "}
         {day.areas.join("、")}
       </p>
+
+      <Suspense fallback={<div className="map-box" />}>
+        <DayMap points={mapPoints} connect />
+      </Suspense>
 
       {day.slots.length === 0 && (
         <div className="empty">
