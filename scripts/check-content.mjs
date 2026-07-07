@@ -1,5 +1,8 @@
 // 內容驗證器:把 src/data bundle 成臨時 ESM 後載入,檢查每個 POI / Hub /
 // City 的完整性。內容擴充批次(subagent 產的分片)合入前必跑。
+//
+// 單檔模式:`node scripts/check-content.mjs src/data/cities/osaka.ts`
+// 只驗那一個城市檔(exports { city, pois }),給內容產生 agent 自驗用。
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -10,14 +13,34 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const tmp = mkdtempSync(join(tmpdir(), "jp-check-"));
 const bundle = join(tmp, "data.mjs");
 
+const singleFile = process.argv[2];
+const entry = singleFile ? join(root, singleFile) : join(root, "src/data/index.ts");
+
 execFileSync(
   join(root, "node_modules/.bin/rolldown"),
-  [join(root, "src/data/index.ts"), "--format", "esm", "--platform", "node", "--file", bundle],
+  [entry, "--format", "esm", "--platform", "node", "--file", bundle],
   { stdio: ["ignore", "ignore", "inherit"] },
 );
 
-const { REGIONS, ALL_POIS, CITIES } = await import(pathToFileURL(bundle).href);
+const mod = await import(pathToFileURL(bundle).href);
 rmSync(tmp, { recursive: true, force: true });
+
+// 單檔模式:把單一城市包成一個虛擬 region 走同一套檢查
+const { REGIONS, ALL_POIS, CITIES } = singleFile
+  ? {
+      REGIONS: [
+        {
+          id: "single",
+          name: "(單檔檢查)",
+          emoji: "🔍",
+          blurb: "single-file check",
+          cities: [mod.city],
+        },
+      ],
+      ALL_POIS: mod.pois,
+      CITIES: [mod.city],
+    }
+  : mod;
 
 const errors = [];
 const warn = [];

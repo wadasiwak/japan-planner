@@ -1,33 +1,25 @@
-import type { RegionDef, POI } from "../types";
+import type { CityDef, POI } from "../types";
 
-// 東京・關東近郊。種子資料:先只有東京都心,近郊城市(鎌倉/橫濱/日光)
-// 與更多 POI 由內容擴充批次補上(kanto_more*.ts)。
+// 東京都心。城市檔案是自包含的:city 定義(含 hubs)與 POI 同檔,
+// POI 的 nearHub 只引用本檔 hubs。
 
-export const region: RegionDef = {
-  id: "kanto",
-  name: "東京・關東近郊",
+export const city: CityDef = {
+  id: "tokyo",
+  name: "東京",
+  nameJa: "東京",
   emoji: "🗼",
-  blurb: "第一次日本自由行的起點:都心逛不完,近郊鎌倉、橫濱、日光一日來回。",
-  cities: [
-    {
-      id: "tokyo",
-      name: "東京",
-      nameJa: "東京",
-      emoji: "🗼",
-      bbox: { minLat: 35.5, maxLat: 35.85, minLng: 139.55, maxLng: 139.95 },
-      maxDays: 6,
-      hubs: [
-        { id: "tokyo-sta-tokyo", name: "東京車站", nameJa: "東京駅", center: { lat: 35.6812, lng: 139.7671 } },
-        { id: "tokyo-sta-shinjuku", name: "新宿車站", nameJa: "新宿駅", center: { lat: 35.6896, lng: 139.7006 } },
-        { id: "tokyo-sta-shibuya", name: "澀谷車站", nameJa: "渋谷駅", center: { lat: 35.658, lng: 139.7016 } },
-        { id: "tokyo-sta-ueno", name: "上野車站", nameJa: "上野駅", center: { lat: 35.7141, lng: 139.7774 } },
-        { id: "tokyo-sta-asakusa", name: "淺草車站", nameJa: "浅草駅", center: { lat: 35.7119, lng: 139.7983 } },
-        { id: "tokyo-sta-ginza", name: "銀座車站", nameJa: "銀座駅", center: { lat: 35.6717, lng: 139.764 } },
-        { id: "tokyo-sta-ikebukuro", name: "池袋車站", nameJa: "池袋駅", center: { lat: 35.7295, lng: 139.7109 } },
-        { id: "tokyo-sta-akihabara", name: "秋葉原車站", nameJa: "秋葉原駅", center: { lat: 35.6984, lng: 139.7731 } },
-        { id: "tokyo-sta-odaiba", name: "台場車站", nameJa: "台場駅", center: { lat: 35.6273, lng: 139.7768 } },
-      ],
-    },
+  bbox: { minLat: 35.5, maxLat: 35.85, minLng: 139.55, maxLng: 139.95 },
+  maxDays: 6,
+  hubs: [
+    { id: "tokyo-sta-tokyo", name: "東京車站", nameJa: "東京駅", center: { lat: 35.6812, lng: 139.7671 } },
+    { id: "tokyo-sta-shinjuku", name: "新宿車站", nameJa: "新宿駅", center: { lat: 35.6896, lng: 139.7006 } },
+    { id: "tokyo-sta-shibuya", name: "澀谷車站", nameJa: "渋谷駅", center: { lat: 35.658, lng: 139.7016 } },
+    { id: "tokyo-sta-ueno", name: "上野車站", nameJa: "上野駅", center: { lat: 35.7141, lng: 139.7774 } },
+    { id: "tokyo-sta-asakusa", name: "淺草車站", nameJa: "浅草駅", center: { lat: 35.7119, lng: 139.7983 } },
+    { id: "tokyo-sta-ginza", name: "銀座車站", nameJa: "銀座駅", center: { lat: 35.6717, lng: 139.764 } },
+    { id: "tokyo-sta-ikebukuro", name: "池袋車站", nameJa: "池袋駅", center: { lat: 35.7295, lng: 139.7109 } },
+    { id: "tokyo-sta-akihabara", name: "秋葉原車站", nameJa: "秋葉原駅", center: { lat: 35.6984, lng: 139.7731 } },
+    { id: "tokyo-sta-odaiba", name: "台場車站", nameJa: "台場駅", center: { lat: 35.6273, lng: 139.7768 } },
   ],
 };
 

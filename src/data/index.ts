@@ -1,23 +1,28 @@
 import type { RegionDef, CityDef, Hub, POI } from "./types";
-import * as kanto from "./pois/kanto";
+import { REGION_META } from "./regions";
+import * as tokyo from "./cities/tokyo";
 
-// Region modules: each exports `region: RegionDef` and `pois: POI[]`.
-// Expansion shards (<region>_more*.ts) export only `pois` and are appended
-// to EXTRA_POIS below.
-const REGION_MODULES: { region: RegionDef; pois: POI[] }[] = [kanto];
+// 城市模組:每個 exports `city: CityDef` 與 `pois: POI[]`。
+// 新增城市 → cities/<id>.ts + 在這裡 import + 掛進 CITY_MODULES。
+const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [tokyo];
 
-const EXTRA_POIS: POI[][] = [];
-
-export const REGIONS: RegionDef[] = REGION_MODULES.map((m) => m.region);
-
-export const ALL_POIS: POI[] = [
-  ...REGION_MODULES.flatMap((m) => m.pois),
-  ...EXTRA_POIS.flat(),
-];
-
-export const CITIES: CityDef[] = REGIONS.flatMap((r) => r.cities);
+export const CITIES: CityDef[] = CITY_MODULES.map((m) => m.city);
 
 const cityIndex = new Map(CITIES.map((c) => [c.id, c]));
+
+// REGION_META 裡還沒有內容檔的城市先跳過,內容批次補上後自動出現。
+export const REGIONS: RegionDef[] = REGION_META.map((r) => ({
+  id: r.id,
+  name: r.name,
+  emoji: r.emoji,
+  blurb: r.blurb,
+  cities: r.cityIds
+    .map((id) => cityIndex.get(id))
+    .filter((c): c is CityDef => !!c),
+})).filter((r) => r.cities.length > 0);
+
+export const ALL_POIS: POI[] = CITY_MODULES.flatMap((m) => m.pois);
+
 const hubIndex = new Map<string, Hub>(
   CITIES.flatMap((c) => c.hubs.map((h) => [h.id, h] as const)),
 );

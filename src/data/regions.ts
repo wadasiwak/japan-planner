@@ -1,0 +1,70 @@
+// 地區骨架:city 內容檔在 src/data/cities/,這裡只負責分組與排序
+// (cities 陣列順序 = J人模式的旅行順序)。
+
+export interface RegionMeta {
+  id: string;
+  name: string;
+  emoji: string;
+  blurb: string;
+  /** 依旅行順序排列,對應 cities/<id>.ts。 */
+  cityIds: string[];
+}
+
+export const REGION_META: RegionMeta[] = [
+  {
+    id: "kanto",
+    name: "東京・關東近郊",
+    emoji: "🗼",
+    blurb: "第一次日本自由行的起點:都心逛不完,近郊鎌倉、橫濱、日光一日來回。",
+    cityIds: ["tokyo", "yokohama", "kamakura", "nikko"],
+  },
+  {
+    id: "kansai",
+    name: "關西",
+    emoji: "⛩️",
+    blurb: "大阪的吃、京都的古、奈良的鹿、神戶的港,一條路線四種風景。",
+    cityIds: ["osaka", "kyoto", "nara", "kobe"],
+  },
+  {
+    id: "hokkaido",
+    name: "北海道",
+    emoji: "🐻",
+    blurb: "夏天薰衣草冬天雪祭,海鮮和拉麵永遠不分季節。",
+    cityIds: ["sapporo", "otaru", "hakodate"],
+  },
+  {
+    id: "kyushu",
+    name: "九州",
+    emoji: "♨️",
+    blurb: "福岡屋台、長崎異國情調、別府由布院泡不完的溫泉。",
+    cityIds: ["fukuoka", "nagasaki", "beppu"],
+  },
+  {
+    id: "okinawa",
+    name: "沖繩",
+    emoji: "🏝️",
+    blurb: "日本裡的南國:那霸市區逛國際通,租車北上看美麗海。",
+    cityIds: ["naha", "okinawa-north"],
+  },
+  {
+    id: "chubu",
+    name: "中部北陸",
+    emoji: "🏔️",
+    blurb: "名古屋城、金澤兼六園、高山老街與白川鄉合掌村。",
+    cityIds: ["nagoya", "kanazawa", "takayama"],
+  },
+  {
+    id: "hiroshima",
+    name: "廣島・宮島",
+    emoji: "🦌",
+    blurb: "原爆圓頂的沉重與宮島海上鳥居的絕景,再配一份廣島燒。",
+    cityIds: ["hiroshima"],
+  },
+  {
+    id: "tohoku",
+    name: "東北",
+    emoji: "🌾",
+    blurb: "仙台牛舌、松島灣百島、藏王樹冰,人少景美的一線。",
+    cityIds: ["sendai"],
+  },
+];
