@@ -57,11 +57,22 @@ export function allocateDays(
     exact: (weights[i] / totalW) * totalDays,
     days: 0,
   }));
-  // 整數部分,受 maxDays 限制
+  // 天數夠分時每城保底 1 天(關西 5 天不能沒有奈良的鹿),
+  // 不夠分時才純看權重淘汰小城市。
+  const floor = totalDays >= cities.length ? 1 : 0;
   let used = 0;
   for (const a of alloc) {
-    a.days = Math.min(Math.floor(a.exact), a.city.maxDays);
+    a.days = Math.min(Math.max(Math.floor(a.exact), floor), a.city.maxDays);
     used += a.days;
+  }
+  // 保底可能導致超分:從小數餘額最小、天數 >1 的城市開始扣回
+  while (used > totalDays) {
+    const donor = [...alloc]
+      .filter((a) => a.days > 1)
+      .sort((x, y) => x.exact - x.days - (y.exact - y.days))[0];
+    if (!donor) break;
+    donor.days--;
+    used--;
   }
   // 剩餘天數按小數餘額大到小補
   const byRemainder = [...alloc].sort(

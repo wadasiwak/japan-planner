@@ -1,10 +1,52 @@
 import type { RegionDef, CityDef, Hub, POI } from "./types";
 import { REGION_META } from "./regions";
 import * as tokyo from "./cities/tokyo";
+import * as yokohama from "./cities/yokohama";
+import * as kamakura from "./cities/kamakura";
+import * as nikko from "./cities/nikko";
+import * as osaka from "./cities/osaka";
+import * as kyoto from "./cities/kyoto";
+import * as nara from "./cities/nara";
+import * as kobe from "./cities/kobe";
+import * as sapporo from "./cities/sapporo";
+import * as otaru from "./cities/otaru";
+import * as hakodate from "./cities/hakodate";
+import * as fukuoka from "./cities/fukuoka";
+import * as nagasaki from "./cities/nagasaki";
+import * as beppu from "./cities/beppu";
+import * as naha from "./cities/naha";
+import * as okinawaNorth from "./cities/okinawa-north";
+import * as nagoya from "./cities/nagoya";
+import * as kanazawa from "./cities/kanazawa";
+import * as takayama from "./cities/takayama";
+import * as hiroshima from "./cities/hiroshima";
+import * as sendai from "./cities/sendai";
 
 // 城市模組:每個 exports `city: CityDef` 與 `pois: POI[]`。
 // 新增城市 → cities/<id>.ts + 在這裡 import + 掛進 CITY_MODULES。
-const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [tokyo];
+const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [
+  tokyo,
+  yokohama,
+  kamakura,
+  nikko,
+  osaka,
+  kyoto,
+  nara,
+  kobe,
+  sapporo,
+  otaru,
+  hakodate,
+  fukuoka,
+  nagasaki,
+  beppu,
+  naha,
+  okinawaNorth,
+  nagoya,
+  kanazawa,
+  takayama,
+  hiroshima,
+  sendai,
+];
 
 export const CITIES: CityDef[] = CITY_MODULES.map((m) => m.city);
 
