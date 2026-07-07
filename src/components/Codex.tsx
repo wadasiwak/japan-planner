@@ -1,4 +1,4 @@
-import { ALL_POIS, cityById, regionById } from "../data";
+import { ALL_POIS, cityById, regionById, REGIONS } from "../data";
 import { useAppStore, type SavedPlan } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 
@@ -47,6 +47,29 @@ export function Codex({ onOpenPlan }: { onOpenPlan: (p: SavedPlan) => void }) {
       <p className="section-label">
         足跡 · 去過 {visitedPois.length} / {ALL_POIS.length} 個地方
       </p>
+      <div className="card">
+        {REGIONS.map((r) => {
+          const cityIds = new Set(r.cities.map((c) => c.id));
+          const total = ALL_POIS.filter((p) => cityIds.has(p.city)).length;
+          const done = visitedPois.filter((p) => cityIds.has(p.city)).length;
+          return (
+            <div key={r.id} className="progress-row">
+              <span className="progress-label">
+                {r.emoji} {r.name}
+              </span>
+              <div className="progress-track">
+                <div
+                  className="progress-fill"
+                  style={{ width: total ? `${(done / total) * 100}%` : 0 }}
+                />
+              </div>
+              <span className="muted small progress-num">
+                {done}/{total}
+              </span>
+            </div>
+          );
+        })}
+      </div>
       {visitedPois.length === 0 && (
         <p className="muted small">
           在「P人隨走」看到去過的地方就打卡,這裡會變成你的日本足跡收集冊。

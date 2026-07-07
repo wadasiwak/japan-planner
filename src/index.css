@@ -294,3 +294,48 @@ button:disabled {
   color: var(--muted);
   padding: 32px 0;
 }
+
+.date-input {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color-scheme: dark;
+}
+
+a.tag.maplink {
+  text-decoration: none;
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+.progress-label {
+  font-size: 0.85rem;
+  min-width: 128px;
+}
+.progress-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  transition: width 0.3s;
+}
+.progress-num {
+  min-width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

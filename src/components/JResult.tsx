@@ -1,6 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { cityById, poiById, regionById } from "../data";
-import { buildPlan, fmtTime, type Plan } from "../lib/planner";
+import { buildPlan, fmtTime, WEEKDAY_CHAR, type Plan } from "../lib/planner";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
@@ -21,6 +21,7 @@ export function JResult({
 }) {
   const [dayIdx, setDayIdx] = useState(0);
   const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
   const savePlan = useAppStore((s) => s.savePlan);
   const region = regionById(plan.input.regionId);
   const day = plan.days[dayIdx];
@@ -45,9 +46,30 @@ export function JResult({
   const reroll = () => {
     setDayIdx(0);
     setSaved(false);
+    setCopied(false);
     onReplace(
       buildPlan({ ...plan.input, seed: Math.floor(Math.random() * 1e9) }),
     );
+  };
+
+  // 全程行程轉純文字,貼 LINE 給旅伴用
+  const copyText = async () => {
+    const lines: string[] = [`【${title}】日本旅圖 🗾`];
+    for (const d of plan.days) {
+      const wd = d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : "";
+      lines.push("", `Day ${d.day}${wd} ${cityById(d.cityId)?.name} — ${d.areas.join("、")}`);
+      for (const s of d.slots) {
+        const poi = s.poiId ? poiById(s.poiId) : undefined;
+        if (poi) {
+          lines.push(`${fmtTime(s.start)} ${poi.name}(${poi.nameJa})${s.kind === "meal" ? " 🍽️" : ""}`);
+        } else if (s.kind === "meal") {
+          lines.push(`${fmtTime(s.start)} 🍽️ ${s.note}`);
+        }
+      }
+    }
+    lines.push("", "https://wadasiwak.github.io/japan-planner/");
+    await navigator.clipboard.writeText(lines.join("\n"));
+    setCopied(true);
   };
 
   if (!day) {
@@ -61,6 +83,9 @@ export function JResult({
         <span className="spacer" />
         <button className="ghost" onClick={reroll}>
           🎲 重骰
+        </button>
+        <button className={copied ? "selected" : "ghost"} onClick={copyText}>
+          {copied ? "✓ 已複製" : "📋 複製"}
         </button>
         <button
           className={saved ? "selected" : ""}
@@ -80,7 +105,9 @@ export function JResult({
             className={i === dayIdx ? "selected" : ""}
             onClick={() => setDayIdx(i)}
           >
-            Day {d.day} · {cityById(d.cityId)?.name}
+            Day {d.day}
+            {d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : ""} ·{" "}
+            {cityById(d.cityId)?.name}
           </button>
         ))}
       </div>

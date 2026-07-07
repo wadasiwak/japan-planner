@@ -41,6 +41,14 @@ export function PoiCard({
             {t}
           </span>
         ))}
+        <a
+          className="tag maplink"
+          href={`https://www.google.com/maps/search/?api=1&query=${poi.center.lat},${poi.center.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🗺️ 導航
+        </a>
         {showVisitToggle && (
           <button
             className={`ghost${visited ? " selected" : ""}`}

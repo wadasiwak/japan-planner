@@ -7,11 +7,18 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [regionId, setRegionId] = useState<string | null>(null);
   const [days, setDays] = useState(4);
   const [pace, setPace] = useState<Pace>("relaxed");
+  const [startDate, setStartDate] = useState("");
 
   const go = () => {
     if (!regionId) return;
     onPlan(
-      buildPlan({ regionId, days, pace, seed: Math.floor(Math.random() * 1e9) }),
+      buildPlan({
+        regionId,
+        days,
+        pace,
+        seed: Math.floor(Math.random() * 1e9),
+        startDate: startDate || undefined,
+      }),
     );
   };
 
@@ -57,6 +64,26 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
           🥾 行軍
           <span className="muted small"> · 一天 10 小時塞好塞滿</span>
         </button>
+      </div>
+
+      <p className="section-label">出發日?(選填)</p>
+      <div className="row wrap">
+        <input
+          type="date"
+          className="date-input"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        {startDate ? (
+          <>
+            <span className="muted small">會自動避開各景點當天的固定公休</span>
+            <button className="ghost small" onClick={() => setStartDate("")}>
+              清除
+            </button>
+          </>
+        ) : (
+          <span className="muted small">不填就不管公休日</span>
+        )}
       </div>
 
       <button className="primary" disabled={!regionId} onClick={go}>

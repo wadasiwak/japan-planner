@@ -8,6 +8,8 @@ export interface PlanInput {
   days: number; // 1–10
   pace: Pace;
   seed: number; // 重骰 = 換 seed
+  /** 出發日 ISO(yyyy-mm-dd)。有填就避開各點當天的固定公休。 */
+  startDate?: string;
 }
 
 export interface PlanSlot {
@@ -22,9 +24,13 @@ export interface PlanSlot {
 export interface PlanDay {
   day: number; // 1-based
   cityId: string;
+  /** 0=日 … 6=六;有填出發日才有。 */
+  weekday?: number;
   areas: string[];
   slots: PlanSlot[];
 }
+
+export const WEEKDAY_CHAR = ["日", "一", "二", "三", "四", "五", "六"] as const;
 
 export interface Plan {
   input: PlanInput;
@@ -136,9 +142,17 @@ function planCityDay(
   pace: Pace,
   groups: AreaGroup[],
   budgetCap: number,
+  weekday?: number,
 ): { areas: string[]; slots: PlanSlot[] } {
   const cfg = PACE_CFG[pace];
   const budget = Math.min(cfg.budget, budgetCap);
+  // 當天公休的點跳過但不消耗,留給其他天排
+  const closed = (p: POI) =>
+    weekday != null && (p.closedDays?.includes(weekday) ?? false);
+  const takeOpen = (list: POI[]): POI | undefined => {
+    const i = list.findIndex((p) => !closed(p));
+    return i === -1 ? undefined : list.splice(i, 1)[0];
+  };
   const slots: PlanSlot[] = [];
   const areas: string[] = [];
   let cursor = cfg.dayStart;
@@ -148,13 +162,14 @@ function planCityDay(
   let lastPoi: POI | null = null;
 
   const mealLen = pace === "relaxed" ? 60 : 45;
+  const picked: AreaGroup[] = [];
 
   const tryMeal = (group: AreaGroup | undefined) => {
     // 到午/晚餐窗口就插一餐:優先用當前分區的 food POI,沒有就自由覓食。
     const wantLunch = !lunchDone && cursor >= LUNCH - 30;
     const wantDinner = !dinnerDone && cursor >= DINNER - 30;
     if (!wantLunch && !wantDinner) return;
-    const food = group?.food.shift();
+    const food = group ? takeOpen(group.food) : undefined;
     const len = food ? food.stayMin[pace] : mealLen;
     slots.push({
       kind: "meal",
@@ -170,14 +185,18 @@ function planCityDay(
   };
 
   while (areas.length < cfg.maxAreas && cursor < cfg.dayEnd && activity < budget) {
-    const group = groups.find((g) => g.main.length > 0 || g.food.length > 0);
+    const group = groups.find(
+      (g) => g.main.some((p) => !closed(p)) || g.food.some((p) => !closed(p)),
+    );
     if (!group) break;
     groups.splice(groups.indexOf(group), 1);
+    picked.push(group);
     areas.push(group.area);
 
     // 跨分區移動
     if (lastPoi) {
-      const target = group.main[0] ?? group.food[0];
+      const target =
+        group.main.find((p) => !closed(p)) ?? group.food.find((p) => !closed(p));
       if (target) {
         const min = transitMinutes(haversineKm(lastPoi.center, target.center));
         slots.push({
@@ -190,11 +209,15 @@ function planCityDay(
       }
     }
 
-    while (group.main.length > 0 && cursor < cfg.dayEnd && activity < budget) {
+    while (cursor < cfg.dayEnd && activity < budget) {
       tryMeal(group);
-      const poi = group.main.shift()!;
+      const poi = takeOpen(group.main);
+      if (!poi) break;
       const stay = poi.stayMin[pace];
-      if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) break;
+      if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) {
+        group.main.unshift(poi); // 塞不下就放回去,留給其他天
+        break;
+      }
       if (lastPoi && lastPoi.area === poi.area) cursor += 10; // 同分區步行
       slots.push({ kind: "poi", start: cursor, end: cursor + stay, poiId: poi.id });
       cursor += stay;
@@ -202,6 +225,10 @@ function planCityDay(
       lastPoi = poi;
     }
     tryMeal(group);
+  }
+  // 當天沒排完的分區放回 pool 尾端,剩餘的點留給之後的天
+  for (const g of picked) {
+    if (g.main.length > 0 || g.food.length > 0) groups.push(g);
   }
   // 收尾:晚餐還沒吃就補一槽
   if (!dinnerDone && cursor >= DINNER - 60) {
@@ -221,6 +248,11 @@ export function buildPlan(input: PlanInput): Plan {
   const rnd = mulberry32(input.seed);
   const alloc = allocateDays(region.cities, input.days);
 
+  // 有出發日就算出每天星期幾,排程避開當天公休
+  const startWeekday = input.startDate
+    ? new Date(`${input.startDate}T00:00:00`).getDay()
+    : undefined;
+
   const days: PlanDay[] = [];
   let dayNo = 1;
   for (const { city, days: n } of alloc) {
@@ -233,8 +265,10 @@ export function buildPlan(input: PlanInput): Plan {
         0,
       );
       const fairBudget = Math.ceil(remainingStay / (n - d));
-      const { areas, slots } = planCityDay(input.pace, groups, fairBudget);
-      days.push({ day: dayNo++, cityId: city.id, areas, slots });
+      const weekday =
+        startWeekday != null ? (startWeekday + dayNo - 1) % 7 : undefined;
+      const { areas, slots } = planCityDay(input.pace, groups, fairBudget, weekday);
+      days.push({ day: dayNo++, cityId: city.id, weekday, areas, slots });
     }
   }
   return { input, days };
