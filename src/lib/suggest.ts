@@ -24,11 +24,20 @@ export interface SuggestInput {
   seed: number;
 }
 
+/** 推薦理由(結構化,顯示時依語言組字串)。 */
+export type ReasonInfo =
+  | { t: "walkable" }
+  | { t: "transit"; min: number }
+  | { t: "must" }
+  | { t: "slot"; slot: "morning" | "afternoon" | "evening" }
+  | { t: "season" }
+  | { t: "rain" };
+
 export interface Suggestion {
   poi: POI;
   km: number;
   transitMin: number;
-  reasons: string[];
+  reasons: ReasonInfo[];
 }
 
 function timeSlot(nowMinutes: number): "morning" | "afternoon" | "evening" {
@@ -37,7 +46,6 @@ function timeSlot(nowMinutes: number): "morning" | "afternoon" | "evening" {
   return "evening";
 }
 
-const SLOT_LABEL = { morning: "早上", afternoon: "下午", evening: "晚上" } as const;
 
 function candidates(input: SuggestInput, ignoreExclude: boolean): POI[] {
   const hub = hubById(input.hubId);
@@ -86,14 +94,14 @@ export function suggest(input: SuggestInput): Suggestion[] {
   const n = input.pace === "march" ? 4 : 3;
   return scored.slice(0, n).map(({ p, km }) => {
     const t = transitMinutes(km);
-    const reasons: string[] = [];
-    if (km <= 1) reasons.push("走路就到");
-    else reasons.push(`移動約 ${t} 分`);
-    if (p.priority === 1) reasons.push("必去清單");
-    if (p.bestTime === slot) reasons.push(`${SLOT_LABEL[slot]}去正合適`);
+    const reasons: ReasonInfo[] = [];
+    if (km <= 1) reasons.push({ t: "walkable" });
+    else reasons.push({ t: "transit", min: t });
+    if (p.priority === 1) reasons.push({ t: "must" });
+    if (p.bestTime === slot) reasons.push({ t: "slot", slot });
     if (input.month && p.bestMonths?.includes(input.month))
-      reasons.push("正是當季");
-    if (input.rain && p.indoor) reasons.push("下雨也不怕");
+      reasons.push({ t: "season" });
+    if (input.rain && p.indoor) reasons.push({ t: "rain" });
     return { poi: p, km, transitMin: t, reasons };
   });
 }

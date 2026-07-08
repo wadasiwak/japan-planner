@@ -3,15 +3,16 @@ import { REGIONS, regionById, poisByCity } from "../data";
 import type { Pace, Category } from "../data/types";
 import { buildPlan, type Plan } from "../lib/planner";
 import { useAppStore } from "../store/appStore";
+import { t, tRegionName, tCityName, type StringKey } from "../i18n";
 
-const PREF_OPTIONS: { cat: Category; label: string }[] = [
-  { cat: "temple", label: "⛩️ 神社寺院" },
-  { cat: "sight", label: "🏯 經典景點" },
-  { cat: "nature", label: "🌿 自然風景" },
-  { cat: "museum", label: "🖼️ 博物展館" },
-  { cat: "shopping", label: "🛍️ 逛街購物" },
-  { cat: "nightlife", label: "🌃 夜生活" },
-  { cat: "experience", label: "🎡 體驗活動" },
+const PREF_OPTIONS: { cat: Category; key: StringKey }[] = [
+  { cat: "temple", key: "pref_temple" },
+  { cat: "sight", key: "pref_sight" },
+  { cat: "nature", key: "pref_nature" },
+  { cat: "museum", key: "pref_museum" },
+  { cat: "shopping", key: "pref_shopping" },
+  { cat: "nightlife", key: "pref_nightlife" },
+  { cat: "experience", key: "pref_experience" },
 ];
 
 /** 這個地區的內容最多值得排幾天(各城 maxDays 加總,封頂 10)。 */
@@ -33,6 +34,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [skipVisited, setSkipVisited] = useState(false);
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
+  const lang = useAppStore((s) => s.lang);
   const region = regionId ? regionById(regionId) : undefined;
   // 容量隨排除的城市縮減
   const cap = region
@@ -82,7 +84,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
 
   return (
     <div className="screen">
-      <p className="section-label">要去哪個地區?</p>
+      <p className="section-label">{t("q_region", lang)}</p>
       <div className="choice-grid">
         {REGIONS.map((r) => {
           const n = r.cities.reduce((s, c) => s + poisByCity(c.id).length, 0);
@@ -96,8 +98,8 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
                 setExcluded(new Set());
               }}
             >
-              {r.emoji} {r.name}
-              <span className="muted small"> · {n} 個景點</span>
+              {r.emoji} {tRegionName(r)}
+              <span className="muted small">{t("n_spots", lang, n)}</span>
             </button>
           );
         })}
@@ -105,7 +107,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
 
       {region && region.cities.length > 1 && (
         <>
-          <p className="section-label">這些城市都去?(去過的可以點掉)</p>
+          <p className="section-label">{t("q_cities", lang)}</p>
           <div className="choice-grid">
             {region.cities.map((c) => (
               <button
@@ -115,7 +117,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
                 onClick={() => toggleCity(c.id)}
               >
                 {excluded.has(c.id) ? "✕ " : ""}
-                {c.emoji} {c.name}
+                {c.emoji} {tCityName(c)}
               </button>
             ))}
           </div>
@@ -124,16 +126,17 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
               className={skipVisited ? "selected" : "ghost"}
               onClick={() => setSkipVisited((v) => !v)}
             >
-              {skipVisited ? "✓" : ""} ⛔ 跳過我打過卡的 {visitedCount} 個點
+              {skipVisited ? "✓ " : ""}
+              {t("skip_visited", lang, visitedCount)}
             </button>
           )}
         </>
       )}
 
-      <p className="section-label">玩幾天?</p>
+      <p className="section-label">{t("q_days", lang)}</p>
       <div className="stepper">
         <button onClick={() => setDays((d) => Math.max(1, d - 1))}>−</button>
-        <span className="num">{days} 天</span>
+        <span className="num">{t("days_unit", lang, days)}</span>
         <button
           disabled={days >= cap}
           onClick={() => setDays((d) => Math.min(cap, d + 1))}
@@ -143,43 +146,43 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
       </div>
       {regionId && (
         <p className="muted small" style={{ textAlign: "center", margin: 0 }}>
-          這個地區的內容約可排 {cap} 天
+          {t("cap_hint", lang, cap)}
         </p>
       )}
 
-      <p className="section-label">遊玩節奏?</p>
+      <p className="section-label">{t("q_pace", lang)}</p>
       <div className="choice-grid">
         <button
           className={pace === "relaxed" ? "selected" : ""}
           onClick={() => setPace("relaxed")}
         >
-          🍵 輕鬆
-          <span className="muted small"> · 一天約 6 小時,含下午咖啡歇腳</span>
+          {t("pace_relaxed", lang)}
+          <span className="muted small">{t("pace_relaxed_desc", lang)}</span>
         </button>
         <button
           className={pace === "march" ? "selected" : ""}
           onClick={() => setPace("march")}
         >
-          🥾 行軍
-          <span className="muted small"> · 一天 10 小時塞好塞滿</span>
+          {t("pace_march", lang)}
+          <span className="muted small">{t("pace_march_desc", lang)}</span>
         </button>
       </div>
 
-      <p className="section-label">特別喜歡?(選填,勾了會多排這些)</p>
+      <p className="section-label">{t("q_prefs", lang)}</p>
       <div className="choice-grid">
-        {PREF_OPTIONS.map(({ cat, label }) => (
+        {PREF_OPTIONS.map(({ cat, key }) => (
           <button
             key={cat}
             className={prefs.includes(cat) ? "selected" : ""}
             style={{ minWidth: 0, flex: "0 1 auto" }}
             onClick={() => togglePref(cat)}
           >
-            {label}
+            {t(key, lang)}
           </button>
         ))}
       </div>
 
-      <p className="section-label">出發日?(選填)</p>
+      <p className="section-label">{t("q_date", lang)}</p>
       <div className="row wrap">
         <input
           type="date"
@@ -189,18 +192,18 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
         />
         {startDate ? (
           <>
-            <span className="muted small">會自動避開各景點當天的固定公休</span>
+            <span className="muted small">{t("date_hint_on", lang)}</span>
             <button className="ghost small" onClick={() => setStartDate("")}>
-              清除
+              {t("clear", lang)}
             </button>
           </>
         ) : (
-          <span className="muted small">不填就不管公休日</span>
+          <span className="muted small">{t("date_hint_off", lang)}</span>
         )}
       </div>
 
       <button className="primary" disabled={!regionId} onClick={go}>
-        排出我的行程 →
+        {t("go_plan", lang)}
       </button>
     </div>
   );

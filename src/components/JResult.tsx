@@ -5,26 +5,33 @@ import {
   removeSlot,
   replaceSlot,
   rerollUnlocked,
-  WEEKDAY_CHAR,
   type Plan,
+  type PlanSlot,
 } from "../lib/planner";
 import { planShareUrl } from "../lib/share";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
+import {
+  t,
+  tArea,
+  tCityName,
+  tPoiName,
+  tRegionName,
+  tSlotInfo,
+  tSouvenirs,
+  WEEKDAY_BY_LANG,
+  type Lang,
+} from "../i18n";
 
 // maplibre 很肥,地圖元件延遲載入,首屏不用扛
 const DayMap = lazy(() =>
   import("./DayMap").then((m) => ({ default: m.DayMap })),
 );
 
-const PACE_LABEL = { relaxed: "輕鬆", march: "行軍" } as const;
-
-const TRANSPORT_TAG = {
-  transit: "🚃 大眾運輸OK",
-  car: "🚗 建議自駕",
-  mixed: "🚃+🚗 市區電車,郊區自駕較省",
-} as const;
+/** 動態時段文字:新版走結構化 info,舊分享連結 fallback note 原文。 */
+const slotText = (slot: PlanSlot, lang: Lang): string =>
+  slot.info ? tSlotInfo(slot.info, lang) : (slot.note ?? "");
 
 export function JResult({
   plan,
@@ -38,6 +45,8 @@ export function JResult({
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
   const [lockedDays, setLockedDays] = useState<Set<number>>(new Set());
+  const lang = useAppStore((s) => s.lang);
+  const WD = WEEKDAY_BY_LANG[lang];
 
   const dirty = () => {
     setSaved(false);
@@ -47,7 +56,13 @@ export function JResult({
   const savePlan = useAppStore((s) => s.savePlan);
   const region = regionById(plan.input.regionId);
   const day = plan.days[dayIdx];
-  const title = `${region?.name ?? "?"} ${plan.input.days} 天・${PACE_LABEL[plan.input.pace]}`;
+  const title = t(
+    "title_days",
+    lang,
+    region ? tRegionName(region) : "?",
+    plan.input.days,
+    t(plan.input.pace === "relaxed" ? "pace_label_relaxed" : "pace_label_march", lang),
+  );
 
   const mapPoints = useMemo<MapPoint[]>(() => {
     if (!plan.days[dayIdx]) return [];
@@ -58,18 +73,16 @@ export function JResult({
         const p = poiById(s.poiId!)!;
         return {
           center: p.center,
-          label: p.name,
+          label: tPoiName(p),
           kind: (s.kind === "meal" ? "food" : "poi") as MapPoint["kind"],
           order: ++order,
         };
       });
-  }, [plan, dayIdx]);
+  }, [plan, dayIdx, lang]);
 
   const reroll = () => {
     dirty();
-    onReplace(
-      rerollUnlocked(plan, lockedDays, Math.floor(Math.random() * 1e9)),
-    );
+    onReplace(rerollUnlocked(plan, lockedDays, Math.floor(Math.random() * 1e9)));
   };
 
   const toggleLock = (dayNo: number) =>
@@ -100,19 +113,26 @@ export function JResult({
 
   // 全程行程轉純文字,貼 LINE 給旅伴用
   const copyText = async () => {
-    const lines: string[] = [`【${title}】日本旅伴JP 🗾`];
+    const lines: string[] = [`【${title}】${t("brand", lang)}JP 🗾`];
     for (const d of plan.days) {
-      const wd = d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : "";
-      lines.push("", `Day ${d.day}${wd} ${cityById(d.cityId)?.name} — ${d.areas.join("、")}`);
+      const wd = d.weekday != null ? `(${WD[d.weekday]})` : "";
+      const city = cityById(d.cityId);
+      lines.push(
+        "",
+        `Day ${d.day}${wd} ${city ? tCityName(city) : ""} — ${d.areas
+          .map((a) => tArea(d.cityId, a))
+          .join("、")}`,
+      );
       for (const s of d.slots) {
         const poi = s.poiId ? poiById(s.poiId) : undefined;
         if (poi) {
           const suffix = s.kind === "meal" ? " 🍽️" : s.kind === "cafe" ? " ☕" : "";
-          lines.push(`${fmtTime(s.start)} ${poi.name}(${poi.nameJa})${suffix}`);
+          const ja = lang === "ja" ? "" : `(${poi.nameJa})`;
+          lines.push(`${fmtTime(s.start)} ${tPoiName(poi)}${ja}${suffix}`);
         } else if (s.kind === "meal") {
-          lines.push(`${fmtTime(s.start)} 🍽️ ${s.note}`);
-        } else if (s.kind === "transit" && s.note?.startsWith("🚄")) {
-          lines.push(`${fmtTime(s.start)} ${s.note}`);
+          lines.push(`${fmtTime(s.start)} 🍽️ ${slotText(s, lang)}`);
+        } else if (s.kind === "transit" && (s.info?.t === "ic" || s.note?.startsWith("🚄"))) {
+          lines.push(`${fmtTime(s.start)} ${slotText(s, lang)}`);
         }
       }
     }
@@ -122,8 +142,10 @@ export function JResult({
   };
 
   if (!day) {
-    return <div className="empty">這個地區的內容還在準備中,先去東京晃晃?</div>;
+    return <div className="empty">{t("region_preparing", lang)}</div>;
   }
+
+  const dayCity = cityById(day.cityId);
 
   return (
     <div className="screen">
@@ -131,13 +153,13 @@ export function JResult({
         <strong>{title}</strong>
         <span className="spacer" />
         <button className="ghost" onClick={reroll}>
-          🎲 重骰
+          {t("reroll", lang)}
         </button>
         <button className={copied ? "selected" : "ghost"} onClick={copyText}>
-          {copied ? "✓ 已複製" : "📋 複製"}
+          {copied ? t("copied", lang) : t("copy", lang)}
         </button>
         <button className={shared ? "selected" : "ghost"} onClick={share}>
-          {shared ? "✓ 連結已複製" : "🔗 分享"}
+          {shared ? t("shared", lang) : t("share", lang)}
         </button>
         <button
           className={saved ? "selected" : ""}
@@ -146,7 +168,7 @@ export function JResult({
             setSaved(true);
           }}
         >
-          {saved ? "✓ 已存" : "💾 存起來"}
+          {saved ? t("saved", lang) : t("save", lang)}
         </button>
       </div>
 
@@ -161,30 +183,33 @@ export function JResult({
             }}
           >
             {lockedDays.has(d.day) ? "🔒 " : ""}Day {d.day}
-            {d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : ""} ·{" "}
-            {cityById(d.cityId)?.name}
+            {d.weekday != null ? `(${WD[d.weekday]})` : ""} ·{" "}
+            {(() => {
+              const c = cityById(d.cityId);
+              return c ? tCityName(c) : d.cityId;
+            })()}
           </button>
         ))}
       </div>
 
       <div className="row">
         <p className="muted small" style={{ margin: 0 }}>
-          {cityById(day.cityId)?.emoji} {cityById(day.cityId)?.name} —{" "}
-          {day.areas.join("、")} ·{" "}
-          {day.slots.filter((s) => s.kind === "poi").length} 個點
+          {dayCity?.emoji} {dayCity ? tCityName(dayCity) : ""} —{" "}
+          {day.areas.map((a) => tArea(day.cityId, a)).join("、")} ·{" "}
+          {t("n_points", lang, day.slots.filter((s) => s.kind === "poi").length)}
           {day.slots.some((s) => s.kind === "cafe") ? " ·☕" : ""}
-          {(() => {
-            const t = cityById(day.cityId)?.transport;
-            return t ? <span className="tag ok" style={{ marginLeft: 6 }}>{TRANSPORT_TAG[t]}</span> : null;
-          })()}
+          {dayCity?.transport && (
+            <span className="tag ok" style={{ marginLeft: 6 }}>
+              {t(`transport_${dayCity.transport}`, lang)}
+            </span>
+          )}
         </p>
         <span className="spacer" />
         <button
           className={`ghost small${lockedDays.has(day.day) ? " selected" : ""}`}
-          title="鎖住這天,重骰時不動它"
           onClick={() => toggleLock(day.day)}
         >
-          {lockedDays.has(day.day) ? "🔒 已鎖定" : "🔓 鎖住這天"}
+          {lockedDays.has(day.day) ? t("locked_day", lang) : t("lock_day", lang)}
         </button>
       </div>
 
@@ -194,16 +219,16 @@ export function JResult({
 
       {(() => {
         // 這是在此城市的最後一天 → 提醒買伴手禮
-        const city = cityById(day.cityId);
         const isLastDayInCity =
           dayIdx === plan.days.length - 1 ||
           plan.days[dayIdx + 1].cityId !== day.cityId;
-        if (!isLastDayInCity || !city?.souvenirs?.length) return null;
+        const souvenirs = dayCity ? tSouvenirs(dayCity) : undefined;
+        if (!isLastDayInCity || !dayCity || !souvenirs?.length) return null;
         return (
           <div className="card souvenirs">
-            <strong>🎁 離開{city.name}前,伴手禮買了嗎?</strong>
+            <strong>{t("souvenir_head", lang, tCityName(dayCity))}</strong>
             <ul>
-              {city.souvenirs.map((s) => (
+              {souvenirs.map((s) => (
                 <li key={s}>{s}</li>
               ))}
             </ul>
@@ -211,22 +236,21 @@ export function JResult({
         );
       })()}
 
-      {day.slots.length === 0 && (
-        <div className="empty">
-          這天先留白 —— 睡到自然醒,或切去「P人隨走」看看附近有什麼。
-        </div>
-      )}
+      {day.slots.length === 0 && <div className="empty">{t("empty_day", lang)}</div>}
 
       <div className="timeline">
         {day.slots.map((slot, i) => {
           const poi = slot.poiId ? poiById(slot.poiId) : undefined;
           if (slot.kind === "transit" || (slot.kind === "meal" && !poi)) {
             return (
-              <div key={i} className={`slot ${slot.kind === "transit" ? "transit" : "meal-free"}`}>
+              <div
+                key={i}
+                className={`slot ${slot.kind === "transit" ? "transit" : "meal-free"}`}
+              >
                 <span className="time">{fmtTime(slot.start)}</span>
                 <div className="body">
                   {slot.kind === "transit" ? "🚃 " : "🍽️ "}
-                  {slot.note}
+                  {slotText(slot, lang)}
                 </div>
               </div>
             );
@@ -243,18 +267,18 @@ export function JResult({
                   poi={poi}
                   extraTags={
                     slot.kind === "meal"
-                      ? ["🍽️ 用餐"]
+                      ? [t("tag_meal", lang)]
                       : slot.kind === "cafe"
-                        ? ["☕ 歇腳"]
+                        ? [t("tag_cafe", lang)]
                         : []
                   }
                 />
                 <div className="slot-actions">
                   <button className="ghost small" onClick={() => doReplace(i)}>
-                    🔁 換一個
+                    {t("swap", lang)}
                   </button>
                   <button className="ghost small" onClick={() => doRemove(i)}>
-                    ✕ 不去
+                    {t("drop", lang)}
                   </button>
                 </div>
               </div>

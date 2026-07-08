@@ -1,4 +1,4 @@
-import type { Plan, PlanSlot } from "./planner";
+import type { Plan, PlanSlot, SlotInfo } from "./planner";
 
 // 行程 → URL hash。slots 序列化成緊湊陣列(kind 用索引、note 只留自由覓食
 // 標記),城際移動的說明在解碼時重建,編輯過的行程也能原樣分享。
@@ -12,7 +12,7 @@ interface Packed {
     c: string; // cityId
     w?: number; // weekday
     a: string[]; // areas
-    s: [number, number, number, string?, string?][]; // [kindIdx,start,end,poiId?,note?]
+    s: [number, number, number, string?, string?, SlotInfo?][]; // [kindIdx,start,end,poiId?,note?,info?]
   }[];
 }
 
@@ -43,6 +43,7 @@ export function encodePlan(plan: Plan): string {
         ];
         if (s.poiId) out[3] = s.poiId;
         else if (s.note) out[4] = s.note;
+        if (s.info) out[5] = s.info;
         return out;
       }),
     })),
@@ -61,11 +62,12 @@ export function decodePlan(code: string): Plan | null {
         cityId: d.c,
         weekday: d.w,
         areas: d.a ?? [],
-        slots: d.s.map(([k, start, end, poiId, note]): PlanSlot => {
+        slots: d.s.map(([k, start, end, poiId, note, info]): PlanSlot => {
           const slot: PlanSlot = { kind: KINDS[k] ?? "poi", start, end };
           // JSON 陣列空洞會變 null,要濾掉才能和原行程完全一致
           if (poiId != null) slot.poiId = poiId;
           if (note != null) slot.note = note;
+          if (info != null) slot.info = info;
           return slot;
         }),
       })),

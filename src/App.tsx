@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Plan } from "./lib/planner";
 import { planFromHash } from "./lib/share";
 import { ALL_POIS, REGIONS } from "./data";
@@ -7,6 +7,7 @@ import { JResult } from "./components/JResult";
 import { PSuggest } from "./components/PSuggest";
 import { Codex } from "./components/Codex";
 import { useAppStore } from "./store/appStore";
+import { t, LANGS, loadContent, setContent, type StringKey } from "./i18n";
 
 type Screen =
   | { t: "home" }
@@ -15,12 +16,11 @@ type Screen =
   | { t: "p-suggest" }
   | { t: "codex" };
 
-const TITLES: Record<Screen["t"], string> = {
-  home: "日本旅伴JP 🗾",
-  "j-setup": "🗓️ J人規劃",
-  "j-result": "🗓️ 你的行程",
-  "p-suggest": "🎲 P人隨走",
-  codex: "🧳 我的收藏",
+const TITLE_KEY: Record<Exclude<Screen["t"], "home">, StringKey> = {
+  "j-setup": "title_jsetup",
+  "j-result": "title_jresult",
+  "p-suggest": "title_psuggest",
+  codex: "title_codex",
 };
 
 export default function App() {
@@ -31,15 +31,52 @@ export default function App() {
   });
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
   const planCount = useAppStore((s) => s.savedPlans.length);
+  const lang = useAppStore((s) => s.lang);
+  const setLang = useAppStore((s) => s.setLang);
+  // 內容字典載好才切畫面,避免中英夾雜的過渡狀態
+  const [dictLang, setDictLang] = useState<string>("zh");
+
+  useEffect(() => {
+    let alive = true;
+    document.documentElement.lang =
+      lang === "zh" ? "zh-Hant" : lang === "ja" ? "ja" : "en";
+    if (lang === "zh") {
+      setContent("zh", null);
+      setDictLang("zh");
+      return;
+    }
+    loadContent(lang).then((dict) => {
+      if (!alive) return;
+      setContent(lang, dict);
+      setDictLang(lang);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [lang]);
+
+  const ready = dictLang === lang;
 
   return (
-    <>
+    <div key={dictLang} style={ready ? undefined : { opacity: 0.5 }}>
+      <div className="lang-switch">
+        {LANGS.map((l) => (
+          <button
+            key={l.id}
+            className={`ghost small${lang === l.id ? " selected" : ""}`}
+            onClick={() => setLang(l.id)}
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+
       {screen.t !== "home" && (
         <header className="app-header">
           <button className="back-btn ghost" onClick={() => setScreen({ t: "home" })}>
             ←
           </button>
-          <h1>{TITLES[screen.t]}</h1>
+          <h1>{t(TITLE_KEY[screen.t], lang)}</h1>
         </header>
       )}
 
@@ -47,7 +84,7 @@ export default function App() {
         <div className="screen">
           <div className="hero">
             <h1 className="brand">
-              日本旅伴
+              {t("brand", lang)}
               <span className="brand-jp">
                 <span className="jj">J</span>
                 <span className="pp">P</span>
@@ -55,40 +92,34 @@ export default function App() {
               <span className="brand-flag">🗾</span>
             </h1>
             <p className="slogan">
-              <span className="chip-j">J 人排好排滿</span>
-              <span className="chip-p">P 人說走就走</span>
+              <span className="chip-j">{t("slogan_j", lang)}</span>
+              <span className="chip-p">{t("slogan_p", lang)}</span>
             </p>
           </div>
-          <button
-            className="mode-card mode-j"
-            onClick={() => setScreen({ t: "j-setup" })}
-          >
-            <span className="mode-title">🗓️ J人規劃</span>
-            <span className="mode-desc">
-              選地區、天數、節奏,一鍵排出逐日行程。出發前就把每天安排得明明白白。
-            </span>
+          <button className="mode-card mode-j" onClick={() => setScreen({ t: "j-setup" })}>
+            <span className="mode-title">{t("mode_j", lang)}</span>
+            <span className="mode-desc">{t("mode_j_desc", lang)}</span>
           </button>
-          <button
-            className="mode-card mode-p"
-            onClick={() => setScreen({ t: "p-suggest" })}
-          >
-            <span className="mode-title">🎲 P人隨走</span>
-            <span className="mode-desc">
-              「每天想明天去哪好累」—— 告訴我你現在在哪,馬上給你等等可以去的地方。
-            </span>
+          <button className="mode-card mode-p" onClick={() => setScreen({ t: "p-suggest" })}>
+            <span className="mode-title">{t("mode_p", lang)}</span>
+            <span className="mode-desc">{t("mode_p_desc", lang)}</span>
           </button>
           <button className="mode-card" onClick={() => setScreen({ t: "codex" })}>
-            <span className="mode-title">🧳 我的收藏</span>
+            <span className="mode-title">{t("mode_codex", lang)}</span>
             <span className="mode-desc">
-              存好的行程 {planCount} 份 · 打卡足跡 {visitedCount} 處
+              {t("codex_stat", lang, planCount, visitedCount)}
             </span>
           </button>
           <div className="stats-row">
-            <span className="stat-chip">{REGIONS.length} 大地區</span>
-            <span className="stat-chip">{ALL_POIS.length} 個景點</span>
+            <span className="stat-chip">{t("stat_regions", lang, REGIONS.length)}</span>
+            <span className="stat-chip">{t("stat_pois", lang, ALL_POIS.length)}</span>
             <span className="stat-chip">
-              {ALL_POIS.filter((p) => p.category === "food" || p.category === "cafe").length}{" "}
-              家餐廳咖啡廳
+              {t(
+                "stat_food",
+                lang,
+                ALL_POIS.filter((p) => p.category === "food" || p.category === "cafe")
+                  .length,
+              )}
             </span>
           </div>
         </div>
@@ -109,6 +140,6 @@ export default function App() {
       )}
 
       <footer className="footer">© 2026 wadasiwak. All rights reserved.</footer>
-    </>
+    </div>
   );
 }

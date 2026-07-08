@@ -1,15 +1,41 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { REGIONS, cityById, hubById } from "../data";
 import type { Pace } from "../data/types";
-import { suggest, type SuggestInput } from "../lib/suggest";
+import { suggest, type SuggestInput, type ReasonInfo } from "../lib/suggest";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
+import {
+  t,
+  tCityName,
+  tHubName,
+  tPoiName,
+  tRegionName,
+  tSouvenirs,
+  type Lang,
+} from "../i18n";
 
 // maplibre 很肥,地圖元件延遲載入,首屏不用扛
 const DayMap = lazy(() =>
   import("./DayMap").then((m) => ({ default: m.DayMap })),
 );
+
+const reasonText = (r: ReasonInfo, lang: Lang): string => {
+  switch (r.t) {
+    case "walkable":
+      return t("reason_walkable", lang);
+    case "transit":
+      return t("reason_transit", lang, r.min);
+    case "must":
+      return t("reason_must", lang);
+    case "slot":
+      return t("reason_slot", lang, t(`slot_${r.slot}`, lang));
+    case "season":
+      return t("reason_season", lang);
+    case "rain":
+      return t("reason_rain", lang);
+  }
+};
 
 export function PSuggest() {
   const [cityId, setCityId] = useState<string | null>(null);
@@ -20,6 +46,7 @@ export function PSuggest() {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const visited = useAppStore((s) => s.visited);
+  const lang = useAppStore((s) => s.lang);
 
   const city = cityId ? cityById(cityId) : undefined;
 
@@ -44,16 +71,16 @@ export function PSuggest() {
 
   const mapPoints = useMemo<MapPoint[]>(() => {
     const hub = hubId ? hubById(hubId) : undefined;
-    if (!hub) return [];
+    if (!hub || !cityId) return [];
     return [
-      { center: hub.center, label: hub.name, kind: "hub" as const },
+      { center: hub.center, label: tHubName(cityId, hub), kind: "hub" as const },
       ...results.map((r) => ({
         center: r.poi.center,
-        label: r.poi.name,
+        label: tPoiName(r.poi),
         kind: (r.poi.category === "food" ? "food" : "poi") as MapPoint["kind"],
       })),
     ];
-  }, [hubId, results]);
+  }, [hubId, cityId, results, lang]);
 
   const nextBatch = () => {
     setExcluded((prev) => {
@@ -64,18 +91,18 @@ export function PSuggest() {
     setSeed(Math.floor(Math.random() * 1e9));
   };
 
+  const souvenirs = city ? tSouvenirs(city) : undefined;
+
   return (
     <div className="screen">
-      <p className="section-label">你在哪個城市?</p>
+      <p className="section-label">{t("q_city", lang)}</p>
       {city && (
         <div className="row wrap">
           <button className="selected">
-            {city.emoji} {city.name}
+            {city.emoji} {tCityName(city)}
           </button>
           {city.transport && (
-            <span className="tag ok">
-              {{ transit: "🚃 大眾運輸OK", car: "🚗 建議自駕", mixed: "🚃+🚗 郊區自駕較省" }[city.transport]}
-            </span>
+            <span className="tag ok">{t(`transport_${city.transport}`, lang)}</span>
           )}
           <button
             className="ghost small"
@@ -85,38 +112,39 @@ export function PSuggest() {
               setExcluded(new Set());
             }}
           >
-            換城市
+            {t("change_city", lang)}
           </button>
         </div>
       )}
-      {!city && REGIONS.map((r) => (
-        <div key={r.id}>
-          <p className="muted small region-label">
-            {r.emoji} {r.name}
-          </p>
-          <div className="choice-grid">
-            {r.cities.map((c) => (
-              <button
-                key={c.id}
-                className={cityId === c.id ? "selected" : ""}
-                onClick={() => {
-                  setCityId(c.id);
-                  setHubId(null);
-                  setExcluded(new Set());
-                }}
-              >
-                {c.emoji} {c.name}
-              </button>
-            ))}
+      {!city &&
+        REGIONS.map((r) => (
+          <div key={r.id}>
+            <p className="muted small region-label">
+              {r.emoji} {tRegionName(r)}
+            </p>
+            <div className="choice-grid">
+              {r.cities.map((c) => (
+                <button
+                  key={c.id}
+                  className={cityId === c.id ? "selected" : ""}
+                  onClick={() => {
+                    setCityId(c.id);
+                    setHubId(null);
+                    setExcluded(new Set());
+                  }}
+                >
+                  {c.emoji} {tCityName(c)}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      {city && city.souvenirs && city.souvenirs.length > 0 && (
+      {city && souvenirs && souvenirs.length > 0 && (
         <details className="card souvenirs">
-          <summary>🎁 {city.name}伴手禮清單</summary>
+          <summary>{t("souvenir_list", lang, tCityName(city))}</summary>
           <ul>
-            {city.souvenirs.map((s) => (
+            {souvenirs.map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ul>
@@ -125,7 +153,7 @@ export function PSuggest() {
 
       {city && (
         <>
-          <p className="section-label">你現在在哪附近?</p>
+          <p className="section-label">{t("q_hub", lang)}</p>
           <div className="choice-grid">
             {city.hubs.map((h) => (
               <button
@@ -136,7 +164,7 @@ export function PSuggest() {
                   setExcluded(new Set());
                 }}
               >
-                📍 {h.name}
+                📍 {tHubName(city.id, h)}
               </button>
             ))}
           </div>
@@ -146,11 +174,11 @@ export function PSuggest() {
       {hubId && (
         <>
           <div className="row wrap">
-            <span className="section-label">還想玩</span>
+            <span className="section-label">{t("want_hours", lang)}</span>
             <div className="row">
               <button onClick={() => setHoursLeft((h) => Math.max(1, h - 1))}>−</button>
               <strong style={{ minWidth: 64, textAlign: "center" }}>
-                {hoursLeft} 小時
+                {t("hours_unit", lang, hoursLeft)}
               </strong>
               <button onClick={() => setHoursLeft((h) => Math.min(12, h + 1))}>＋</button>
             </div>
@@ -159,32 +187,30 @@ export function PSuggest() {
               className={pace === "march" ? "selected" : ""}
               onClick={() => setPace((p) => (p === "march" ? "relaxed" : "march"))}
             >
-              🥾 行軍模式
+              {t("march_mode", lang)}
             </button>
             <button className={rain ? "selected" : ""} onClick={() => setRain((r) => !r)}>
-              🌧️ 下雨了
+              {t("rain_mode", lang)}
             </button>
           </div>
 
           {results.length === 0 ? (
-            <div className="empty">
-              這個條件下找不到點了 —— 放寬時間或關掉雨天模式試試。
-            </div>
+            <div className="empty">{t("p_empty", lang)}</div>
           ) : (
             <>
               <Suspense fallback={<div className="map-box" />}>
                 <DayMap points={mapPoints} />
               </Suspense>
-              <p className="muted small">等等可以去:</p>
+              <p className="muted small">{t("next_up", lang)}</p>
               {results.map((r) => (
                 <PoiCard
                   key={r.poi.id}
                   poi={r.poi}
                   showVisitToggle
-                  extraTags={r.reasons}
+                  extraTags={r.reasons.map((x) => reasonText(x, lang))}
                 />
               ))}
-              <button onClick={nextBatch}>🔄 換一批</button>
+              <button onClick={nextBatch}>{t("next_batch", lang)}</button>
             </>
           )}
         </>

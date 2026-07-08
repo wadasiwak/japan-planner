@@ -1,7 +1,7 @@
 import type { CityDef, POI, Pace, Category } from "../data/types";
 import { regionById, poisByCity, poiById, cityById } from "../data";
 import { intercityLeg } from "../data/transit";
-import { haversineKm, transitMinutes, intercityMinutes, fmtDuration } from "./geo";
+import { haversineKm, transitMinutes, intercityMinutes } from "./geo";
 import { latestEndMin } from "./hours";
 import { mulberry32, gumbelScore } from "./rng";
 import { useAppStore } from "../store/appStore";
@@ -21,13 +21,24 @@ export interface PlanInput {
   skipVisited?: boolean;
 }
 
+/**
+ * 動態時段的結構化內容,顯示時才依語言組字串:
+ * ic=城際移動、mv=市內跨分區移動、fm=自由覓食。
+ */
+export type SlotInfo =
+  | { t: "ic"; from: string; to: string; min: number; via?: string }
+  | { t: "mv"; area: string; min: number }
+  | { t: "fm"; meal: "lunch" | "dinner" };
+
 export interface PlanSlot {
   kind: "poi" | "meal" | "cafe" | "transit";
   /** minutes from 00:00 */
   start: number;
   end: number;
   poiId?: string; // poi / cafe / meal(有選到店時)
-  note?: string; // transit 說明或「自由覓食」
+  info?: SlotInfo;
+  /** 舊版分享連結的純文字說明,僅為相容保留。 */
+  note?: string;
 }
 
 export interface PlanDay {
@@ -268,7 +279,7 @@ function planCityDay(
       start: cursor,
       end: cursor + len,
       poiId: food?.id,
-      note: food ? undefined : wantLunch ? "自由覓食(午餐)" : "自由覓食(晚餐)",
+      info: food ? undefined : { t: "fm", meal: wantLunch ? "lunch" : "dinner" },
     });
     cursor += len;
     if (food) lastPoi = food;
@@ -323,7 +334,7 @@ function planCityDay(
           kind: "transit",
           start: cursor,
           end: cursor + min,
-          note: `移動到「${group.area}」(約 ${min} 分)`,
+          info: { t: "mv", area: group.area, min },
         });
         cursor += min;
       }
@@ -382,7 +393,7 @@ function planCityDay(
       kind: "meal",
       start: Math.max(cursor, DINNER),
       end: Math.max(cursor, DINNER) + mealLen,
-      note: "自由覓食(晚餐)",
+      info: { t: "fm", meal: "dinner" },
     });
   }
   return { areas, slots };
@@ -407,12 +418,11 @@ function intercitySlot(prev: CityDef, next: CityDef, pace: Pace): PlanSlot {
   const min =
     leg?.min ??
     intercityMinutes(haversineKm(prev.hubs[0].center, next.hubs[0].center));
-  const via = leg ? `・${leg.via}` : "";
   return {
     kind: "transit",
     start: cfg.dayStart,
     end: cfg.dayStart + min,
-    note: `🚄 從${prev.name}移動到${next.name}(約 ${fmtDuration(min)},含拉行李)${via}`,
+    info: { t: "ic", from: prev.id, to: next.id, min, via: leg?.via },
   };
 }
 

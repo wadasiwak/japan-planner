@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Plan } from "../lib/planner";
+import type { Lang } from "../i18n";
 
 export interface SavedPlan {
   id: string;
@@ -13,9 +14,11 @@ interface AppState {
   /** 去過的 POI id → 打卡時間。 */
   visited: Record<string, number>;
   savedPlans: SavedPlan[];
+  lang: Lang;
   toggleVisited: (poiId: string) => void;
   savePlan: (title: string, plan: Plan) => void;
   deletePlan: (id: string) => void;
+  setLang: (lang: Lang) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -23,6 +26,8 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       visited: {},
       savedPlans: [],
+      lang: "zh" as Lang,
+      setLang: (lang) => set({ lang }),
       toggleVisited: (poiId) =>
         set((s) => {
           const visited = { ...s.visited };
