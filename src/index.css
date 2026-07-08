@@ -368,6 +368,20 @@ a.tag.maplink {
   font-variant-numeric: tabular-nums;
 }
 
+.souvenirs ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: #c6cdd8;
+  font-size: 0.9rem;
+}
+.souvenirs li {
+  margin: 3px 0;
+}
+.souvenirs summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .region-label {
   margin: 8px 0 6px;
   font-weight: 700;

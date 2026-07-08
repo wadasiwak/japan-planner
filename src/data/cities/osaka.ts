@@ -19,6 +19,12 @@ export const city: CityDef = {
     { id: "osaka-sta-bentencho", name: "弁天町車站", nameJa: "弁天町駅", center: { lat: 34.6699, lng: 135.4632 } },
     { id: "osaka-sta-nishikujo", name: "西九條車站", nameJa: "西九条駅", center: { lat: 34.6829, lng: 135.4664 } },
   ],
+  souvenirs: [
+    "551蓬萊肉包(現做現蒸的豚まん,大阪人氣伴手禮首選,車站就有)",
+    "老爺爺起司蛋糕(りくろーおじさん現烤輕乳酪蛋糕,便宜又鬆軟)",
+    "呼吸チョコ(裹可可粉的杏仁巧克力,北新地等口味是大阪限定)",
+    "粟おこし(あみだ池大黒的米香脆菓,江戶時代傳承的大阪名物)",
+  ],
 };
 
 export const pois: POI[] = [

@@ -17,6 +17,13 @@ export const city: CityDef = {
     { id: "takamatsu-port", name: "高松港", nameJa: "高松港", center: { lat: 34.3527, lng: 134.0490 } },
     { id: "takamatsu-miyanoura-port", name: "直島宮浦港", nameJa: "直島 宮浦港", center: { lat: 34.4614, lng: 133.9803 } },
   ],
+  souvenirs: [
+    "讚岐烏龍麵乾麵組(名店半生麵、乾麵禮盒,多附湯露)",
+    "和三盆(讚岐傳統手工細糖,三谷製糖等老舖的干菓子入口即化)",
+    "草間彌生周邊(直島南瓜主題雜貨與美術館限定商品)",
+    "灸まん(金刀比羅宮參道名物,艾灸造型的白餡饅頭)",
+    "小豆島橄欖製品(橄欖油、橄欖手霜等瀨戶內名產)",
+  ],
 };
 
 export const pois: POI[] = [

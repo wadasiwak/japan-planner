@@ -46,6 +46,12 @@ export interface CityDef {
   maxDays: number;
   /** 5–10 個 P人模式錨點。 */
   hubs: Hub[];
+  /**
+   * 這城市的代表伴手禮 3–6 樣,格式「名稱(一句說明)」,
+   * 例:"白色戀人(石屋製菓白巧克力夾心餅,新千歲機場也買得到)"。
+   * 行程會在離開這城市前一天提醒。
+   */
+  souvenirs?: string[];
 }
 
 export interface RegionDef {

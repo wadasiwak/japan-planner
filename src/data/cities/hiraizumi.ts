@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "hiraizumi-chusonji-sando", name: "中尊寺表參道入口", nameJa: "中尊寺 月見坂入口", center: { lat: 38.9862, lng: 141.107 } },
     { id: "hiraizumi-sta-ichinoseki", name: "一之關車站", nameJa: "一ノ関駅", center: { lat: 38.934, lng: 141.1367 } },
   ],
+  souvenirs: [
+    "かもめの玉子(さいとう製菓的白餡蛋形銘菓,岩手代表)",
+    "中尊寺金色堂周邊(金箔書籤、御守等金色堂主題小物)",
+    "田むらの梅(鄰站一關的松栄堂銘菓,青紫蘇裹白餡求肥)",
+    "餅菓子(一關・平泉是餅文化之鄉,ずんだ、核桃口味都有)",
+  ],
 };
 
 export const pois: POI[] = [

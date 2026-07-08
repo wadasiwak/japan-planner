@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "nagoya-osu-kannon", name: "大須觀音", nameJa: "大須観音", center: { lat: 35.1597, lng: 136.8997 } },
     { id: "nagoya-sta-kanayama", name: "金山車站", nameJa: "金山駅", center: { lat: 35.143, lng: 136.9008 } },
   ],
+  souvenirs: [
+    "ゆかり(坂角総本舗的炸蝦仙貝,名古屋伴手禮定番)",
+    "青柳ういろう(名古屋外郎糕老鋪,米粉蒸糕樸實有嚼勁)",
+    "ぴよりん(小雞造型布丁甜點,保存僅當日,現場吃最實際)",
+    "桂新堂海老仙貝(整隻蝦壓進仙貝,包裝雅緻適合送禮)",
+    "手羽先真空包(世界の山ちゃん等名店雞翅,回家加熱重現)",
+  ],
 };
 
 export const pois: POI[] = [

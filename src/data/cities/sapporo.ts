@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "sapporo-sta-susukino", name: "薄野車站", nameJa: "すすきの駅", center: { lat: 43.0555, lng: 141.3536 } },
     { id: "sapporo-sta-maruyama", name: "圓山公園車站", nameJa: "円山公園駅", center: { lat: 43.0578, lng: 141.3169 } },
   ],
+  souvenirs: [
+    "白色戀人(石屋製菓白巧克力夾心餅,新千歲機場也買得到)",
+    "マルセイバターサンド(六花亭的葡萄奶油夾心餅,北海道經典)",
+    "Royce' 生巧克力(入口即化,怕熱,回程前再買並拿保冷袋)",
+    "じゃがポックル(Calbee 北海道限定薯條三兄弟,熱門到常缺貨)",
+    "札幌農學校牛奶餅乾(北海道大學認證,奶香樸實的牛奶餅乾)",
+  ],
 };
 
 export const pois: POI[] = [

@@ -17,6 +17,11 @@ export const city: CityDef = {
     { id: "yokohama-sta-motomachi", name: "元町・中華街車站", nameJa: "元町・中華街駅", center: { lat: 35.4408, lng: 139.6507 } },
     { id: "yokohama-sta-shin-yokohama", name: "新橫濱車站", nameJa: "新横浜駅", center: { lat: 35.507, lng: 139.6176 } },
   ],
+  souvenirs: [
+    "崎陽軒燒賣便當(百年名物シウマイ弁当,車站與百貨都買得到)",
+    "ありあけ橫濱harbour(船型栗子餡蛋糕,橫濱代表洋菓子)",
+    "馬車道十番館ビスカウト(復古洋風夾心餅乾,馬車道老舖名物)",
+  ],
 };
 
 export const pois: POI[] = [

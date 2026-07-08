@@ -17,6 +17,13 @@ export const city: CityDef = {
     { id: "fukuoka-sta-ohorikoen", name: "大濠公園車站", nameJa: "大濠公園駅", center: { lat: 33.586, lng: 130.3798 } },
     { id: "fukuoka-sta-dazaifu", name: "太宰府車站", nameJa: "太宰府駅", center: { lat: 33.5188, lng: 130.529 } },
   ],
+  souvenirs: [
+    "辛子明太子(福さ屋、やまや等老舖的醃漬鱈魚卵,有常溫包裝方便帶回)",
+    "博多通りもん(明月堂白餡奶油饅頭,博多最經典伴手禮)",
+    "博多ひよ子(小雞造型豆沙饅頭,福岡起家的百年名點)",
+    "梅ヶ枝餅(太宰府名物烤麻糬,參道現烤,也有盒裝可外帶)",
+    "筑紫もち(如水庵黃豆粉麻糬淋黑糖蜜,風味近信玄餅)",
+  ],
 };
 
 export const pois: POI[] = [

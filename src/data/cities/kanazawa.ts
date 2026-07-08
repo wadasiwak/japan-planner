@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "kanazawa-higashichaya", name: "東茶屋街", nameJa: "ひがし茶屋街", center: { lat: 36.5726, lng: 136.6668 } },
     { id: "kanazawa-kenrokuen-shita", name: "兼六園下・金澤城", nameJa: "兼六園下・金沢城", center: { lat: 36.5645, lng: 136.662 } },
   ],
+  souvenirs: [
+    "金箔菓子(金箔卡斯提拉、金箔羊羹,金澤金箔產量全日第一)",
+    "烏雞庵金箔かすてら(烏骨雞蛋做的蜂蜜蛋糕再貼上金箔)",
+    "金箔化妝品(箔一等品牌的金箔吸油面紙、保養品)",
+    "加賀棒茶(焙煎茶莖的香氣茶,丸八製茶場最有名)",
+    "中田屋きんつば(紅豆金鍔燒,金澤和菓子的代表老鋪)",
+  ],
 };
 
 export const pois: POI[] = [

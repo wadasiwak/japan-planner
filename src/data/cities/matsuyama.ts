@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "matsuyama-okaido", name: "大街道", nameJa: "大街道", center: { lat: 33.8399, lng: 132.7695 } },
     { id: "matsuyama-dogo-sta", name: "道後溫泉站", nameJa: "道後温泉駅", center: { lat: 33.8494, lng: 132.7849 } },
   ],
+  souvenirs: [
+    "一六タルト(柚子餡蛋糕捲,愛媛百年銘菓,六時屋タルト也有名)",
+    "坊っちゃん団子(三色糰子,因夏目漱石小說《少爺》得名)",
+    "今治毛巾(世界級品質的愛媛今治タオル,松山市區有專賣店)",
+    "蜜柑製品(愛媛蜜柑汁 POM ジュース與各式蜜柑菓子)",
+    "母恵夢(愛媛代表銘菓,奶油餡小蛋糕,老少咸宜)",
+  ],
 };
 
 export const pois: POI[] = [

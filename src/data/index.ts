@@ -31,6 +31,17 @@ import * as matsuyama from "./cities/matsuyama";
 import * as okayama from "./cities/okayama";
 import * as izumo from "./cities/izumo";
 import * as tottori from "./cities/tottori";
+import * as kumamoto from "./cities/kumamoto";
+import * as kagoshima from "./cities/kagoshima";
+import * as miyazaki from "./cities/miyazaki";
+import * as hakone from "./cities/hakone";
+import * as kawaguchiko from "./cities/kawaguchiko";
+import * as atami from "./cities/atami";
+import * as himeji from "./cities/himeji";
+import * as furano from "./cities/furano";
+import * as noboribetsu from "./cities/noboribetsu";
+import * as matsumoto from "./cities/matsumoto";
+import * as ise from "./cities/ise";
 
 // 城市模組:每個 exports `city: CityDef` 與 `pois: POI[]`。
 // 新增城市 → cities/<id>.ts + 在這裡 import + 掛進 CITY_MODULES。
@@ -66,6 +77,17 @@ const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [
   okayama,
   izumo,
   tottori,
+  kumamoto,
+  kagoshima,
+  miyazaki,
+  hakone,
+  kawaguchiko,
+  atami,
+  himeji,
+  furano,
+  noboribetsu,
+  matsumoto,
+  ise,
 ];
 
 export const CITIES: CityDef[] = CITY_MODULES.map((m) => m.city);

@@ -17,6 +17,13 @@ export const city: CityDef = {
     { id: "naha-gyokusendo", name: "玉泉洞(南城)", nameJa: "玉泉洞", center: { lat: 26.1408, lng: 127.7489 } },
     { id: "naha-chinen", name: "知念(南城)", nameJa: "知念", center: { lat: 26.1721, lng: 127.8290 } },
   ],
+  souvenirs: [
+    "紅芋タルト(御菓子御殿紅芋塔,沖繩伴手禮代名詞)",
+    "ちんすこう(金楚糕,琉球傳統酥餅,新垣等老舖口味眾多)",
+    "泡盛(沖繩蒸餾米酒,久米仙、殘波等品牌,小瓶好帶)",
+    "雪塩菓子(宮古島雪鹽做的雪塩金楚糕與雪塩餅乾)",
+    "沖繩黑糖(離島產黑糖塊,直接吃或煮黑糖茶都合適)",
+  ],
 };
 
 export const pois: POI[] = [

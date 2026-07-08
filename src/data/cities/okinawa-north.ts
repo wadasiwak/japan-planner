@@ -17,6 +17,12 @@ export const city: CityDef = {
     { id: "okinawa-north-nago", name: "名護", nameJa: "名護", center: { lat: 26.5886, lng: 127.9761 } },
     { id: "okinawa-north-motobu", name: "本部町", nameJa: "本部町", center: { lat: 26.6579, lng: 127.8981 } },
   ],
+  souvenirs: [
+    "鯨鯊周邊(美麗海水族館限定的甚平鯊玩偶與雜貨)",
+    "名護鳳梨製品(名護鳳梨園的鳳梨蛋糕、果汁與鳳梨酒)",
+    "オリオンビール周邊(名護起家的沖繩啤酒與周邊小物)",
+    "香檬製品(山原名產香檬(シークヮーサー)的果汁與果醬)",
+  ],
 };
 
 export const pois: POI[] = [

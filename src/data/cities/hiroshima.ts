@@ -17,6 +17,13 @@ export const city: CityDef = {
     { id: "hiroshima-miyajimaguchi", name: "宮島口車站", nameJa: "宮島口駅", center: { lat: 34.3126, lng: 132.3027 } },
     { id: "hiroshima-miyajima-pier", name: "宮島棧橋", nameJa: "宮島桟橋", center: { lat: 34.3016, lng: 132.3229 } },
   ],
+  souvenirs: [
+    "もみじ饅頭(紅葉饅頭,宮島名物,にしき堂、藤い屋等口味多)",
+    "宮島杓子(飯杓造型開運木製品,嚴島神社參道名產)",
+    "廣島檸檬製品(瀨戶內檸檬的餅乾、果醬與檸檬飲品)",
+    "お好み焼きソース(オタフク御好燒醬,在家重現廣島燒必備)",
+    "熊野筆(熊野町產化妝刷與毛筆,日本第一筆之鄉)",
+  ],
 };
 
 export const pois: POI[] = [

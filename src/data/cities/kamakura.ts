@@ -17,6 +17,12 @@ export const city: CityDef = {
     { id: "kamakura-sta-kokomae", name: "鎌倉高校前車站", nameJa: "鎌倉高校前駅", center: { lat: 35.3067, lng: 139.5006 } },
     { id: "kamakura-sta-enoshima", name: "江之島車站", nameJa: "江ノ島駅", center: { lat: 35.3105, lng: 139.4848 } },
   ],
+  souvenirs: [
+    "鳩サブレー(豐島屋的鴿子造型奶油餅乾,鎌倉百年名物)",
+    "クルミッ子(鎌倉紅谷的焦糖核桃夾心,超人氣常缺貨要早點買)",
+    "力餅(力餅家的求肥紅豆麻糬,長谷老舖,只能放一兩天)",
+    "鎌倉半月(鎌倉五郎的半月形夾心薄餅,抹茶口味最經典)",
+  ],
 };
 
 export const pois: POI[] = [

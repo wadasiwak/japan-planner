@@ -15,6 +15,12 @@ export const city: CityDef = {
     { id: "nikko-sta-jr-nikko", name: "JR 日光車站", nameJa: "日光駅", center: { lat: 36.7469, lng: 139.6295 } },
     { id: "nikko-chuzenji-onsen-bt", name: "中禪寺溫泉巴士總站", nameJa: "中禅寺温泉バスターミナル", center: { lat: 36.7292, lng: 139.4886 } },
   ],
+  souvenirs: [
+    "日光羊羹(名水煉製的傳統羊羹,綿半、三ツ山等老舖各有擁護者)",
+    "たまり漬(上澤梅太郎的醬油溜漬物,蕗蕎、蘿蔔都是配飯神器)",
+    "三猿周邊(東照宮「不見不聞不言」三猿的各式紀念小物)",
+    "日光甚五郎煎餅(石田屋的鹽味奶油薄煎餅,越吃越涮嘴)",
+  ],
 };
 
 export const pois: POI[] = [

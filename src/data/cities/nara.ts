@@ -15,6 +15,12 @@ export const city: CityDef = {
     { id: "nara-sta-jr", name: "JR奈良站", nameJa: "JR奈良駅", center: { lat: 34.6812, lng: 135.8199 } },
     { id: "nara-hub-park", name: "奈良公園", nameJa: "奈良公園", center: { lat: 34.6851, lng: 135.843 } },
   ],
+  souvenirs: [
+    "中谷堂麻糬(高速搗麻糬表演聞名的艾草紅豆麻糬,現買現吃最對味)",
+    "鹿周邊(小鹿造型玩偶、餅乾、文具,奈良公園一帶限定款超多)",
+    "奈良漬(酒粕醃漬瓜果的傳統漬物,老舖有真空包裝方便帶)",
+    "柿葉壽司(柿葉包裹的醋漬鯖魚壽司,平宗等老舖名物)",
+  ],
 };
 
 export const pois: POI[] = [

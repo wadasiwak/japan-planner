@@ -15,6 +15,13 @@ export const city: CityDef = {
     { id: "okayama-sta-kurashiki", name: "倉敷車站", nameJa: "倉敷駅", center: { lat: 34.606, lng: 133.7702 } },
     { id: "okayama-bikan", name: "倉敷美觀地區", nameJa: "倉敷美観地区", center: { lat: 34.5953, lng: 133.7717 } },
   ],
+  souvenirs: [
+    "きびだんご(吉備糰子,廣榮堂等老舖,桃太郎傳說名點)",
+    "白桃菓子(岡山白桃做的果凍、布丁等甜點)",
+    "マスカット菓子(麝香葡萄果凍與葡萄菓子,水果王國代表)",
+    "倉敷帆布(倉敷產帆布包與小物,職人品質)",
+    "兒島丹寧小物(國產牛仔布聖地兒島的丹寧錢包與雜貨)",
+  ],
 };
 
 export const pois: POI[] = [

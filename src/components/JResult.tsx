@@ -182,6 +182,25 @@ export function JResult({
         <DayMap points={mapPoints} connect />
       </Suspense>
 
+      {(() => {
+        // 這是在此城市的最後一天 → 提醒買伴手禮
+        const city = cityById(day.cityId);
+        const isLastDayInCity =
+          dayIdx === plan.days.length - 1 ||
+          plan.days[dayIdx + 1].cityId !== day.cityId;
+        if (!isLastDayInCity || !city?.souvenirs?.length) return null;
+        return (
+          <div className="card souvenirs">
+            <strong>🎁 離開{city.name}前,伴手禮買了嗎?</strong>
+            <ul>
+              {city.souvenirs.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
+
       {day.slots.length === 0 && (
         <div className="empty">
           這天先留白 —— 睡到自然醒,或切去「P人隨走」看看附近有什麼。

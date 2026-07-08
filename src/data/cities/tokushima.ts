@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "tokushima-sta-naruto", name: "鳴門車站", nameJa: "鳴門駅", center: { lat: 34.1728, lng: 134.6090 } },
     { id: "tokushima-naruto-park", name: "鳴門公園", nameJa: "鳴門公園", center: { lat: 34.2367, lng: 134.6483 } },
   ],
+  souvenirs: [
+    "鳴門金時菓子(名產地瓜做的燒菓子與蜜番薯點心)",
+    "すだち製品(酢橘果汁、調味醬與酢橘酒,德島代表柑橘)",
+    "阿波和三盆(岡田製糖所等傳統製法的高級砂糖干菓子)",
+    "金長まんじゅう(以狸貓傳說命名的巧克力皮白餡饅頭)",
+    "藍染小物(阿波藍染的手帕、束口袋等傳統工藝品)",
+  ],
 };
 
 export const pois: POI[] = [

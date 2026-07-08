@@ -72,6 +72,12 @@ for (const r of REGIONS) {
     const b = c.bbox;
     if (!b || b.minLat >= b.maxLat || b.minLng >= b.maxLng) err(`city ${c.id}: bbox 不合法`);
     if (!c.hubs || c.hubs.length < 3) err(`city ${c.id}: hubs 少於 3 個`);
+    if (c.souvenirs !== undefined) {
+      if (!Array.isArray(c.souvenirs) || c.souvenirs.length < 3 || c.souvenirs.length > 6)
+        err(`city ${c.id}: souvenirs 需為 3–6 樣`);
+      else if (c.souvenirs.some((s) => typeof s !== "string" || s.length < 4 || s.length > 60))
+        err(`city ${c.id}: souvenirs 每樣需為 4–60 字`);
+    } else warn.push(`city ${c.id}: 還沒有伴手禮清單`);
     for (const h of c.hubs ?? []) {
       if (hubIds.has(h.id)) err(`hub 重複 id: ${h.id}`);
       hubIds.add(h.id);

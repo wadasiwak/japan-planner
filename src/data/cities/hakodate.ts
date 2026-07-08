@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "hakodate-sta-jujigai", name: "十字街站(元町)", nameJa: "十字街停留場", center: { lat: 41.7645, lng: 140.7178 } },
     { id: "hakodate-sta-yunokawa", name: "湯之川溫泉站", nameJa: "湯の川温泉停留場", center: { lat: 41.7862, lng: 140.7862 } },
   ],
+  souvenirs: [
+    "五島軒咖哩調理包(函館百年洋食老店的招牌咖哩,常溫好帶)",
+    "いか塩辛與烏賊製品(烏賊之城函館,鹽辛、燻花枝下酒一流)",
+    "トラピスト修道院餅乾(修道院直營,發酵奶油香氣濃郁)",
+    "スナッフルス チーズオムレット(函館的半熟起司蛋糕,入口即化)",
+  ],
 };
 
 export const pois: POI[] = [

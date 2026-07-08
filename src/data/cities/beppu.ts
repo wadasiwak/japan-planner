@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "beppu-sta-kamegawa", name: "龜川車站", nameJa: "亀川駅", center: { lat: 33.3273, lng: 131.4934 } },
     { id: "beppu-sta-yufuin", name: "由布院車站", nameJa: "由布院駅", center: { lat: 33.2621, lng: 131.3552 } },
   ],
+  souvenirs: [
+    "地獄蒸しプリン(岡本屋名物,溫泉地獄蒸氣蒸出的焦糖布丁)",
+    "湯の花入浴劑(明礬溫泉湯之花小屋採製的天然入浴劑)",
+    "かぼす製品(大分特產臭橙的果汁、調味料與糖果)",
+    "ざぼん漬(柚子皮砂糖漬,別府溫泉街的懷舊點心)",
+    "別府竹細工(傳統竹編工藝小物,國家指定傳統工藝品)",
+  ],
 };
 
 export const pois: POI[] = [

@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "kobe-sta-shinkobe", name: "新神戶車站", nameJa: "新神戸駅", center: { lat: 34.7069, lng: 135.1954 } },
     { id: "kobe-sta-arima", name: "有馬溫泉車站", nameJa: "有馬温泉駅", center: { lat: 34.7963, lng: 135.2479 } },
   ],
+  souvenirs: [
+    "神戶風月堂法蘭酥(ゴーフル薄餅夾奶油,神戶洋菓子代表)",
+    "觀音屋起司蛋糕(現烤丹麥起司蛋糕鹹甜熱食,也有冷藏盒裝可帶走)",
+    "神戶布丁(神戸プリン,滑嫩焦糖布丁,車站土產店必見)",
+    "炭酸煎餅(有馬溫泉名物,用溫泉碳酸泉製作的酥脆薄餅)",
+  ],
 };
 
 export const pois: POI[] = [

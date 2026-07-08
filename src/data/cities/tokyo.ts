@@ -27,6 +27,13 @@ export const city: CityDef = {
     { id: "tokyo-sta-iidabashi", name: "飯田橋車站", nameJa: "飯田橋駅", center: { lat: 35.702, lng: 139.745 } },
     { id: "tokyo-sta-shimokitazawa", name: "下北澤車站", nameJa: "下北沢駅", center: { lat: 35.6613, lng: 139.6683 } },
   ],
+  souvenirs: [
+    "東京ばな奈(香蕉卡士達夾心海綿蛋糕,東京車站與機場都買得到)",
+    "Press Butter Sand(現烤焦糖奶油夾心餅乾,東京車站人氣排隊名店)",
+    "N.Y.C.SAND(紐約焦糖夾心餅乾,大丸東京店常常大排長龍)",
+    "舟和芋羊羹(淺草老舖的地瓜羊羹,樸實不甜膩,保存期限較短)",
+    "雷おこし(雷門旁的江戶傳統米香脆餅,淺草代表名產)",
+  ],
 };
 
 export const pois: POI[] = [

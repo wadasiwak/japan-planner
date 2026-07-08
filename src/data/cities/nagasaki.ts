@@ -16,6 +16,13 @@ export const city: CityDef = {
     { id: "nagasaki-sta-heiwakoen", name: "平和公園電車站", nameJa: "平和公園停留場", center: { lat: 32.7745, lng: 129.8655 } },
     { id: "nagasaki-sta-oura", name: "大浦天主堂電車站", nameJa: "大浦天主堂停留場", center: { lat: 32.7366, lng: 129.8699 } },
   ],
+  souvenirs: [
+    "福砂屋カステラ(長崎蛋糕創始老舖,底層砂糖顆粒是招牌)",
+    "文明堂カステラ(長崎蛋糕另一名門,蛋香濃郁口感鬆軟)",
+    "ちゃんぽん麵組合包(みろくや等品牌的長崎強棒麵伴手包,附湯頭)",
+    "クルス(十字架圖案薄餅夾白巧克力,充滿長崎異國風情的名點)",
+    "桃カステラ(桃子造型的喜氣長崎蛋糕,長崎和菓子店限定)",
+  ],
 };
 
 export const pois: POI[] = [

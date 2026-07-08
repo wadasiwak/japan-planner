@@ -15,6 +15,12 @@ export const city: CityDef = {
     { id: "otaru-sta-minami-otaru", name: "南小樽車站", nameJa: "南小樽駅", center: { lat: 43.1877, lng: 141.0033 } },
     { id: "otaru-sta-chikko", name: "小樽築港車站", nameJa: "小樽築港駅", center: { lat: 43.1783, lng: 141.021 } },
   ],
+  souvenirs: [
+    "北一硝子玻璃小物(堺町通老鋪,玻璃杯與小飾品都好帶)",
+    "LeTAO 雙層乳酪蛋糕(小樽本店招牌,需保冷,也有常溫小點)",
+    "小樽音樂盒(音樂盒堂本館自選一顆,建築本身就是百年古蹟)",
+    "あまとうマロンコロン(小樽老牌洋菓子店的三層夾心酥餅)",
+  ],
 };
 
 export const pois: POI[] = [

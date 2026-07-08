@@ -17,6 +17,12 @@ export const city: CityDef = {
     { id: "yamagata-zao-bt", name: "藏王溫泉巴士總站", nameJa: "蔵王温泉バスターミナル", center: { lat: 38.1676, lng: 140.3996 } },
     { id: "yamagata-ginzan-onsen", name: "銀山溫泉", nameJa: "銀山温泉", center: { lat: 38.57, lng: 140.5287 } },
   ],
+  souvenirs: [
+    "樹氷ロマン(白巧克力夾心威化餅,藏王樹冰意象的山形銘菓)",
+    "乃し梅(佐藤屋的梅子薄片和菓子,兩百年老鋪的酸甜滋味)",
+    "櫻桃加工品(櫻桃王國山形,果凍、糖果整年都買得到)",
+    "おしどりミルクケーキ(煉乳製的牛奶片零嘴,號稱能吃的牛奶)",
+  ],
 };
 
 export const pois: POI[] = [

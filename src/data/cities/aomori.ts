@@ -17,6 +17,13 @@ export const city: CityDef = {
     { id: "aomori-sta-hirosaki", name: "弘前車站", nameJa: "弘前駅", center: { lat: 40.6015, lng: 140.4933 } },
     { id: "aomori-towadako-yasumiya", name: "十和田湖(休屋)", nameJa: "十和田湖 休屋", center: { lat: 40.4258, lng: 140.8975 } },
   ],
+  souvenirs: [
+    "気になるリンゴ(ラグノオ的整顆蜜漬蘋果派,青森代表)",
+    "青森蘋果汁(100% 純汁品牌眾多,便宜又最有在地感)",
+    "パティシエのりんごスティック(ラグノオ蘋果條派,常溫好分送)",
+    "睡魔祭周邊(ねぶた面具、金魚燈籠小物,祭典氣氛帶著走)",
+    "A-FACTORY 蘋果氣泡酒(青森站旁直營,青森蘋果釀的 Cidre)",
+  ],
 };
 
 export const pois: POI[] = [

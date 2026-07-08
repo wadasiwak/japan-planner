@@ -15,29 +15,32 @@ export const REGION_META: RegionMeta[] = [
     id: "kanto",
     name: "東京・關東近郊",
     emoji: "🗼",
-    blurb: "第一次日本自由行的起點:都心逛不完,近郊鎌倉、橫濱、日光一日來回。",
-    cityIds: ["tokyo", "yokohama", "kamakura", "nikko"],
+    blurb: "第一次日本自由行的起點:都心逛不完,箱根河口湖泡湯看富士山。",
+    // 旅行順序:都心→近郊南線(橫濱鎌倉箱根熱海)→富士五湖→日光
+    cityIds: ["tokyo", "yokohama", "kamakura", "hakone", "atami", "kawaguchiko", "nikko"],
   },
   {
     id: "kansai",
     name: "關西",
     emoji: "⛩️",
     blurb: "大阪的吃、京都的古、奈良的鹿、神戶的港,一條路線四種風景。",
-    cityIds: ["osaka", "kyoto", "nara", "kobe"],
+    cityIds: ["osaka", "kyoto", "nara", "kobe", "himeji"],
   },
   {
     id: "hokkaido",
     name: "北海道",
     emoji: "🐻",
-    blurb: "夏天薰衣草冬天雪祭,海鮮和拉麵永遠不分季節。",
-    cityIds: ["sapporo", "otaru", "hakodate"],
+    blurb: "富良野薰衣草、登別地獄谷、函館夜景,海鮮和拉麵永遠不分季節。",
+    // 旅行順序:富良野(東)→札幌小樽→登別洞爺→函館(南),城際移動最省
+    cityIds: ["furano", "sapporo", "otaru", "noboribetsu", "hakodate"],
   },
   {
     id: "kyushu",
     name: "九州",
     emoji: "♨️",
-    blurb: "福岡屋台、長崎異國情調、別府由布院泡不完的溫泉。",
-    cityIds: ["fukuoka", "nagasaki", "beppu"],
+    blurb: "福岡屋台、長崎異國情調、阿蘇火山、櫻島、日南海岸,溫泉泡好泡滿。",
+    // 旅行順序:福岡進→長崎→熊本阿蘇→鹿兒島→宮崎→別府出(北→南→東北上)
+    cityIds: ["fukuoka", "nagasaki", "kumamoto", "kagoshima", "miyazaki", "beppu"],
   },
   {
     id: "okinawa",
@@ -50,8 +53,9 @@ export const REGION_META: RegionMeta[] = [
     id: "chubu",
     name: "中部北陸",
     emoji: "🏔️",
-    blurb: "名古屋城、金澤兼六園、高山老街與白川鄉合掌村。",
-    cityIds: ["nagoya", "kanazawa", "takayama"],
+    blurb: "伊勢神宮、名古屋、飛驒高山、上高地、金澤兼六園,山海一條線。",
+    // 旅行順序:伊勢(南)→名古屋→高山→松本→金澤,南往北一條線
+    cityIds: ["ise", "nagoya", "takayama", "matsumoto", "kanazawa"],
   },
   {
     id: "chugoku",

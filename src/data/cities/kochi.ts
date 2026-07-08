@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "kochi-harimayabashi", name: "播磨屋橋", nameJa: "はりまや橋", center: { lat: 33.5600, lng: 133.5423 } },
     { id: "kochi-katsurahama-bus", name: "桂濱", nameJa: "桂浜", center: { lat: 33.4980, lng: 133.5745 } },
   ],
+  souvenirs: [
+    "芋けんぴ(澁谷食品等品牌的炸地瓜條,高知國民零嘴)",
+    "柚子製品(馬路村柚子醋醬油與柚子飲品最有名)",
+    "鰹節・宗田節(柴魚禮盒,土佐清水的宗田節是高湯名品)",
+    "ミレービスケット(野村煎豆加工店的懷舊小圓餅,高知靈魂零食)",
+  ],
 };
 
 export const pois: POI[] = [

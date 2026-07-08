@@ -20,6 +20,13 @@ export const city: CityDef = {
     { id: "kyoto-sta-demachiyanagi", name: "出町柳站", nameJa: "出町柳駅", center: { lat: 35.0302, lng: 135.7729 } },
     { id: "kyoto-sta-nijojo-mae", name: "二條城前站", nameJa: "二条城前駅", center: { lat: 35.0111, lng: 135.7519 } },
   ],
+  souvenirs: [
+    "生八橋(肉桂香麻糬皮包紅豆餡,聖護院、井筒等老舖任選)",
+    "阿闍梨餅(滿月本店的半生菓子,彈牙外皮包丹波紅豆餡)",
+    "宇治抹茶菓子(伊藤久右衛門、中村藤吉的抹茶甜點都很經典)",
+    "京ばあむ(抹茶豆乳年輪蛋糕,切面層次分明超好拍)",
+    "よーじや吸油面紙(藝妓臉商標的京都美妝小物,送禮輕巧)",
+  ],
 };
 
 export const pois: POI[] = [

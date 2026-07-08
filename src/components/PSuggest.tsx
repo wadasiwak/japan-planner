@@ -107,6 +107,17 @@ export function PSuggest() {
         </div>
       ))}
 
+      {city && city.souvenirs && city.souvenirs.length > 0 && (
+        <details className="card souvenirs">
+          <summary>🎁 {city.name}伴手禮清單</summary>
+          <ul>
+            {city.souvenirs.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </details>
+      )}
+
       {city && (
         <>
           <p className="section-label">你現在在哪附近?</p>

@@ -15,6 +15,12 @@ export const city: CityDef = {
     { id: "sendai-kokubuncho", name: "國分町", nameJa: "国分町", center: { lat: 38.2634, lng: 140.8697 } },
     { id: "sendai-sta-matsushima-kaigan", name: "松島海岸車站", nameJa: "松島海岸駅", center: { lat: 38.3665, lng: 141.0574 } },
   ],
+  souvenirs: [
+    "萩の月(菓匠三全的卡士達奶油蛋糕,仙台伴手禮不動的第一名)",
+    "牛たん真空包(利久、喜助等名店牛舌,帶回家煎就是名店味)",
+    "ずんだ菓子(毛豆泥甜點各式各樣,ずんだ奶昔則要現場喝)",
+    "喜久福(喜久水庵的鮮奶油大福,抹茶口味必買,需保冷)",
+  ],
 };
 
 export const pois: POI[] = [

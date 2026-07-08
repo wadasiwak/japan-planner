@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "izumo-taisha-mae", name: "出雲大社前車站", nameJa: "出雲大社前駅", center: { lat: 35.3945, lng: 132.6867 } },
     { id: "izumo-sta-matsue", name: "松江車站", nameJa: "松江駅", center: { lat: 35.463, lng: 133.0636 } },
   ],
+  souvenirs: [
+    "緣結び周邊(出雲大社參道的結緣紅線、御守與緣結び糸)",
+    "出雲そば乾麵(出雲蕎麥麵禮盒,附沾醬在家重現三段割子)",
+    "俵まんぢう(米俵造型奶油餡饅頭,出雲名點)",
+    "ぜんざい菓子(出雲是善哉紅豆湯發祥地,即食善哉包好帶)",
+  ],
 };
 
 export const pois: POI[] = [

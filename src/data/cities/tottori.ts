@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "tottori-sakyu", name: "鳥取砂丘", nameJa: "鳥取砂丘", center: { lat: 35.539, lng: 134.227 } },
     { id: "tottori-sta-sakaiminato", name: "境港車站", nameJa: "境港駅", center: { lat: 35.5397, lng: 133.2311 } },
   ],
+  souvenirs: [
+    "因幡の白うさぎ(壽製菓白兔造型饅頭,取材神話白兔傳說)",
+    "二十世紀梨菓子(鳥取名產梨子做的果凍、餅乾與糖果)",
+    "鬼太郎周邊(境港水木茂之路的鬼太郎菓子與雜貨)",
+    "白バラ牛乳周邊(大山乳業人氣牛奶的餅乾、蛋糕等製品)",
+  ],
 };
 
 export const pois: POI[] = [

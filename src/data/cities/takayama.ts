@@ -16,6 +16,12 @@ export const city: CityDef = {
     { id: "takayama-sanmachi", name: "三町老街口", nameJa: "さんまち通り", center: { lat: 36.142, lng: 137.2588 } },
     { id: "takayama-shirakawago-bt", name: "白川鄉巴士總站", nameJa: "白川郷バスターミナル", center: { lat: 36.2602, lng: 136.9057 } },
   ],
+  souvenirs: [
+    "さるぼぼ(飛驒無臉猴寶寶護身吊飾,不同顏色各有寓意)",
+    "飛驒牛加工品(牛肉乾、咖哩調理包,常溫帶走飛驒牛滋味)",
+    "朴葉味噌(飛驒鄉土味,回家鋪在朴葉上烤,配飯神器)",
+    "飛驒春慶塗(透亮琥珀色的漆器,茶盤、便當盒都經典)",
+  ],
 };
 
 export const pois: POI[] = [
