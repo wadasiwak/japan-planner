@@ -16,7 +16,9 @@ import {
   t,
   tArea,
   tCityName,
+  tPoiBlurb,
   tPoiName,
+  tPoiTips,
   tRegionName,
   tSlotInfo,
   tSouvenirs,
@@ -106,10 +108,52 @@ export function JResult({
     onReplace(removeSlot(plan, dayIdx, slotIdx));
   };
 
-  const share = async () => {
+  const [shareOpen, setShareOpen] = useState(false);
+
+  const promoText = () => t("share_promo", lang, title);
+
+  const copyLink = async () => {
     await navigator.clipboard.writeText(planShareUrl(plan));
     setShared(true);
+    setShareOpen(false);
   };
+
+  const nativeShare = async () => {
+    try {
+      await navigator.share({ text: promoText(), url: planShareUrl(plan) });
+    } catch {
+      /* 用戶取消 */
+    }
+    setShareOpen(false);
+  };
+
+  const openIntent = (make: (text: string, url: string) => string) => {
+    window.open(make(promoText(), planShareUrl(plan)), "_blank", "noopener");
+    setShareOpen(false);
+  };
+
+  const INTENTS: { label: string; make: (text: string, url: string) => string }[] = [
+    {
+      label: "LINE",
+      make: (text, url) =>
+        `https://line.me/R/share?text=${encodeURIComponent(`${text}\n${url}`)}`,
+    },
+    {
+      label: "Facebook",
+      make: (text, url) =>
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,
+    },
+    {
+      label: "X",
+      make: (text, url) =>
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+    },
+    {
+      label: "Threads",
+      make: (text, url) =>
+        `https://www.threads.net/intent/post?text=${encodeURIComponent(`${text}\n${url}`)}`,
+    },
+  ];
 
   // 全程行程轉純文字,貼 LINE 給旅伴用
   const copyText = async () => {
@@ -158,8 +202,14 @@ export function JResult({
         <button className={copied ? "selected" : "ghost"} onClick={copyText}>
           {copied ? t("copied", lang) : t("copy", lang)}
         </button>
-        <button className={shared ? "selected" : "ghost"} onClick={share}>
+        <button
+          className={shared ? "selected" : "ghost"}
+          onClick={() => setShareOpen((o) => !o)}
+        >
           {shared ? t("shared", lang) : t("share", lang)}
+        </button>
+        <button className="ghost" title={t("pdf_hint", lang)} onClick={() => window.print()}>
+          {t("download_pdf", lang)}
         </button>
         <button
           className={saved ? "selected" : ""}
@@ -171,6 +221,28 @@ export function JResult({
           {saved ? t("saved", lang) : t("save", lang)}
         </button>
       </div>
+
+      {shareOpen && (
+        <div className="share-menu">
+          {"share" in navigator && (
+            <button className="ghost small" onClick={nativeShare}>
+              {t("share_native", lang)}
+            </button>
+          )}
+          {INTENTS.map((it) => (
+            <button
+              key={it.label}
+              className="ghost small"
+              onClick={() => openIntent(it.make)}
+            >
+              {it.label}
+            </button>
+          ))}
+          <button className="ghost small" onClick={copyLink}>
+            {t("copy_link", lang)}
+          </button>
+        </div>
+      )}
 
       <div className="day-tabs">
         {plan.days.map((d, i) => (
@@ -237,6 +309,61 @@ export function JResult({
       })()}
 
       {day.slots.length === 0 && <div className="empty">{t("empty_day", lang)}</div>}
+
+      {/* 列印/PDF 專用:全部天數攤平,螢幕上隱藏(見 @media print) */}
+      <div className="print-view">
+        <h1>
+          {title} — {t("brand", lang)}JP 🗾
+        </h1>
+        {plan.days.map((d, di) => {
+          const c = cityById(d.cityId);
+          const isLastInCity =
+            di === plan.days.length - 1 || plan.days[di + 1].cityId !== d.cityId;
+          const souvenirs = c && isLastInCity ? tSouvenirs(c) : undefined;
+          return (
+            <section key={d.day} className="print-day">
+              <h2>
+                Day {d.day}
+                {d.weekday != null ? `(${WD[d.weekday]})` : ""} ·{" "}
+                {c ? tCityName(c) : ""} —{" "}
+                {d.areas.map((a) => tArea(d.cityId, a)).join("、")}
+              </h2>
+              {d.slots.map((s, i) => {
+                const poi = s.poiId ? poiById(s.poiId) : undefined;
+                if (!poi) {
+                  const txt = slotText(s, lang);
+                  return txt ? (
+                    <p key={i} className="print-transit">
+                      {fmtTime(s.start)} {s.kind === "meal" ? "🍽️ " : "🚃 "}
+                      {txt}
+                    </p>
+                  ) : null;
+                }
+                const tips = tPoiTips(poi);
+                return (
+                  <div key={i} className="print-poi">
+                    <p className="print-poi-head">
+                      <strong>
+                        {fmtTime(s.start)}–{fmtTime(s.end)} {tPoiName(poi)}
+                      </strong>{" "}
+                      {lang !== "ja" && <span>({poi.nameJa})</span>}
+                      {s.kind === "meal" ? " 🍽️" : s.kind === "cafe" ? " ☕" : ""}
+                    </p>
+                    <p className="print-poi-blurb">{tPoiBlurb(poi)}</p>
+                    {tips && <p className="print-poi-tips">💡 {tips}</p>}
+                  </div>
+                );
+              })}
+              {souvenirs && souvenirs.length > 0 && (
+                <p className="print-souvenirs">
+                  🎁 {souvenirs.join("、")}
+                </p>
+              )}
+            </section>
+          );
+        })}
+        <p className="print-footer">https://wadasiwak.github.io/japan-planner/</p>
+      </div>
 
       <div className="timeline">
         {day.slots.map((slot, i) => {
