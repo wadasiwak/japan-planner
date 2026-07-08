@@ -4,21 +4,23 @@
 // 清單來自 sites.json,加新作品只要改那一個檔,全部站台同步更新。
 (function () {
   var script = document.currentScript;
-  var current = (script && script.dataset.site) || "";
+  // data-site 可逗號分隔多個 id(入口頁排除自己全部子站用)
+  var current = ((script && script.dataset.site) || "").split(",");
   fetch("https://wadasiwak.github.io/japan-planner/sites.json")
     .then(function (r) {
       return r.json();
     })
     .then(function (data) {
       var sites = (data.sites || []).filter(function (s) {
-        return s.id !== current;
+        return current.indexOf(s.id) === -1;
       });
       if (!sites.length) return;
       var wrap = document.createElement("nav");
       wrap.setAttribute("aria-label", "More sites by the author");
       wrap.style.cssText =
-        "max-width:640px;margin:8px auto 0;padding:14px 16px 30px;text-align:center;" +
-        "font-size:12.5px;line-height:2.1;opacity:.9;font-family:inherit;";
+        "display:block;width:100%;flex-basis:100%;max-width:640px;margin:8px auto 0;" +
+        "padding:14px 16px 30px;text-align:center;font-size:12.5px;line-height:2.1;" +
+        "opacity:.9;font-family:inherit;";
       var label = document.createElement("div");
       label.textContent = data.label || "🧰 更多作品";
       label.style.cssText =
@@ -35,7 +37,8 @@
           "opacity:.85;white-space:nowrap;";
         wrap.appendChild(a);
       });
-      document.body.appendChild(wrap);
+      // 頁面若提供 #more-sites-slot 就放那裡(body 是 flex 版型時避免變成側欄)
+      (document.getElementById("more-sites-slot") || document.body).appendChild(wrap);
     })
     .catch(function () {
       /* 清單抓不到就安靜地不顯示 */

@@ -16,11 +16,32 @@
       "url": "https://wadasiwak.github.io/world-quest/"
     },
     {
-      "id": "recommenders",
-      "emoji": "🎬",
-      "name": "評分推薦",
-      "desc": "動畫/電影/影集評分與個人化推薦",
-      "url": "https://wadasiwak.github.io/recommenders/"
+      "id": "rec-anime",
+      "emoji": "📺",
+      "name": "動畫推薦",
+      "desc": "AniList 人氣 2000 部評分+個人化推薦",
+      "url": "https://wadasiwak.github.io/recommenders/anime/"
+    },
+    {
+      "id": "rec-movie",
+      "emoji": "🎞️",
+      "name": "電影推薦",
+      "desc": "TMDB 前 2000 部評分+個人化推薦",
+      "url": "https://wadasiwak.github.io/recommenders/movie/"
+    },
+    {
+      "id": "rec-tv",
+      "emoji": "📡",
+      "name": "影集推薦",
+      "desc": "TMDB 前 2000 部評分+個人化推薦",
+      "url": "https://wadasiwak.github.io/recommenders/tv/"
+    },
+    {
+      "id": "rec-art",
+      "emoji": "🎨",
+      "name": "藝術推薦",
+      "desc": "世界名作×台灣藝術家 評分+推薦",
+      "url": "https://wadasiwak.github.io/recommenders/art/"
     },
     {
       "id": "qianshi",
