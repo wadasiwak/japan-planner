@@ -15,10 +15,13 @@ interface AppState {
   visited: Record<string, number>;
   savedPlans: SavedPlan[];
   lang: Lang;
+  /** 內容字典載入完成的訊號:元件訂閱它,語言包到位時原地重繪(不重掛)。 */
+  dictTick: number;
   toggleVisited: (poiId: string) => void;
   savePlan: (title: string, plan: Plan) => void;
   deletePlan: (id: string) => void;
   setLang: (lang: Lang) => void;
+  bumpDict: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -27,7 +30,9 @@ export const useAppStore = create<AppState>()(
       visited: {},
       savedPlans: [],
       lang: "zh" as Lang,
+      dictTick: 0,
       setLang: (lang) => set({ lang }),
+      bumpDict: () => set((s) => ({ dictTick: s.dictTick + 1 })),
       toggleVisited: (poiId) =>
         set((s) => {
           const visited = { ...s.visited };

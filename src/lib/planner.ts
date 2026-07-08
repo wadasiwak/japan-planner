@@ -2,7 +2,7 @@ import type { CityDef, POI, Pace, Category } from "../data/types";
 import { regionById, poisByCity, poiById, cityById } from "../data";
 import { intercityLeg } from "../data/transit";
 import { haversineKm, transitMinutes, intercityMinutes } from "./geo";
-import { latestEndMin } from "./hours";
+import { earliestStartMin, latestEndMin } from "./hours";
 import { mulberry32, gumbelScore } from "./rng";
 import { useAppStore } from "../store/appStore";
 
@@ -235,6 +235,8 @@ function planCityDay(
             ? transitMinutes(haversineKm(lastPoi.center, p.center))
             : 0;
         const end = Math.min(cfg.dayEnd, latestEndMin(p));
+        // 太早也不行:歡樂街早上只有鐵門(留在 pool,傍晚或改天再排)
+        if (cursor + walk < earliestStartMin(p)) continue;
         if (cursor + walk + stay > end || activity + stay > budget + 45)
           continue;
       }
@@ -312,11 +314,15 @@ function planCityDay(
       const t = lastPoi
         ? transitMinutes(haversineKm(lastPoi.center, open[0].center))
         : 0;
-      // 至少要有一個點在「移動過去後、打烊/收工前」塞得下
+      // 至少要有一個點在「移動過去後、開門後、打烊/收工前」塞得下
       return open.some((p) => {
         const stay = p.stayMin[pace];
         const end = Math.min(cfg.dayEnd, latestEndMin(p));
-        return cursor + t + stay <= end && activity + stay <= budget + 45;
+        return (
+          cursor + t >= earliestStartMin(p) &&
+          cursor + t + stay <= end &&
+          activity + stay <= budget + 45
+        );
       });
     });
     if (!group) break;
@@ -543,7 +549,8 @@ export function replaceSlot(
       wantKind(p) &&
       seasonOk(p, month) &&
       !(day.weekday != null && p.closedDays?.includes(day.weekday)) &&
-      // 替補也不能是「這時段已打烊」的點
+      // 替補要合時段:還沒開門(夜生活別出現在早上)或已打烊的都不行
+      slot.start >= earliestStartMin(p) &&
       slot.start + p.stayMin[plan.input.pace] <= latestEndMin(p),
   );
   if (!candidates.length) return null;

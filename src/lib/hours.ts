@@ -6,6 +6,16 @@ import type { POI } from "../data/types";
  * 寺社 16:30-17、購物街 20-21;夜景/夜生活與 bestTime=evening 的點不設限,
  * 吃的交給用餐邏輯。寧可保守,別把美術館排到晚上八點。
  */
+/**
+ * 「最早幾點開始才有意義」(分):夜生活/夜景 16:00 前不排——
+ * 早上九點的歡樂街只有鐵門可看。afternoon 限定的點 11:00 起。
+ */
+export function earliestStartMin(p: POI): number {
+  if (p.category === "nightlife" || p.bestTime === "evening") return 16 * 60;
+  if (p.bestTime === "afternoon") return 11 * 60;
+  return 0;
+}
+
 export function latestEndMin(p: POI): number {
   if (p.bestTime === "evening" || p.category === "nightlife") return 24 * 60;
   switch (p.category) {

@@ -35,6 +35,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [skipVisited, setSkipVisited] = useState(false);
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
   const lang = useAppStore((s) => s.lang);
+  useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
   const region = regionId ? regionById(regionId) : undefined;
   // 容量隨排除的城市縮減
   const cap = region

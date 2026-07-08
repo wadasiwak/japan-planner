@@ -48,6 +48,7 @@ export function JResult({
   const [shared, setShared] = useState(false);
   const [lockedDays, setLockedDays] = useState<Set<number>>(new Set());
   const lang = useAppStore((s) => s.lang);
+  useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
   const WD = WEEKDAY_BY_LANG[lang];
 
   const dirty = () => {

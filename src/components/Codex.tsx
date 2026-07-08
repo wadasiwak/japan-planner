@@ -8,6 +8,7 @@ export function Codex({ onOpenPlan }: { onOpenPlan: (p: SavedPlan) => void }) {
   const savedPlans = useAppStore((s) => s.savedPlans);
   const deletePlan = useAppStore((s) => s.deletePlan);
   const lang = useAppStore((s) => s.lang);
+  useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
 
   const visitedPois = ALL_POIS.filter((p) => visited[p.id]).sort(
     (a, b) => (visited[b.id] ?? 0) - (visited[a.id] ?? 0),

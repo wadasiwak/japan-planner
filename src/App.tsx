@@ -33,7 +33,8 @@ export default function App() {
   const planCount = useAppStore((s) => s.savedPlans.length);
   const lang = useAppStore((s) => s.lang);
   const setLang = useAppStore((s) => s.setLang);
-  // 內容字典載好才切畫面,避免中英夾雜的過渡狀態
+  const bumpDict = useAppStore((s) => s.bumpDict);
+  // 內容字典載好後 bump 訊號讓元件原地重繪(不重掛,畫面狀態保留)
   const [dictLang, setDictLang] = useState<string>("zh");
 
   useEffect(() => {
@@ -43,22 +44,24 @@ export default function App() {
     if (lang === "zh") {
       setContent("zh", null);
       setDictLang("zh");
+      bumpDict();
       return;
     }
     loadContent(lang).then((dict) => {
       if (!alive) return;
       setContent(lang, dict);
       setDictLang(lang);
+      bumpDict();
     });
     return () => {
       alive = false;
     };
-  }, [lang]);
+  }, [lang, bumpDict]);
 
   const ready = dictLang === lang;
 
   return (
-    <div key={dictLang} style={ready ? undefined : { opacity: 0.5 }}>
+    <div style={ready ? undefined : { opacity: 0.5 }}>
       <div className="lang-switch">
         {LANGS.map((l) => (
           <button

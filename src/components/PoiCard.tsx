@@ -27,6 +27,7 @@ export function PoiCard({
   const visited = useAppStore((s) => !!s.visited[poi.id]);
   const toggleVisited = useAppStore((s) => s.toggleVisited);
   const lang = useAppStore((s) => s.lang);
+  useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
   const tips = tPoiTips(poi);
 
   return (

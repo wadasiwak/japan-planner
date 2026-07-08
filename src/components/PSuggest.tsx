@@ -47,6 +47,7 @@ export function PSuggest() {
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const visited = useAppStore((s) => s.visited);
   const lang = useAppStore((s) => s.lang);
+  useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
 
   const city = cityId ? cityById(cityId) : undefined;
 
