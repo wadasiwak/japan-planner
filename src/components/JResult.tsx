@@ -9,6 +9,7 @@ import {
   type PlanSlot,
 } from "../lib/planner";
 import { planShareUrl } from "../lib/share";
+import { matchPasses } from "../data/passes";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
@@ -244,6 +245,34 @@ export function JResult({
           </button>
         </div>
       )}
+
+      {(() => {
+        // 交通票券建議:依這趟去的城市/城際段數觸發
+        const cityIds = [...new Set(plan.days.map((d) => d.cityId))];
+        const legs = plan.days.reduce(
+          (s, d) => s + d.slots.filter((x) => x.info?.t === "ic").length,
+          0,
+        );
+        const passes = matchPasses({
+          regionId: plan.input.regionId,
+          cityIds,
+          intercityLegs: legs,
+        });
+        if (!passes.length) return null;
+        return (
+          <details className="card pass-card" open>
+            <summary>{t("pass_head", lang)}</summary>
+            {passes.map((p) => (
+              <div key={p.id} className="pass-item">
+                <strong>{p.name[lang]}</strong>
+                <span className="tag ok">{p.price}</span>
+                <p className="muted small">{p.desc[lang]}</p>
+              </div>
+            ))}
+            <p className="muted small pass-note">{t("pass_note", lang)}</p>
+          </details>
+        );
+      })()}
 
       <div className="day-tabs">
         {plan.days.map((d, i) => (

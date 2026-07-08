@@ -475,6 +475,25 @@ button:disabled {
   padding: 32px 0;
 }
 
+.pass-card summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.pass-item {
+  margin-top: 8px;
+}
+.pass-item strong {
+  margin-right: 8px;
+}
+.pass-item p {
+  margin: 2px 0 0;
+}
+.pass-note {
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
 .share-menu {
   display: flex;
   gap: 6px;

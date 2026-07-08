@@ -49,6 +49,11 @@ export interface CityDef {
    * mixed=市區大眾運輸、郊區自駕或包車較省時。
    */
   transport?: "transit" | "car" | "mixed";
+  /**
+   * 「交通即景點」的走廊城市:分區的正確行進順序(如箱根黃金循環
+   * 湯本→強羅→大涌谷蘆之湖)。有填時排程照這個順序走,不用最近鄰。
+   */
+  corridor?: string[];
   /** 5–10 個 P人模式錨點。 */
   hubs: Hub[];
   /**

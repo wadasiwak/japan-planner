@@ -12,6 +12,8 @@ export const city: CityDef = {
   bbox: { minLat: 36.52, maxLat: 36.62, minLng: 137.42, maxLng: 137.68 },
   maxDays: 1,
   transport: "transit",
+  // 交通即景點:照這個順序走(票券一路搭到底)
+  corridor: ["室堂・立山高原", "黑部水壩"],
   hubs: [
     { id: "tateyama-sta", name: "立山車站", nameJa: "立山駅", center: { lat: 36.5837, lng: 137.4453 } },
     { id: "tateyama-murodo", name: "室堂", nameJa: "室堂ターミナル", center: { lat: 36.577, lng: 137.5956 } },

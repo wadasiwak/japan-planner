@@ -81,6 +81,11 @@ for (const r of REGIONS) {
     if (c.transport !== undefined && !["transit", "car", "mixed"].includes(c.transport))
       err(`city ${c.id}: transport 不合法 "${c.transport}"`);
     if (c.transport === undefined) warn.push(`city ${c.id}: 還沒有交通建議(transport)`);
+    if (c.corridor) {
+      const cityAreas = new Set(ALL_POIS.filter((p) => p.city === c.id).map((p) => p.area));
+      for (const a of c.corridor)
+        if (!cityAreas.has(a)) err(`city ${c.id}: corridor 含不存在的分區「${a}」`);
+    }
     for (const h of c.hubs ?? []) {
       if (hubIds.has(h.id)) err(`hub 重複 id: ${h.id}`);
       hubIds.add(h.id);

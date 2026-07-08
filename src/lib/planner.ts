@@ -405,6 +405,14 @@ function planCityDay(
   return { areas, slots };
 }
 
+function sortByCorridor(groups: AreaGroup[], corridor: string[]): void {
+  const idx = (a: string) => {
+    const i = corridor.indexOf(a);
+    return i === -1 ? 99 : i;
+  };
+  groups.sort((a, b) => idx(a.area) - idx(b.area));
+}
+
 const monthOf = (startDate?: string): number | undefined =>
   startDate ? new Date(`${startDate}T00:00:00`).getMonth() + 1 : undefined;
 
@@ -462,6 +470,9 @@ export function buildPlan(input: PlanInput): Plan {
     const ctx: Ctx = { rnd, month, prefs };
     const groups = buildAreaGroups(cityPool(city.id, input), ctx);
     for (let d = 0; d < n; d++) {
+      // 走廊城市(箱根黃金循環等):照走廊順序走,不用分數/最近鄰;
+      // 每天重排一次,day 結束時退回 pool 的分區才會歸位
+      if (city.corridor) sortByCorridor(groups, city.corridor);
       // 公平分配:剩餘內容 ÷ 剩餘天數,內容不夠塞滿時每天分得平均
       const remainingStay = groups.reduce(
         (s, g) => s + g.main.reduce((x, p) => x + p.stayMin[input.pace], 0),
@@ -642,6 +653,7 @@ export function rerollUnlocked(
         d.done = true;
         continue;
       }
+      if (city.corridor) sortByCorridor(groups, city.corridor);
       const remainingStay = groups.reduce(
         (s, g) => s + g.main.reduce((x, p) => x + p.stayMin[input.pace], 0),
         0,

@@ -186,6 +186,12 @@ const STRINGS = {
     en: "🚃+🚗 Transit in town, car for outskirts",
     ja: "🚃+🚗 市街は電車、郊外は車が楽",
   },
+  pass_head: { zh: "💳 這趟建議買", en: "💳 Passes worth buying", ja: "💳 このプランにおすすめの切符" },
+  pass_note: {
+    zh: "價格為約略值,購買前以官網為準",
+    en: "Prices are approximate — check official sites before buying",
+    ja: "価格は目安。購入前に公式サイトでご確認を",
+  },
   souvenir_head: {
     zh: "🎁 離開{0}前,伴手禮買了嗎?",
     en: "🎁 Leaving {0} — got your souvenirs?",

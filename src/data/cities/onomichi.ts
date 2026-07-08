@@ -12,6 +12,8 @@ export const city: CityDef = {
   bbox: { minLat: 34.28, maxLat: 34.43, minLng: 132.96, maxLng: 133.22 },
   maxDays: 2,
   transport: "transit",
+  // 交通即景點:照這個順序走(票券一路搭到底)
+  corridor: ["尾道市區", "島波海道"],
   hubs: [
     { id: "onomichi-sta", name: "尾道車站", nameJa: "尾道駅", center: { lat: 34.4089, lng: 133.1943 } },
     { id: "onomichi-senkoji-ropeway", name: "千光寺山麓纜車站", nameJa: "千光寺山ロープウェイ山麓駅", center: { lat: 34.4107, lng: 133.2014 } },
