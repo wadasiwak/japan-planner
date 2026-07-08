@@ -20,6 +20,12 @@ const DayMap = lazy(() =>
 
 const PACE_LABEL = { relaxed: "輕鬆", march: "行軍" } as const;
 
+const TRANSPORT_TAG = {
+  transit: "🚃 大眾運輸OK",
+  car: "🚗 建議自駕",
+  mixed: "🚃+🚗 市區電車,郊區自駕較省",
+} as const;
+
 export function JResult({
   plan,
   onReplace,
@@ -167,6 +173,10 @@ export function JResult({
           {day.areas.join("、")} ·{" "}
           {day.slots.filter((s) => s.kind === "poi").length} 個點
           {day.slots.some((s) => s.kind === "cafe") ? " ·☕" : ""}
+          {(() => {
+            const t = cityById(day.cityId)?.transport;
+            return t ? <span className="tag ok" style={{ marginLeft: 6 }}>{TRANSPORT_TAG[t]}</span> : null;
+          })()}
         </p>
         <span className="spacer" />
         <button

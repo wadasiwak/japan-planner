@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "⚓",
   bbox: { minLat: 34.64, maxLat: 34.84, minLng: 135.12, maxLng: 135.3 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "kobe-sta-sannomiya", name: "三宮車站", nameJa: "三ノ宮駅", center: { lat: 34.6946, lng: 135.195 } },
     { id: "kobe-sta-motomachi", name: "元町車站", nameJa: "元町駅", center: { lat: 34.6907, lng: 135.1878 } },

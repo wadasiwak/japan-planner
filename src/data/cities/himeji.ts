@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🏯",
   bbox: { minLat: 34.8, maxLat: 34.88, minLng: 134.61, maxLng: 134.72 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "himeji-sta", name: "姬路車站", nameJa: "姫路駅", center: { lat: 34.8262, lng: 134.6903 } },
     { id: "himeji-otemae", name: "大手前通", nameJa: "大手前通り", center: { lat: 34.833, lng: 134.6935 } },

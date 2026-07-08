@@ -17,14 +17,14 @@ export const REGION_META: RegionMeta[] = [
     emoji: "🗼",
     blurb: "第一次日本自由行的起點:都心逛不完,箱根河口湖泡湯看富士山。",
     // 旅行順序:都心→近郊南線(橫濱鎌倉箱根熱海)→富士五湖→日光
-    cityIds: ["tokyo", "yokohama", "kamakura", "hakone", "atami", "kawaguchiko", "nikko"],
+    cityIds: ["tokyo", "kawagoe", "yokohama", "kamakura", "hakone", "atami", "kawaguchiko", "karuizawa", "kusatsu", "nikko"],
   },
   {
     id: "kansai",
     name: "關西",
     emoji: "⛩️",
     blurb: "大阪的吃、京都的古、奈良的鹿、神戶的港,一條路線四種風景。",
-    cityIds: ["osaka", "kyoto", "nara", "kobe", "himeji"],
+    cityIds: ["osaka", "kyoto", "nara", "kobe", "himeji", "koyasan", "shirahama"],
   },
   {
     id: "hokkaido",
@@ -32,7 +32,7 @@ export const REGION_META: RegionMeta[] = [
     emoji: "🐻",
     blurb: "富良野薰衣草、登別地獄谷、函館夜景,海鮮和拉麵永遠不分季節。",
     // 旅行順序:富良野(東)→札幌小樽→登別洞爺→函館(南),城際移動最省
-    cityIds: ["furano", "sapporo", "otaru", "noboribetsu", "hakodate"],
+    cityIds: ["shiretoko", "furano", "sapporo", "otaru", "noboribetsu", "hakodate"],
   },
   {
     id: "kyushu",
@@ -40,14 +40,14 @@ export const REGION_META: RegionMeta[] = [
     emoji: "♨️",
     blurb: "福岡屋台、長崎異國情調、阿蘇火山、櫻島、日南海岸,溫泉泡好泡滿。",
     // 旅行順序:福岡進→長崎→熊本阿蘇→鹿兒島→宮崎→別府出(北→南→東北上)
-    cityIds: ["fukuoka", "nagasaki", "kumamoto", "kagoshima", "miyazaki", "beppu"],
+    cityIds: ["fukuoka", "nagasaki", "kumamoto", "kagoshima", "yakushima", "miyazaki", "beppu"],
   },
   {
     id: "okinawa",
     name: "沖繩",
     emoji: "🏝️",
     blurb: "日本裡的南國:那霸市區逛國際通,租車北上看美麗海。",
-    cityIds: ["naha", "okinawa-north"],
+    cityIds: ["naha", "okinawa-north", "miyako", "ishigaki"],
   },
   {
     id: "chubu",
@@ -55,7 +55,7 @@ export const REGION_META: RegionMeta[] = [
     emoji: "🏔️",
     blurb: "伊勢神宮、名古屋、飛驒高山、上高地、金澤兼六園,山海一條線。",
     // 旅行順序:伊勢(南)→名古屋→高山→松本→金澤,南往北一條線
-    cityIds: ["ise", "nagoya", "takayama", "matsumoto", "kanazawa"],
+    cityIds: ["ise", "nagoya", "takayama", "matsumoto", "tateyama", "kanazawa"],
   },
   {
     id: "chugoku",
@@ -63,7 +63,7 @@ export const REGION_META: RegionMeta[] = [
     emoji: "🦌",
     blurb: "廣島宮島、倉敷美觀、出雲結緣、鳥取砂丘,山陽山陰一次走。",
     // 旅行順序:廣島→岡山(山陽)→鳥取→出雲(山陰往西)
-    cityIds: ["hiroshima", "okayama", "tottori", "izumo"],
+    cityIds: ["hiroshima", "onomichi", "okayama", "tottori", "izumo"],
   },
   {
     id: "shikoku",
@@ -79,6 +79,6 @@ export const REGION_META: RegionMeta[] = [
     emoji: "🌾",
     blurb: "仙台牛舌、松島百島、山寺藏王、平泉金色堂、青森奧入瀨,人少景美的大東北。",
     // 旅行順序:仙台進 → 山形一日 → 平泉 → 一路北上青森(城際移動總量最小)
-    cityIds: ["sendai", "yamagata", "hiraizumi", "aomori"],
+    cityIds: ["aizu", "yamagata", "sendai", "hiraizumi", "kakunodate", "aomori"],
   },
 ];

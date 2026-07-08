@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🐟",
   bbox: { minLat: 33.48, maxLat: 33.59, minLng: 133.51, maxLng: 133.6 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "kochi-sta", name: "高知車站", nameJa: "高知駅", center: { lat: 33.5680, lng: 133.5439 } },
     { id: "kochi-harimayabashi", name: "播磨屋橋", nameJa: "はりまや橋", center: { lat: 33.5600, lng: 133.5423 } },

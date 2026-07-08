@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🎋",
   bbox: { minLat: 38.2, maxLat: 38.42, minLng: 140.8, maxLng: 141.11 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "sendai-sta-sendai", name: "仙台車站", nameJa: "仙台駅", center: { lat: 38.2601, lng: 140.8824 } },
     { id: "sendai-kokubuncho", name: "國分町", nameJa: "国分町", center: { lat: 38.2634, lng: 140.8697 } },

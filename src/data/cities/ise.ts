@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🦞",
   bbox: { minLat: 34.26, maxLat: 34.55, minLng: 136.68, maxLng: 136.87 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "ise-sta-iseshi", name: "伊勢市車站", nameJa: "伊勢市駅", center: { lat: 34.4911, lng: 136.7098 } },
     { id: "ise-sta-isuzugawa", name: "五十鈴川車站", nameJa: "五十鈴川駅", center: { lat: 34.4766, lng: 136.7275 } },

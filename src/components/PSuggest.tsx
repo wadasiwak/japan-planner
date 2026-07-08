@@ -68,10 +68,15 @@ export function PSuggest() {
     <div className="screen">
       <p className="section-label">你在哪個城市?</p>
       {city && (
-        <div className="row">
+        <div className="row wrap">
           <button className="selected">
             {city.emoji} {city.name}
           </button>
+          {city.transport && (
+            <span className="tag ok">
+              {{ transit: "🚃 大眾運輸OK", car: "🚗 建議自駕", mixed: "🚃+🚗 郊區自駕較省" }[city.transport]}
+            </span>
+          )}
           <button
             className="ghost small"
             onClick={() => {

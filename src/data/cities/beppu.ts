@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "♨️",
   bbox: { minLat: 33.24, maxLat: 33.35, minLng: 131.33, maxLng: 131.53 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "beppu-sta-beppu", name: "別府車站", nameJa: "別府駅", center: { lat: 33.2786, lng: 131.5013 } },
     { id: "beppu-kannawa-bus", name: "鐵輪巴士站", nameJa: "鉄輪バス停", center: { lat: 33.3168, lng: 131.4757 } },

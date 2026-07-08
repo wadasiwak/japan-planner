@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "⛪",
   bbox: { minLat: 32.72, maxLat: 32.79, minLng: 129.83, maxLng: 129.9 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "nagasaki-sta-nagasaki", name: "長崎車站", nameJa: "長崎駅", center: { lat: 32.7519, lng: 129.8709 } },
     { id: "nagasaki-sta-shinchi", name: "新地中華街電車站", nameJa: "新地中華街停留場", center: { lat: 32.7422, lng: 129.873 } },

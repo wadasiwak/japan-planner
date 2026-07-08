@@ -44,6 +44,11 @@ export interface CityDef {
   bbox: { minLat: number; maxLat: number; minLng: number; maxLng: number };
   /** J人模式:這城市單獨玩最多值得排幾天(分配天數的上限)。 */
   maxDays: number;
+  /**
+   * 交通建議:transit=大眾運輸就夠 / car=建議自駕(景點分散、班次少) /
+   * mixed=市區大眾運輸、郊區自駕或包車較省時。
+   */
+  transport?: "transit" | "car" | "mixed";
   /** 5–10 個 P人模式錨點。 */
   hubs: Hub[];
   /**

@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🗻",
   bbox: { minLat: 35.44, maxLat: 35.55, minLng: 138.72, maxLng: 138.85 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "kawaguchiko-sta-kawaguchiko", name: "河口湖站", nameJa: "河口湖駅", center: { lat: 35.4983, lng: 138.7644 } },
     { id: "kawaguchiko-sta-shimoyoshida", name: "下吉田站(新倉山)", nameJa: "下吉田駅", center: { lat: 35.4966, lng: 138.7957 } },

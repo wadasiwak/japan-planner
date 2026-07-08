@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🦑",
   bbox: { minLat: 41.74, maxLat: 41.81, minLng: 140.69, maxLng: 140.8 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "hakodate-sta-hakodate", name: "函館車站", nameJa: "函館駅", center: { lat: 41.7738, lng: 140.7262 } },
     { id: "hakodate-sta-goryokaku", name: "五稜郭公園前站", nameJa: "五稜郭公園前停留場", center: { lat: 41.7857, lng: 140.753 } },

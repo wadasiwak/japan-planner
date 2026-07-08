@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🐒",
   bbox: { minLat: 36.71, maxLat: 36.78, minLng: 139.46, maxLng: 139.65 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "nikko-sta-tobu-nikko", name: "東武日光車站", nameJa: "東武日光駅", center: { lat: 36.7478, lng: 139.626 } },
     { id: "nikko-sta-jr-nikko", name: "JR 日光車站", nameJa: "日光駅", center: { lat: 36.7469, lng: 139.6295 } },

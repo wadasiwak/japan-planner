@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🍎",
   bbox: { minLat: 40.4, maxLat: 40.86, minLng: 140.44, maxLng: 141.23 },
   maxDays: 3,
+  transport: "mixed",
   hubs: [
     { id: "aomori-sta-aomori", name: "青森車站", nameJa: "青森駅", center: { lat: 40.8286, lng: 140.7345 } },
     { id: "aomori-sta-shin-aomori", name: "新青森車站", nameJa: "新青森駅", center: { lat: 40.827, lng: 140.6939 } },

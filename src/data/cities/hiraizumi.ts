@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🪷",
   bbox: { minLat: 38.91, maxLat: 39.01, minLng: 141.04, maxLng: 141.16 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "hiraizumi-sta-hiraizumi", name: "平泉車站", nameJa: "平泉駅", center: { lat: 38.9866, lng: 141.116 } },
     { id: "hiraizumi-chusonji-sando", name: "中尊寺表參道入口", nameJa: "中尊寺 月見坂入口", center: { lat: 38.9862, lng: 141.107 } },

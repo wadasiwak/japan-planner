@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "♨️",
   bbox: { minLat: 38.13, maxLat: 38.62, minLng: 140.3, maxLng: 140.56 },
   maxDays: 2,
+  transport: "mixed",
   hubs: [
     { id: "yamagata-sta-yamagata", name: "山形車站", nameJa: "山形駅", center: { lat: 38.2484, lng: 140.3274 } },
     { id: "yamagata-sta-yamadera", name: "山寺車站", nameJa: "山寺駅", center: { lat: 38.311, lng: 140.4353 } },

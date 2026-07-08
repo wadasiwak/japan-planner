@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🐻",
   bbox: { minLat: 32.65, maxLat: 33.06, minLng: 130.64, maxLng: 131.35 },
   maxDays: 2,
+  transport: "mixed",
   hubs: [
     { id: "kumamoto-sta", name: "熊本站", nameJa: "熊本駅", center: { lat: 32.7903, lng: 130.6886 } },
     { id: "kumamoto-torichosuji", name: "通町筋", nameJa: "通町筋", center: { lat: 32.8036, lng: 130.7107 } },

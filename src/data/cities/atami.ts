@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🏖️",
   bbox: { minLat: 35.08, maxLat: 35.13, minLng: 139.05, maxLng: 139.09 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "atami-sta-atami", name: "熱海站", nameJa: "熱海駅", center: { lat: 35.1036, lng: 139.0777 } },
     { id: "atami-ginza", name: "銀座商店街", nameJa: "熱海銀座商店街", center: { lat: 35.0964, lng: 139.0743 } },

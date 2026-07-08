@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🕯️",
   bbox: { minLat: 43.16, maxLat: 43.22, minLng: 140.95, maxLng: 141.04 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "otaru-sta-otaru", name: "小樽車站", nameJa: "小樽駅", center: { lat: 43.1971, lng: 140.9941 } },
     { id: "otaru-sta-minami-otaru", name: "南小樽車站", nameJa: "南小樽駅", center: { lat: 43.1877, lng: 141.0033 } },

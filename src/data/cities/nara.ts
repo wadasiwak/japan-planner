@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🦌",
   bbox: { minLat: 34.64, maxLat: 34.72, minLng: 135.79, maxLng: 135.88 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "nara-sta-kintetsu", name: "近鐵奈良站", nameJa: "近鉄奈良駅", center: { lat: 34.6844, lng: 135.8281 } },
     { id: "nara-sta-jr", name: "JR奈良站", nameJa: "JR奈良駅", center: { lat: 34.6812, lng: 135.8199 } },

@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "⛩️",
   bbox: { minLat: 34.93, maxLat: 35.15, minLng: 135.62, maxLng: 135.83 },
   maxDays: 5,
+  transport: "transit",
   hubs: [
     { id: "kyoto-sta-kyoto", name: "京都車站", nameJa: "京都駅", center: { lat: 34.9858, lng: 135.7588 } },
     { id: "kyoto-sta-gion-shijo", name: "祇園四條站", nameJa: "祇園四条駅", center: { lat: 35.0037, lng: 135.772 } },

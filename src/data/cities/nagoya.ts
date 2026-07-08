@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🏯",
   bbox: { minLat: 35.05, maxLat: 35.22, minLng: 136.85, maxLng: 137.12 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "nagoya-sta-nagoya", name: "名古屋車站", nameJa: "名古屋駅", center: { lat: 35.1709, lng: 136.8815 } },
     { id: "nagoya-sta-sakae", name: "榮車站", nameJa: "栄駅", center: { lat: 35.1698, lng: 136.908 } },

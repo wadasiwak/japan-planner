@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🎨",
   bbox: { minLat: 34.31, maxLat: 34.48, minLng: 133.95, maxLng: 134.16 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "takamatsu-sta-takamatsu", name: "高松車站", nameJa: "高松駅", center: { lat: 34.3505, lng: 134.0466 } },
     { id: "takamatsu-kawaramachi", name: "瓦町車站", nameJa: "瓦町駅", center: { lat: 34.3423, lng: 134.0513 } },

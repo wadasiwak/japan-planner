@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🐫",
   bbox: { minLat: 35.47, maxLat: 35.6, minLng: 133.2, maxLng: 134.36 },
   maxDays: 1,
+  transport: "mixed",
   hubs: [
     { id: "tottori-sta-tottori", name: "鳥取車站", nameJa: "鳥取駅", center: { lat: 35.4938, lng: 134.2226 } },
     { id: "tottori-sakyu", name: "鳥取砂丘", nameJa: "鳥取砂丘", center: { lat: 35.539, lng: 134.227 } },

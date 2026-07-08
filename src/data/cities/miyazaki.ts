@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🗿",
   bbox: { minLat: 31.58, maxLat: 31.97, minLng: 131.3, maxLng: 131.52 },
   maxDays: 2,
+  transport: "car",
   hubs: [
     { id: "miyazaki-sta", name: "宮崎站", nameJa: "宮崎駅", center: { lat: 31.9157, lng: 131.4315 } },
     { id: "miyazaki-aoshima-sta", name: "青島站", nameJa: "青島駅", center: { lat: 31.808, lng: 131.4655 } },

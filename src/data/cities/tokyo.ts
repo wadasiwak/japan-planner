@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🗼",
   bbox: { minLat: 35.5, maxLat: 35.85, minLng: 139.55, maxLng: 139.95 },
   maxDays: 6,
+  transport: "transit",
   hubs: [
     { id: "tokyo-sta-tokyo", name: "東京車站", nameJa: "東京駅", center: { lat: 35.6812, lng: 139.7671 } },
     { id: "tokyo-sta-shinjuku", name: "新宿車站", nameJa: "新宿駅", center: { lat: 35.6896, lng: 139.7006 } },

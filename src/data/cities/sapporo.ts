@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🍜",
   bbox: { minLat: 43.0, maxLat: 43.11, minLng: 141.25, maxLng: 141.4 },
   maxDays: 3,
+  transport: "transit",
   hubs: [
     { id: "sapporo-sta-sapporo", name: "札幌車站", nameJa: "札幌駅", center: { lat: 43.0687, lng: 141.3508 } },
     { id: "sapporo-sta-odori", name: "大通車站", nameJa: "大通駅", center: { lat: 43.0606, lng: 141.356 } },

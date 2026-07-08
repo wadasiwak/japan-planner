@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🍜",
   bbox: { minLat: 33.5, maxLat: 33.62, minLng: 130.33, maxLng: 130.56 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "fukuoka-sta-hakata", name: "博多車站", nameJa: "博多駅", center: { lat: 33.5902, lng: 130.4207 } },
     { id: "fukuoka-sta-tenjin", name: "天神車站", nameJa: "天神駅", center: { lat: 33.5912, lng: 130.3988 } },

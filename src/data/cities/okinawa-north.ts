@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🐳",
   bbox: { minLat: 26.28, maxLat: 26.75, minLng: 127.68, maxLng: 128.06 },
   maxDays: 2,
+  transport: "car",
   hubs: [
     { id: "okinawa-north-american-village-hub", name: "美國村", nameJa: "アメリカンビレッジ", center: { lat: 26.3159, lng: 127.7565 } },
     { id: "okinawa-north-yomitan", name: "讀谷村", nameJa: "読谷村", center: { lat: 26.3961, lng: 127.7444 } },

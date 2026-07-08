@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🌋",
   bbox: { minLat: 31.18, maxLat: 31.66, minLng: 130.5, maxLng: 130.72 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "kagoshima-chuo-sta", name: "鹿兒島中央站", nameJa: "鹿児島中央駅", center: { lat: 31.5837, lng: 130.5417 } },
     { id: "kagoshima-tenmonkan", name: "天文館", nameJa: "天文館", center: { lat: 31.5897, lng: 130.5556 } },

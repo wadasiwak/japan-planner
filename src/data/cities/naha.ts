@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🌺",
   bbox: { minLat: 26.08, maxLat: 26.26, minLng: 127.62, maxLng: 127.86 },
   maxDays: 2,
+  transport: "mixed",
   hubs: [
     { id: "naha-kokusai", name: "國際通", nameJa: "国際通り", center: { lat: 26.2149, lng: 127.6867 } },
     { id: "naha-shuri", name: "首里", nameJa: "首里", center: { lat: 26.2172, lng: 127.7168 } },

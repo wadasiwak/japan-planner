@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "⛩️",
   bbox: { minLat: 34.25, maxLat: 34.45, minLng: 132.27, maxLng: 132.52 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "hiroshima-sta-hiroshima", name: "廣島車站", nameJa: "広島駅", center: { lat: 34.3978, lng: 132.4754 } },
     { id: "hiroshima-genbaku-dome-mae", name: "原爆圓頂前電停", nameJa: "原爆ドーム前停留場", center: { lat: 34.3946, lng: 132.4539 } },

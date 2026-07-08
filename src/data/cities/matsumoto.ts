@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "⛰️",
   bbox: { minLat: 36.2, maxLat: 36.28, minLng: 137.58, maxLng: 138.0 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "matsumoto-sta-matsumoto", name: "松本車站", nameJa: "松本駅", center: { lat: 36.2307, lng: 137.9642 } },
     { id: "matsumoto-castle-area", name: "松本城", nameJa: "松本城", center: { lat: 36.2386, lng: 137.9689 } },

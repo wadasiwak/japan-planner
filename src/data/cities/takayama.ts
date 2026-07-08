@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🛖",
   bbox: { minLat: 36.1, maxLat: 36.3, minLng: 136.87, maxLng: 137.3 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "takayama-sta-takayama", name: "高山車站", nameJa: "高山駅", center: { lat: 36.1408, lng: 137.2522 } },
     { id: "takayama-sanmachi", name: "三町老街口", nameJa: "さんまち通り", center: { lat: 36.142, lng: 137.2588 } },

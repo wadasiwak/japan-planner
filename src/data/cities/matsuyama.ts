@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "♨️",
   bbox: { minLat: 33.82, maxLat: 33.87, minLng: 132.73, maxLng: 132.82 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "matsuyama-sta", name: "松山車站", nameJa: "松山駅", center: { lat: 33.8419, lng: 132.7501 } },
     { id: "matsuyama-okaido", name: "大街道", nameJa: "大街道", center: { lat: 33.8399, lng: 132.7695 } },

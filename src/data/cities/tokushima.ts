@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "🌀",
   bbox: { minLat: 34.05, maxLat: 34.26, minLng: 134.50, maxLng: 134.70 },
   maxDays: 1,
+  transport: "transit",
   hubs: [
     { id: "tokushima-sta-tokushima", name: "德島車站", nameJa: "徳島駅", center: { lat: 34.0750, lng: 134.5515 } },
     { id: "tokushima-sta-naruto", name: "鳴門車站", nameJa: "鳴門駅", center: { lat: 34.1728, lng: 134.6090 } },

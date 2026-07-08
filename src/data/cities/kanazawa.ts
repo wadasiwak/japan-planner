@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "✨",
   bbox: { minLat: 36.53, maxLat: 36.6, minLng: 136.62, maxLng: 136.69 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "kanazawa-sta-kanazawa", name: "金澤車站", nameJa: "金沢駅", center: { lat: 36.5781, lng: 136.6486 } },
     { id: "kanazawa-korinbo", name: "香林坊", nameJa: "香林坊", center: { lat: 36.5613, lng: 136.6558 } },

@@ -78,6 +78,9 @@ for (const r of REGIONS) {
       else if (c.souvenirs.some((s) => typeof s !== "string" || s.length < 4 || s.length > 60))
         err(`city ${c.id}: souvenirs 每樣需為 4–60 字`);
     } else warn.push(`city ${c.id}: 還沒有伴手禮清單`);
+    if (c.transport !== undefined && !["transit", "car", "mixed"].includes(c.transport))
+      err(`city ${c.id}: transport 不合法 "${c.transport}"`);
+    if (c.transport === undefined) warn.push(`city ${c.id}: 還沒有交通建議(transport)`);
     for (const h of c.hubs ?? []) {
       if (hubIds.has(h.id)) err(`hub 重複 id: ${h.id}`);
       hubIds.add(h.id);
@@ -133,7 +136,7 @@ if (!singleFile && mod.intercityLeg) {
         const [a, b] = [r.cities[i].id, r.cities[j].id];
         const leg = mod.intercityLeg(a, b);
         if (!leg) err(`transit: ${r.id} 缺 ${a} ↔ ${b} 的城際交通`);
-        else if (leg.min < 20 || leg.min > 420)
+        else if (leg.min < 20 || leg.min > 600)
           err(`transit: ${a}↔${b} 時間不合理 (${leg.min} 分)`);
       }
     }

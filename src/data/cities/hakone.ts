@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "♨️",
   bbox: { minLat: 35.18, maxLat: 35.27, minLng: 138.98, maxLng: 139.12 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "hakone-sta-yumoto", name: "箱根湯本站", nameJa: "箱根湯本駅", center: { lat: 35.2323, lng: 139.1069 } },
     { id: "hakone-sta-gora", name: "強羅站", nameJa: "強羅駅", center: { lat: 35.2493, lng: 139.0517 } },

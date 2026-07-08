@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🍑",
   bbox: { minLat: 34.55, maxLat: 34.72, minLng: 133.74, maxLng: 133.96 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "okayama-sta-okayama", name: "岡山車站", nameJa: "岡山駅", center: { lat: 34.666, lng: 133.918 } },
     { id: "okayama-sta-kurashiki", name: "倉敷車站", nameJa: "倉敷駅", center: { lat: 34.606, lng: 133.7702 } },

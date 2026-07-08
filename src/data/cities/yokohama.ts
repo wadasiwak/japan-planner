@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🎡",
   bbox: { minLat: 35.4, maxLat: 35.52, minLng: 139.6, maxLng: 139.67 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "yokohama-sta-yokohama", name: "橫濱車站", nameJa: "横浜駅", center: { lat: 35.4657, lng: 139.6224 } },
     { id: "yokohama-sta-sakuragicho", name: "櫻木町車站", nameJa: "桜木町駅", center: { lat: 35.4508, lng: 139.6312 } },

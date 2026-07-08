@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🚃",
   bbox: { minLat: 35.28, maxLat: 35.35, minLng: 139.46, maxLng: 139.59 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "kamakura-sta-kamakura", name: "鎌倉車站", nameJa: "鎌倉駅", center: { lat: 35.3191, lng: 139.5503 } },
     { id: "kamakura-sta-kitakamakura", name: "北鎌倉車站", nameJa: "北鎌倉駅", center: { lat: 35.3374, lng: 139.5468 } },

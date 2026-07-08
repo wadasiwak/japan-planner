@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "♨️",
   bbox: { minLat: 42.46, maxLat: 42.6, minLng: 140.72, maxLng: 141.19 },
   maxDays: 2,
+  transport: "transit",
   hubs: [
     { id: "noboribetsu-bus-terminal", name: "登別溫泉巴士總站", nameJa: "登別温泉バスターミナル", center: { lat: 42.4922, lng: 141.1441 } },
     { id: "noboribetsu-toyako-bus-terminal", name: "洞爺湖溫泉巴士總站", nameJa: "洞爺湖温泉バスターミナル", center: { lat: 42.5647, lng: 140.8227 } },

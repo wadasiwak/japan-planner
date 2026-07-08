@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "⛩️",
   bbox: { minLat: 35.34, maxLat: 35.5, minLng: 132.65, maxLng: 133.09 },
   maxDays: 2,
+  transport: "mixed",
   hubs: [
     { id: "izumo-sta-izumoshi", name: "出雲市車站", nameJa: "出雲市駅", center: { lat: 35.3614, lng: 132.757 } },
     { id: "izumo-taisha-mae", name: "出雲大社前車站", nameJa: "出雲大社前駅", center: { lat: 35.3945, lng: 132.6867 } },

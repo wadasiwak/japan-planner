@@ -10,6 +10,7 @@ export const city: CityDef = {
   emoji: "🐙",
   bbox: { minLat: 34.62, maxLat: 34.73, minLng: 135.4, maxLng: 135.56 },
   maxDays: 4,
+  transport: "transit",
   hubs: [
     { id: "osaka-sta-namba", name: "難波車站", nameJa: "なんば駅", center: { lat: 34.6665, lng: 135.5012 } },
     { id: "osaka-sta-umeda", name: "大阪・梅田車站", nameJa: "大阪駅・梅田駅", center: { lat: 34.7025, lng: 135.4959 } },

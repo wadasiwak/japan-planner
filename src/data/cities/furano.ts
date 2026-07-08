@@ -11,6 +11,7 @@ export const city: CityDef = {
   emoji: "💜",
   bbox: { minLat: 43.25, maxLat: 43.65, minLng: 142.32, maxLng: 142.68 },
   maxDays: 2,
+  transport: "mixed",
   hubs: [
     { id: "furano-sta-furano", name: "富良野車站", nameJa: "富良野駅", center: { lat: 43.3499, lng: 142.3865 } },
     { id: "furano-sta-biei", name: "美瑛車站", nameJa: "美瑛駅", center: { lat: 43.5882, lng: 142.4668 } },
