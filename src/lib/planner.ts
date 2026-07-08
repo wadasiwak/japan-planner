@@ -145,6 +145,7 @@ function planCityDay(
   pace: Pace,
   groups: AreaGroup[],
   budgetCap: number,
+  rnd: () => number,
   weekday?: number,
   startCursor?: number,
 ): { areas: string[]; slots: PlanSlot[] } {
@@ -153,9 +154,22 @@ function planCityDay(
   // 當天公休的點跳過但不消耗,留給其他天排
   const closed = (p: POI) =>
     weekday != null && (p.closedDays?.includes(weekday) ?? false);
-  const takeOpen = (list: POI[]): POI | undefined => {
-    const i = list.findIndex((p) => !closed(p));
-    return i === -1 ? undefined : list.splice(i, 1)[0];
+  // 依評分取最佳(跳過公休);評分越低越好
+  const takeBest = (
+    list: POI[],
+    score: (p: POI) => number,
+  ): POI | undefined => {
+    let bi = -1;
+    let bs = Infinity;
+    for (let i = 0; i < list.length; i++) {
+      if (closed(list[i])) continue;
+      const s = score(list[i]);
+      if (s < bs) {
+        bs = s;
+        bi = i;
+      }
+    }
+    return bi === -1 ? undefined : list.splice(bi, 1)[0];
   };
   const slots: PlanSlot[] = [];
   const areas: string[] = [];
@@ -169,12 +183,20 @@ function planCityDay(
   const mealLen = pace === "relaxed" ? 60 : 45;
   const picked: AreaGroup[] = [];
 
+  /** 與目前所在點的距離(km);一天剛開始還沒有定位就當 0。 */
+  const distFrom = (p: POI) => (lastPoi ? haversineKm(lastPoi.center, p.center) : 0);
+
   const tryMeal = (group: AreaGroup | undefined) => {
-    // 到午/晚餐窗口就插一餐:優先用當前分區的 food POI,沒有就自由覓食。
+    // 到午/晚餐窗口就插一餐:選離目前位置最近的 food POI;
+    // 最近的都超過 2km 就不專程跑,改自由覓食(在附近隨便吃)。
     const wantLunch = !lunchDone && cursor >= LUNCH - 30;
     const wantDinner = !dinnerDone && cursor >= DINNER - 30;
     if (!wantLunch && !wantDinner) return;
-    const food = group ? takeOpen(group.food) : undefined;
+    let food = group ? takeBest(group.food, distFrom) : undefined;
+    if (food && distFrom(food) > 2) {
+      group!.food.push(food);
+      food = undefined;
+    }
     const len = food ? food.stayMin[pace] : mealLen;
     slots.push({
       kind: "meal",
@@ -189,11 +211,15 @@ function planCityDay(
     else dinnerDone = true;
   };
 
-  // 輕鬆模式:下午 14:00–16:30 之間找當前分區的咖啡廳歇腳一次
+  // 輕鬆模式:下午 14:00–16:30 之間就近歇腳一次;要走超過 1.5km 就算了
   const tryCafe = (group: AreaGroup) => {
     if (cafeDone || cursor < 14 * 60 || cursor > 16.5 * 60) return;
-    const cafe = takeOpen(group.cafe);
+    const cafe = takeBest(group.cafe, distFrom);
     if (!cafe) return;
+    if (distFrom(cafe) > 1.5) {
+      group.cafe.push(cafe);
+      return;
+    }
     const len = cafe.stayMin[pace];
     slots.push({ kind: "cafe", start: cursor, end: cursor + len, poiId: cafe.id });
     cursor += len;
@@ -229,14 +255,22 @@ function planCityDay(
     while (cursor < cfg.dayEnd && activity < budget) {
       tryMeal(group);
       tryCafe(group);
-      const poi = takeOpen(group.main);
+      // 最近鄰優先:距離為主,優先度小幅加權;
+      // 夜間限定的點白天先壓後、早晨限定的點下午降權,避免路線來回拉扯
+      const poi = takeBest(group.main, (p) => {
+        let s = distFrom(p) + (p.priority - 1) * 0.6 + rnd() * 0.4;
+        if (p.bestTime === "evening" && cursor < 16 * 60) s += 5;
+        if (p.bestTime === "morning" && cursor >= 13 * 60) s += 2;
+        return s;
+      });
       if (!poi) break;
       const stay = poi.stayMin[pace];
       if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) {
         group.main.unshift(poi); // 塞不下就放回去,留給其他天
         break;
       }
-      if (lastPoi && lastPoi.area === poi.area) cursor += 10; // 同分區步行
+      if (lastPoi && lastPoi.area === poi.area)
+        cursor += transitMinutes(distFrom(poi)); // 同分區依實距步行
       slots.push({ kind: "poi", start: cursor, end: cursor + stay, poiId: poi.id });
       cursor += stay;
       activity += stay;
@@ -311,6 +345,7 @@ export function buildPlan(input: PlanInput): Plan {
         input.pace,
         groups,
         fairBudget,
+        rnd,
         weekday,
         startCursor,
       );
