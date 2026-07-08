@@ -364,6 +364,12 @@ a.tag.maplink {
   font-variant-numeric: tabular-nums;
 }
 
+.region-label {
+  margin: 8px 0 6px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .slot-actions {
   display: flex;
   gap: 6px;

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useState } from "react";
-import { CITIES, cityById, hubById } from "../data";
+import { REGIONS, cityById, hubById } from "../data";
 import type { Pace } from "../data/types";
 import { suggest, type SuggestInput } from "../lib/suggest";
 import { useAppStore } from "../store/appStore";
@@ -67,21 +67,45 @@ export function PSuggest() {
   return (
     <div className="screen">
       <p className="section-label">你在哪個城市?</p>
-      <div className="choice-grid">
-        {CITIES.map((c) => (
+      {city && (
+        <div className="row">
+          <button className="selected">
+            {city.emoji} {city.name}
+          </button>
           <button
-            key={c.id}
-            className={cityId === c.id ? "selected" : ""}
+            className="ghost small"
             onClick={() => {
-              setCityId(c.id);
+              setCityId(null);
               setHubId(null);
               setExcluded(new Set());
             }}
           >
-            {c.emoji} {c.name}
+            換城市
           </button>
-        ))}
-      </div>
+        </div>
+      )}
+      {!city && REGIONS.map((r) => (
+        <div key={r.id}>
+          <p className="muted small region-label">
+            {r.emoji} {r.name}
+          </p>
+          <div className="choice-grid">
+            {r.cities.map((c) => (
+              <button
+                key={c.id}
+                className={cityId === c.id ? "selected" : ""}
+                onClick={() => {
+                  setCityId(c.id);
+                  setHubId(null);
+                  setExcluded(new Set());
+                }}
+              >
+                {c.emoji} {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {city && (
         <>

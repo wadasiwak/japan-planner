@@ -67,7 +67,8 @@ try {
   await page.getByText("P人隨走").click();
   await page.locator(".choice-grid button").first().click(); // 第一個城市
   await page.waitForTimeout(200);
-  await page.locator(".choice-grid").nth(1).locator("button").first().click(); // 第一個 hub
+  // 城市選定後收合,剩下唯一的 choice-grid 就是 hub 清單
+  await page.locator(".choice-grid").last().locator("button").first().click();
   await page.waitForTimeout(500);
 
   const sugCards = await page.locator(".poi-card").count();

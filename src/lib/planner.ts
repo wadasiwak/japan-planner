@@ -71,7 +71,31 @@ const inSeasonBoost = (p: POI, month?: number): boolean =>
 export function allocateDays(
   cities: CityDef[],
   totalDays: number,
+  pace: Pace = "relaxed",
 ): { city: CityDef; days: number }[] {
+  // 城市數上限:天數少就別硬塞每個城市 —— 輕鬆 2 天/城、行軍 1.5 天/城,
+  // 城際近(平均 ≤110 分,如關西)多送 1 城;遠距地區(中國/四國/東北…)
+  // 寧可少去幾城玩得深,省下整段整段的拉車時間。
+  if (cities.length > 1) {
+    const legs = cities
+      .slice(1)
+      .map((c, i) => intercityLeg(cities[i].id, c.id)?.min ?? 150);
+    const avgLeg = legs.reduce((a, b) => a + b, 0) / legs.length;
+    const daysPerCity = pace === "march" ? 1.5 : 2;
+    const maxCities = Math.min(
+      cities.length,
+      Math.ceil(totalDays / daysPerCity) + (avgLeg <= 110 ? 1 : 0),
+    );
+    if (cities.length > maxCities) {
+      const byWeight = [...cities].sort(
+        (a, b) =>
+          poisByCity(b.id).reduce((s, p) => s + PRIORITY_W[p.priority], 0) -
+          poisByCity(a.id).reduce((s, p) => s + PRIORITY_W[p.priority], 0),
+      );
+      const keep = new Set(byWeight.slice(0, maxCities).map((c) => c.id));
+      cities = cities.filter((c) => keep.has(c.id)); // 保持旅行順序
+    }
+  }
   const weights = cities.map((c) =>
     poisByCity(c.id).reduce((s, p) => s + PRIORITY_W[p.priority], 0),
   );
@@ -174,16 +198,23 @@ function planCityDay(
   // 當天公休的點跳過但不消耗,留給其他天排
   const closed = (p: POI) =>
     ctx.weekday != null && (p.closedDays?.includes(ctx.weekday) ?? false);
-  // 依評分取最佳(跳過公休);評分越低越好
+  // 依評分取最佳(跳過公休);mustFit 時只挑「剩餘時間/預算塞得下」的,
+  // 大點塞不下就自動退而求其次選小點,不會卡住整個分區
   const takeBest = (
     list: POI[],
     score: (p: POI) => number,
+    mustFit = false,
   ): POI | undefined => {
     let bi = -1;
     let bs = Infinity;
     for (let i = 0; i < list.length; i++) {
-      if (closed(list[i])) continue;
-      const s = score(list[i]);
+      const p = list[i];
+      if (closed(p)) continue;
+      if (mustFit) {
+        const stay = p.stayMin[pace];
+        if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) continue;
+      }
+      const s = score(p);
       if (s < bs) {
         bs = s;
         bi = i;
@@ -249,9 +280,19 @@ function planCityDay(
   };
 
   while (areas.length < cfg.maxAreas && cursor < cfg.dayEnd && activity < budget) {
-    const group = groups.find(
-      (g) => g.main.some((p) => !closed(p)) || g.food.some((p) => !closed(p)),
-    );
+    // 可行性檢查:剩餘時間+預算要塞得下「移動過去+至少一個景點」才進場,
+    // 否則會出現傍晚到了新分區、只排進移動和晚餐、一個點都沒玩的窘境。
+    const group = groups.find((g) => {
+      const open = g.main.filter((p) => !closed(p));
+      if (open.length === 0) return false; // 只剩吃的分區不值得專程移動
+      const t = lastPoi
+        ? transitMinutes(haversineKm(lastPoi.center, open[0].center))
+        : 0;
+      const minStay = Math.min(...open.map((p) => p.stayMin[pace]));
+      return (
+        cursor + t + minStay <= cfg.dayEnd && activity + minStay <= budget + 45
+      );
+    });
     if (!group) break;
     groups.splice(groups.indexOf(group), 1);
     picked.push(group);
@@ -273,31 +314,46 @@ function planCityDay(
       }
     }
 
+    // 分區時間軟上限:一天 N 區就大約 1/N 預算一區,別把第一區塞好塞滿
+    // 害壓軸分區(倉敷美觀這種)只剩尾巴。後面沒有可玩的分區時上限失效。
+    const cumCap = (budget * areas.length) / cfg.maxAreas;
+    // 剛進分區先排第一個景點再吃飯 —— 否則「移動+晚餐」就把傍晚吃光,
+    // 變成到了新分區卻一個點都沒玩(倉敷慘案)
+    let fresh = true;
     while (cursor < cfg.dayEnd && activity < budget) {
-      tryMeal(group);
-      tryCafe(group);
+      if (
+        !fresh && // 剛進場至少排一個點,否則變成只路過吃飯的幽靈分區
+        activity >= cumCap &&
+        groups.some((g) => g.main.some((p) => !closed(p)))
+      )
+        break;
+      if (!fresh) {
+        tryMeal(group);
+        tryCafe(group);
+      }
       // 最近鄰優先:距離為主,優先度/偏好/當季小幅加權;
       // 夜間限定的點白天先壓後、早晨限定的點下午降權,避免路線來回拉扯
-      const poi = takeBest(group.main, (p) => {
-        let s = distFrom(p) + (p.priority - 1) * 0.6 + ctx.rnd() * 0.4;
-        if (ctx.prefs?.has(p.category)) s -= 1.2;
-        if (inSeasonBoost(p, ctx.month)) s -= 1.5;
-        if (p.bestTime === "evening" && cursor < 16 * 60) s += 5;
-        if (p.bestTime === "morning" && cursor >= 13 * 60) s += 2;
-        return s;
-      });
+      const poi = takeBest(
+        group.main,
+        (p) => {
+          let s = distFrom(p) + (p.priority - 1) * 0.6 + ctx.rnd() * 0.4;
+          if (ctx.prefs?.has(p.category)) s -= 1.2;
+          if (inSeasonBoost(p, ctx.month)) s -= 1.5;
+          if (p.bestTime === "evening" && cursor < 16 * 60) s += 5;
+          if (p.bestTime === "morning" && cursor >= 13 * 60) s += 2;
+          return s;
+        },
+        true,
+      );
       if (!poi) break;
       const stay = poi.stayMin[pace];
-      if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) {
-        group.main.unshift(poi); // 塞不下就放回去,留給其他天
-        break;
-      }
       if (lastPoi && lastPoi.area === poi.area)
         cursor += transitMinutes(distFrom(poi)); // 同分區依實距步行
       slots.push({ kind: "poi", start: cursor, end: cursor + stay, poiId: poi.id });
       cursor += stay;
       activity += stay;
       lastPoi = poi;
+      fresh = false;
     }
     tryMeal(group);
   }
@@ -341,7 +397,7 @@ export function buildPlan(input: PlanInput): Plan {
   const region = regionById(input.regionId);
   if (!region) return { input, days: [] };
   const rnd = mulberry32(input.seed);
-  const alloc = allocateDays(region.cities, input.days);
+  const alloc = allocateDays(region.cities, input.days, input.pace);
   const month = monthOf(input.startDate);
   const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
 
@@ -449,11 +505,26 @@ export function replaceSlot(
       !(day.weekday != null && p.closedDays?.includes(day.weekday)),
   );
   if (!candidates.length) return null;
+  // 替補要讓「前一站→替補→後一站」繞路最少,而不是單純離舊點近 ——
+  // 離舊點近但在反方向,整條路線會被拉歪
+  const before = day.slots
+    .slice(0, slotIdx)
+    .reverse()
+    .map((s) => (s.poiId ? poiById(s.poiId) : undefined))
+    .find(Boolean);
+  const after = day.slots
+    .slice(slotIdx + 1)
+    .map((s) => (s.poiId ? poiById(s.poiId) : undefined))
+    .find(Boolean);
+  const detour = (p: POI) => {
+    if (before && after)
+      return haversineKm(before.center, p.center) + haversineKm(p.center, after.center);
+    if (before) return haversineKm(before.center, p.center);
+    if (after) return haversineKm(p.center, after.center);
+    return haversineKm(old.center, p.center);
+  };
   const best = candidates
-    .map((p) => ({
-      p,
-      s: haversineKm(old.center, p.center) + (p.priority - 1) * 0.4 + rnd() * 0.3,
-    }))
+    .map((p) => ({ p, s: detour(p) + (p.priority - 1) * 0.4 + rnd() * 0.3 }))
     .sort((a, b) => a.s - b.s)[0].p;
   const days = plan.days.map((d, i) =>
     i === dayIdx
