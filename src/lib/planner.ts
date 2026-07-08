@@ -1,5 +1,5 @@
-import type { CityDef, POI, Pace } from "../data/types";
-import { regionById, poisByCity } from "../data";
+import type { CityDef, POI, Pace, Category } from "../data/types";
+import { regionById, poisByCity, poiById, cityById } from "../data";
 import { intercityLeg } from "../data/transit";
 import { haversineKm, transitMinutes, intercityMinutes, fmtDuration } from "./geo";
 import { mulberry32, gumbelScore } from "./rng";
@@ -9,8 +9,10 @@ export interface PlanInput {
   days: number; // 1–10
   pace: Pace;
   seed: number; // 重骰 = 換 seed
-  /** 出發日 ISO(yyyy-mm-dd)。有填就避開各點當天的固定公休。 */
+  /** 出發日 ISO(yyyy-mm-dd)。有填就避開公休、過濾季節限定、加權當季。 */
   startDate?: string;
+  /** 興趣偏好:這些類別加權多排。 */
+  prefs?: Category[];
 }
 
 export interface PlanSlot {
@@ -18,7 +20,7 @@ export interface PlanSlot {
   /** minutes from 00:00 */
   start: number;
   end: number;
-  poiId?: string; // poi / meal(有選到店時)
+  poiId?: string; // poi / cafe / meal(有選到店時)
   note?: string; // transit 說明或「自由覓食」
 }
 
@@ -31,12 +33,12 @@ export interface PlanDay {
   slots: PlanSlot[];
 }
 
-export const WEEKDAY_CHAR = ["日", "一", "二", "三", "四", "五", "六"] as const;
-
 export interface Plan {
   input: PlanInput;
   days: PlanDay[];
 }
+
+export const WEEKDAY_CHAR = ["日", "一", "二", "三", "四", "五", "六"] as const;
 
 const PRIORITY_W = { 1: 3, 2: 2, 3: 1 } as const;
 
@@ -49,7 +51,23 @@ const PACE_CFG = {
 const LUNCH = 12 * 60;
 const DINNER = 18 * 60;
 
-/** 把天數依 POI 份量分給地區內的城市(largest remainder,cap maxDays)。 */
+/** 排程上下文:亂數、星期、月份(季節)、偏好。 */
+interface Ctx {
+  rnd: () => number;
+  weekday?: number;
+  month?: number;
+  prefs?: Set<Category>;
+  startCursor?: number;
+}
+
+/** 季節硬過濾:有 months 且不含當月就不排。月份未知(沒填出發日)一律通過。 */
+export const seasonOk = (p: POI, month?: number): boolean =>
+  month == null || !p.months || p.months.includes(month);
+
+const inSeasonBoost = (p: POI, month?: number): boolean =>
+  month != null && !!p.bestMonths?.includes(month);
+
+/** 把天數依 POI 份量分給地區內的城市(每城保底+largest remainder,cap maxDays)。 */
 export function allocateDays(
   cities: CityDef[],
   totalDays: number,
@@ -103,34 +121,38 @@ export function allocateDays(
 
 interface AreaGroup {
   area: string;
-  main: POI[]; // 非 food/cafe,照排程順序
+  main: POI[]; // 非 food/cafe
   food: POI[];
   cafe: POI[];
   score: number;
 }
 
-/** 依 bestTime 排一天內的先後:morning 先、evening 殿後。 */
-const TIME_ORDER = { morning: 0, any: 1, afternoon: 2, evening: 3 } as const;
-
-function buildAreaGroups(pois: POI[], rnd: () => number): AreaGroup[] {
+function buildAreaGroups(pois: POI[], ctx: Ctx): AreaGroup[] {
   const byArea = new Map<string, POI[]>();
   for (const p of pois) {
+    if (!seasonOk(p, ctx.month)) continue;
     const list = byArea.get(p.area);
     if (list) list.push(p);
     else byArea.set(p.area, [p]);
   }
   const groups: AreaGroup[] = [];
   for (const [area, list] of byArea) {
-    const base = list.reduce((s, p) => s + PRIORITY_W[p.priority], 0);
-    const sortKey = (p: POI) =>
-      TIME_ORDER[p.bestTime] * 100 + p.priority * 10 + rnd();
-    const sorted = [...list].sort((a, b) => sortKey(a) - sortKey(b));
+    // 分區份量:優先度+偏好類別+當季加分。
+    // 偏好權重要大到能翻轉分區選擇(組成由選哪些分區決定,分區內只是順序)。
+    const base = list.reduce(
+      (s, p) =>
+        s +
+        PRIORITY_W[p.priority] +
+        (ctx.prefs?.has(p.category) ? 2.5 : 0) +
+        (inSeasonBoost(p, ctx.month) ? 1.5 : 0),
+      0,
+    );
     groups.push({
       area,
-      main: sorted.filter((p) => p.category !== "food" && p.category !== "cafe"),
-      food: sorted.filter((p) => p.category === "food"),
-      cafe: sorted.filter((p) => p.category === "cafe"),
-      score: gumbelScore(base, rnd),
+      main: list.filter((p) => p.category !== "food" && p.category !== "cafe"),
+      food: list.filter((p) => p.category === "food"),
+      cafe: list.filter((p) => p.category === "cafe"),
+      score: gumbelScore(base, ctx.rnd),
     });
   }
   return groups.sort((a, b) => b.score - a.score);
@@ -145,15 +167,13 @@ function planCityDay(
   pace: Pace,
   groups: AreaGroup[],
   budgetCap: number,
-  rnd: () => number,
-  weekday?: number,
-  startCursor?: number,
+  ctx: Ctx,
 ): { areas: string[]; slots: PlanSlot[] } {
   const cfg = PACE_CFG[pace];
   const budget = Math.min(cfg.budget, budgetCap);
   // 當天公休的點跳過但不消耗,留給其他天排
   const closed = (p: POI) =>
-    weekday != null && (p.closedDays?.includes(weekday) ?? false);
+    ctx.weekday != null && (p.closedDays?.includes(ctx.weekday) ?? false);
   // 依評分取最佳(跳過公休);評分越低越好
   const takeBest = (
     list: POI[],
@@ -171,9 +191,10 @@ function planCityDay(
     }
     return bi === -1 ? undefined : list.splice(bi, 1)[0];
   };
+
   const slots: PlanSlot[] = [];
   const areas: string[] = [];
-  let cursor = Math.max(cfg.dayStart, startCursor ?? 0);
+  let cursor = Math.max(cfg.dayStart, ctx.startCursor ?? 0);
   let activity = 0;
   let lunchDone = false;
   let dinnerDone = false;
@@ -255,10 +276,12 @@ function planCityDay(
     while (cursor < cfg.dayEnd && activity < budget) {
       tryMeal(group);
       tryCafe(group);
-      // 最近鄰優先:距離為主,優先度小幅加權;
+      // 最近鄰優先:距離為主,優先度/偏好/當季小幅加權;
       // 夜間限定的點白天先壓後、早晨限定的點下午降權,避免路線來回拉扯
       const poi = takeBest(group.main, (p) => {
-        let s = distFrom(p) + (p.priority - 1) * 0.6 + rnd() * 0.4;
+        let s = distFrom(p) + (p.priority - 1) * 0.6 + ctx.rnd() * 0.4;
+        if (ctx.prefs?.has(p.category)) s -= 1.2;
+        if (inSeasonBoost(p, ctx.month)) s -= 1.5;
         if (p.bestTime === "evening" && cursor < 16 * 60) s += 5;
         if (p.bestTime === "morning" && cursor >= 13 * 60) s += 2;
         return s;
@@ -280,7 +303,7 @@ function planCityDay(
   }
   // 當天沒排完的分區放回 pool 尾端,剩餘的點留給之後的天
   for (const g of picked) {
-    if (g.main.length > 0 || g.food.length > 0) groups.push(g);
+    if (g.main.length > 0 || g.food.length > 0 || g.cafe.length > 0) groups.push(g);
   }
   // 收尾:晚餐還沒吃就補一槽
   if (!dinnerDone && cursor >= DINNER - 60) {
@@ -294,43 +317,48 @@ function planCityDay(
   return { areas, slots };
 }
 
+const monthOf = (startDate?: string): number | undefined =>
+  startDate ? new Date(`${startDate}T00:00:00`).getMonth() + 1 : undefined;
+
+/** 換城市第一天開頭的城際移動時段。 */
+function intercitySlot(prev: CityDef, next: CityDef, pace: Pace): PlanSlot {
+  const cfg = PACE_CFG[pace];
+  // 優先查真實交通表(含路線建議),沒有的配對才用距離公式估
+  const leg = intercityLeg(prev.id, next.id);
+  const min =
+    leg?.min ??
+    intercityMinutes(haversineKm(prev.hubs[0].center, next.hubs[0].center));
+  const via = leg ? `・${leg.via}` : "";
+  return {
+    kind: "transit",
+    start: cfg.dayStart,
+    end: cfg.dayStart + min,
+    note: `🚄 從${prev.name}移動到${next.name}(約 ${fmtDuration(min)},含拉行李)${via}`,
+  };
+}
+
 export function buildPlan(input: PlanInput): Plan {
   const region = regionById(input.regionId);
   if (!region) return { input, days: [] };
   const rnd = mulberry32(input.seed);
   const alloc = allocateDays(region.cities, input.days);
+  const month = monthOf(input.startDate);
+  const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
 
   // 有出發日就算出每天星期幾,排程避開當天公休
   const startWeekday = input.startDate
     ? new Date(`${input.startDate}T00:00:00`).getDay()
     : undefined;
 
-  const cfg = PACE_CFG[input.pace];
   const days: PlanDay[] = [];
   let dayNo = 1;
   let prevCity: CityDef | null = null;
   for (const { city, days: n } of alloc) {
-    // 換城市的第一天,行程從城際移動之後才開始(以各城第一個 hub 為錨)
-    let intercity: PlanSlot | null = null;
-    if (prevCity) {
-      // 優先查真實交通表(含路線建議),沒有的配對才用距離公式估
-      const leg = intercityLeg(prevCity.id, city.id);
-      const min =
-        leg?.min ??
-        intercityMinutes(
-          haversineKm(prevCity.hubs[0].center, city.hubs[0].center),
-        );
-      const via = leg ? `・${leg.via}` : "";
-      intercity = {
-        kind: "transit",
-        start: cfg.dayStart,
-        end: cfg.dayStart + min,
-        note: `🚄 從${prevCity.name}移動到${city.name}(約 ${fmtDuration(min)},含拉行李)${via}`,
-      };
-    }
+    const intercity = prevCity ? intercitySlot(prevCity, city, input.pace) : null;
 
     // 這城市的 POI 一次建組,跨這幾天共用消耗,不會重複排
-    const groups = buildAreaGroups(poisByCity(city.id), rnd);
+    const ctx: Ctx = { rnd, month, prefs };
+    const groups = buildAreaGroups(poisByCity(city.id), ctx);
     for (let d = 0; d < n; d++) {
       // 公平分配:剩餘內容 ÷ 剩餘天數,內容不夠塞滿時每天分得平均
       const remainingStay = groups.reduce(
@@ -340,19 +368,176 @@ export function buildPlan(input: PlanInput): Plan {
       const fairBudget = Math.ceil(remainingStay / (n - d));
       const weekday =
         startWeekday != null ? (startWeekday + dayNo - 1) % 7 : undefined;
-      const startCursor = d === 0 && intercity ? intercity.end : undefined;
-      const { areas, slots } = planCityDay(
-        input.pace,
-        groups,
-        fairBudget,
-        rnd,
+      const { areas, slots } = planCityDay(input.pace, groups, fairBudget, {
+        ...ctx,
         weekday,
-        startCursor,
-      );
+        startCursor: d === 0 && intercity ? intercity.end : undefined,
+      });
       if (d === 0 && intercity) slots.unshift(intercity);
       days.push({ day: dayNo++, cityId: city.id, weekday, areas, slots });
     }
     prevCity = city;
+  }
+  return { input, days };
+}
+
+// ---------------------------------------------------------------------------
+// 行程編輯:單點替換 / 不去 / 鎖定日重骰
+// ---------------------------------------------------------------------------
+
+/** 重排一天的時間軸:保留順序與型態,重新累計時間(含同分區步行)。 */
+export function retimeDay(day: PlanDay, pace: Pace): PlanDay {
+  const cfg = PACE_CFG[pace];
+  const mealLen = pace === "relaxed" ? 60 : 45;
+  let cursor = day.slots[0]?.start ?? cfg.dayStart;
+  let prevPoi: POI | undefined;
+  const slots = day.slots.map((s) => {
+    const poi = s.poiId ? poiById(s.poiId) : undefined;
+    let dur = s.end - s.start;
+    if (poi) dur = poi.stayMin[pace];
+    else if (s.kind === "meal") dur = mealLen;
+    // 兩個相鄰景點間補步行時間(原本 transit slot 的照舊)
+    if (poi && prevPoi && s.kind !== "transit")
+      cursor += transitMinutes(haversineKm(prevPoi.center, poi.center)) - 10 > 0
+        ? transitMinutes(haversineKm(prevPoi.center, poi.center))
+        : 10;
+    const out = { ...s, start: cursor, end: cursor + dur };
+    cursor += dur;
+    if (poi) prevPoi = poi;
+    return out;
+  });
+  return { ...day, slots };
+}
+
+/** 把某一格從行程拿掉(不去了),當天時間軸重排。 */
+export function removeSlot(plan: Plan, dayIdx: number, slotIdx: number): Plan {
+  const days = plan.days.map((d, i) =>
+    i === dayIdx
+      ? retimeDay({ ...d, slots: d.slots.filter((_, j) => j !== slotIdx) }, plan.input.pace)
+      : d,
+  );
+  return { ...plan, days };
+}
+
+/** 換一個:同城市、同型態、就近的未用景點。找不到回 null。 */
+export function replaceSlot(
+  plan: Plan,
+  dayIdx: number,
+  slotIdx: number,
+  seed: number,
+): Plan | null {
+  const day = plan.days[dayIdx];
+  const slot = day?.slots[slotIdx];
+  const old = slot?.poiId ? poiById(slot.poiId) : undefined;
+  if (!day || !slot || !old) return null;
+  const rnd = mulberry32(seed);
+  const month = monthOf(plan.input.startDate);
+  const used = new Set(
+    plan.days.flatMap((d) => d.slots.map((s) => s.poiId)).filter(Boolean),
+  );
+  const wantKind = (p: POI) =>
+    slot.kind === "meal"
+      ? p.category === "food"
+      : slot.kind === "cafe"
+        ? p.category === "cafe"
+        : p.category !== "food" && p.category !== "cafe";
+  const candidates = poisByCity(day.cityId).filter(
+    (p) =>
+      !used.has(p.id) &&
+      wantKind(p) &&
+      seasonOk(p, month) &&
+      !(day.weekday != null && p.closedDays?.includes(day.weekday)),
+  );
+  if (!candidates.length) return null;
+  const best = candidates
+    .map((p) => ({
+      p,
+      s: haversineKm(old.center, p.center) + (p.priority - 1) * 0.4 + rnd() * 0.3,
+    }))
+    .sort((a, b) => a.s - b.s)[0].p;
+  const days = plan.days.map((d, i) =>
+    i === dayIdx
+      ? retimeDay(
+          {
+            ...d,
+            slots: d.slots.map((s, j) =>
+              j === slotIdx ? { ...s, poiId: best.id, note: undefined } : s,
+            ),
+          },
+          plan.input.pace,
+        )
+      : d,
+  );
+  return { ...plan, days };
+}
+
+/** 重骰,但鎖住的天(day 編號)原封不動,其他天避開鎖定天已用的點。 */
+export function rerollUnlocked(
+  plan: Plan,
+  lockedDays: Set<number>,
+  seed: number,
+): Plan {
+  if (lockedDays.size === 0) return buildPlan({ ...plan.input, seed });
+  const input = { ...plan.input, seed };
+  const rnd = mulberry32(seed);
+  const month = monthOf(input.startDate);
+  const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
+  const usedInLocked = new Set(
+    plan.days
+      .filter((d) => lockedDays.has(d.day))
+      .flatMap((d) => d.slots.map((s) => s.poiId))
+      .filter((x): x is string => !!x),
+  );
+
+  // 依原行程的天→城市對應重排(不重新分配天數,鎖定才有意義)
+  const days: PlanDay[] = [];
+  let i = 0;
+  let prevCityId: string | null = null;
+  while (i < plan.days.length) {
+    const cityId = plan.days[i].cityId;
+    const cityDays: (PlanDay & { done?: boolean })[] = [];
+    while (i < plan.days.length && plan.days[i].cityId === cityId)
+      cityDays.push({ ...plan.days[i++] });
+    const city = cityById(cityId)!;
+    const ctx: Ctx = { rnd, month, prefs };
+    const groups = buildAreaGroups(
+      poisByCity(cityId).filter((p) => !usedInLocked.has(p.id)),
+      ctx,
+    );
+    const intercity =
+      prevCityId && prevCityId !== cityId
+        ? intercitySlot(cityById(prevCityId)!, city, input.pace)
+        : null;
+    const unlockedLeft = () =>
+      cityDays.filter((d) => !lockedDays.has(d.day) && !d.done);
+    for (const d of cityDays) {
+      if (lockedDays.has(d.day)) {
+        days.push({
+          day: d.day,
+          cityId,
+          weekday: d.weekday,
+          areas: d.areas,
+          slots: d.slots,
+        });
+        d.done = true;
+        continue;
+      }
+      const remainingStay = groups.reduce(
+        (s, g) => s + g.main.reduce((x, p) => x + p.stayMin[input.pace], 0),
+        0,
+      );
+      const fairBudget = Math.ceil(remainingStay / Math.max(1, unlockedLeft().length));
+      const isCityFirst = d === cityDays[0];
+      const { areas, slots } = planCityDay(input.pace, groups, fairBudget, {
+        ...ctx,
+        weekday: d.weekday,
+        startCursor: isCityFirst && intercity ? intercity.end : undefined,
+      });
+      if (isCityFirst && intercity) slots.unshift(intercity);
+      days.push({ day: d.day, cityId, weekday: d.weekday, areas, slots });
+      d.done = true;
+    }
+    prevCityId = cityId;
   }
   return { input, days };
 }

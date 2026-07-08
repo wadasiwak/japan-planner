@@ -35,6 +35,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "yamagata-sta-yamagata",
     tips: "從山形車站步行約 10 分,櫻花季搭配仙山線列車穿過花海的畫面最經典。",
+    bestMonths: [4],
   },
   {
     id: "yamagata-nagaya-sakaba",
@@ -146,6 +147,8 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "yamagata-zao-bt",
     tips: "樹冰是季節限定,約 12 月下旬至 3 月上旬、1-2 月最壯觀;夜間點燈場次要另外購票,務必做好零下防寒。",
+    months: [12, 1, 2, 3],
+    bestMonths: [1, 2],
   },
   {
     id: "yamagata-zao-dai-rotenburo",
@@ -162,6 +165,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "yamagata-zao-bt",
     tips: "冬季(約 11 月中至 4 月中)封閉,只營業無雪季節;強酸泉會咬銀飾,下水前記得摘掉。",
+    months: [4, 5, 6, 7, 8, 9, 10, 11],
   },
   {
     id: "yamagata-zao-robata",
@@ -194,6 +198,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "yamagata-ginzan-onsen",
     tips: "從大石田車站轉巴士約 40 分,班次不多要先查時刻;傍晚點燈後最美,不住宿的話留意末班車時間。",
+    bestMonths: [12, 1, 2],
   },
   {
     id: "yamagata-izunohana",

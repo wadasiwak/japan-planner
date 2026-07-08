@@ -235,6 +235,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "hiroshima-miyajima-pier",
+    bestMonths: [11],
   },
   {
     id: "hiroshima-micchan-sohonten",

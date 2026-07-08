@@ -128,6 +128,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "takayama-shirakawago-bt",
     tips: "高山出發濃飛巴士約 50 分,旺季車票要提前網路預約。",
+    bestMonths: [1, 2],
   },
   {
     id: "takayama-shiroyama-tenbodai",

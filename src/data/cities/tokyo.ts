@@ -139,6 +139,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "tokyo-sta-shinjuku",
     tips: "週一休園;禁帶酒精,野餐請自備墊子。",
+    bestMonths: [3, 4],
   },
   {
     id: "tokyo-kabukicho",
@@ -184,6 +185,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "tokyo-sta-ueno",
+    bestMonths: [3, 4],
   },
   {
     id: "tokyo-ameyoko",
@@ -519,6 +521,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "tokyo-sta-nakameguro",
     tips: "櫻花季傍晚有燈籠點燈,夜櫻人潮多但值得。",
+    bestMonths: [3, 4],
   },
   {
     id: "tokyo-daikanyama-tsite",
@@ -800,6 +803,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "tokyo-sta-ueno",
+    bestMonths: [4],
   },
   {
     id: "tokyo-ichiran-shinjuku",

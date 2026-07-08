@@ -147,6 +147,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "okinawa-north-onna",
+    months: [4, 5, 6, 7, 8, 9, 10],
   },
   {
     id: "okinawa-north-nakamura-soba",

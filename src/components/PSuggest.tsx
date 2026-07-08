@@ -33,6 +33,7 @@ export function PSuggest() {
       hoursLeft,
       pace,
       weekday: now.getDay(),
+      month: now.getMonth() + 1,
       rain,
       visited: new Set(Object.keys(visited)),
       excludeIds: excluded,

@@ -34,6 +34,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "sapporo-sta-odori",
     tips: "名物烤玉米攤只在春夏到 10 月初營業,冬天改去雪祭雕像區。",
+    bestMonths: [2, 7, 8],
   },
   {
     id: "sapporo-tv-tower",
@@ -239,6 +240,7 @@ export const pois: POI[] = [
     priority: 3,
     nearHub: "sapporo-sta-sapporo",
     tips: "銀杏並木見頃約 10 月下旬到 11 月初,遊客可自由入校。",
+    bestMonths: [10, 11],
   },
   {
     id: "sapporo-former-govt",

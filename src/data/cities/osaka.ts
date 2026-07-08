@@ -308,6 +308,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "osaka-sta-osakajokoen",
     tips: "西之丸庭園需門票且週一休園;只逛外圍公園則全年免費開放。",
+    bestMonths: [3, 4],
   },
   {
     id: "osaka-jo-terrace",

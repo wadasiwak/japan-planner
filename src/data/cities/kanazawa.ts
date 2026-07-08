@@ -34,6 +34,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "kanazawa-kenrokuen-shita",
     tips: "開園第一小時人最少;十一月起架設的雪吊是金澤冬天的名景。",
+    bestMonths: [1, 2, 11],
   },
   {
     id: "kanazawa-castle-park",

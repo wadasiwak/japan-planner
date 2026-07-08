@@ -78,6 +78,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "nikko-sta-tobu-nikko",
+    bestMonths: [11],
   },
   {
     id: "nikko-nishisando-chaya",
@@ -124,6 +125,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "nikko-chuzenji-onsen-bt",
+    bestMonths: [10, 11],
   },
   {
     id: "nikko-chuzenji-onsen-street",
@@ -155,6 +157,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "nikko-chuzenji-onsen-bt",
     tips: "纜車站只在上行的第二伊呂波坂單行道上,上山途中先停這裡;紅葉季要留塞車緩衝。",
+    bestMonths: [10, 11],
   },
   {
     id: "nikko-ebisuya",

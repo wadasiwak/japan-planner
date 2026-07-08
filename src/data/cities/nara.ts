@@ -141,6 +141,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "nara-hub-park",
+    months: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   },
   {
     id: "nara-national-museum",

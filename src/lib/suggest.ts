@@ -13,6 +13,8 @@ export interface SuggestInput {
   pace: Pace;
   /** 今天星期幾(0=日 … 6=六),過濾公休。 */
   weekday: number;
+  /** 現在月份(1–12),過濾季節限定、加權當季。 */
+  month?: number;
   /** 下雨模式:只出室內。 */
   rain: boolean;
   visited: Set<string>;
@@ -45,6 +47,7 @@ function candidates(input: SuggestInput, ignoreExclude: boolean): POI[] {
     if (input.visited.has(p.id)) return false;
     if (!ignoreExclude && input.excludeIds.has(p.id)) return false;
     if (p.closedDays?.includes(input.weekday)) return false;
+    if (input.month && p.months && !p.months.includes(input.month)) return false;
     if (input.rain && !p.indoor) return false;
     // 硬性不合時段:早上限定的點傍晚後不推、晚上限定的點早上不推
     if (p.bestTime === "morning" && slot === "evening") return false;
@@ -70,7 +73,8 @@ export function suggest(input: SuggestInput): Suggestion[] {
     const base =
       (4 - p.priority) * 2 + // 必去 6 / 推薦 4 / 湊數 2
       (p.bestTime === slot ? 1.5 : 0) +
-      (p.bestTime === "any" ? 0.5 : 0) -
+      (p.bestTime === "any" ? 0.5 : 0) +
+      (input.month && p.bestMonths?.includes(input.month) ? 1.5 : 0) - // 當季加分
       Math.min(km * 1.2, 6); // 距離罰分,封頂避免直接淘汰遠處必去
     return { p, km, score: gumbelScore(base, rnd) };
   });
@@ -84,6 +88,8 @@ export function suggest(input: SuggestInput): Suggestion[] {
     else reasons.push(`移動約 ${t} 分`);
     if (p.priority === 1) reasons.push("必去清單");
     if (p.bestTime === slot) reasons.push(`${SLOT_LABEL[slot]}去正合適`);
+    if (input.month && p.bestMonths?.includes(input.month))
+      reasons.push("正是當季");
     if (input.rain && p.indoor) reasons.push("下雨也不怕");
     return { poi: p, km, transitMin: t, reasons };
   });

@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { REGIONS, regionById, poisByCity } from "../data";
-import type { Pace } from "../data/types";
+import type { Pace, Category } from "../data/types";
 import { buildPlan, type Plan } from "../lib/planner";
+
+const PREF_OPTIONS: { cat: Category; label: string }[] = [
+  { cat: "temple", label: "⛩️ 神社寺院" },
+  { cat: "sight", label: "🏯 經典景點" },
+  { cat: "nature", label: "🌿 自然風景" },
+  { cat: "museum", label: "🖼️ 博物展館" },
+  { cat: "shopping", label: "🛍️ 逛街購物" },
+  { cat: "nightlife", label: "🌃 夜生活" },
+  { cat: "experience", label: "🎡 體驗活動" },
+];
 
 /** 這個地區的內容最多值得排幾天(各城 maxDays 加總,封頂 10)。 */
 const regionCapacity = (regionId: string): number => {
@@ -18,7 +28,11 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [days, setDays] = useState(4);
   const [pace, setPace] = useState<Pace>("relaxed");
   const [startDate, setStartDate] = useState("");
+  const [prefs, setPrefs] = useState<Category[]>([]);
   const cap = regionId ? regionCapacity(regionId) : 10;
+
+  const togglePref = (cat: Category) =>
+    setPrefs((ps) => (ps.includes(cat) ? ps.filter((c) => c !== cat) : [...ps, cat]));
 
   const go = () => {
     if (!regionId) return;
@@ -29,6 +43,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
         pace,
         seed: Math.floor(Math.random() * 1e9),
         startDate: startDate || undefined,
+        prefs: prefs.length ? prefs : undefined,
       }),
     );
   };
@@ -88,6 +103,20 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
           🥾 行軍
           <span className="muted small"> · 一天 10 小時塞好塞滿</span>
         </button>
+      </div>
+
+      <p className="section-label">特別喜歡?(選填,勾了會多排這些)</p>
+      <div className="choice-grid">
+        {PREF_OPTIONS.map(({ cat, label }) => (
+          <button
+            key={cat}
+            className={prefs.includes(cat) ? "selected" : ""}
+            style={{ minWidth: 0, flex: "0 1 auto" }}
+            onClick={() => togglePref(cat)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       <p className="section-label">出發日?(選填)</p>

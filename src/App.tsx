@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Plan } from "./lib/planner";
+import { planFromHash } from "./lib/share";
 import { ALL_POIS, REGIONS } from "./data";
 import { JSetup } from "./components/JSetup";
 import { JResult } from "./components/JResult";
@@ -23,7 +24,11 @@ const TITLES: Record<Screen["t"], string> = {
 };
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>({ t: "home" });
+  // 分享連結:#p=... 直接開行程
+  const [screen, setScreen] = useState<Screen>(() => {
+    const shared = planFromHash();
+    return shared ? { t: "j-result", plan: shared } : { t: "home" };
+  });
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
   const planCount = useAppStore((s) => s.savedPlans.length);
 

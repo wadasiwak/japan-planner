@@ -127,6 +127,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "kamakura-sta-hase",
     tips: "六月繡球花季要抽整理券,平日一早去最保險。",
+    bestMonths: [6],
   },
   {
     id: "kamakura-yuigahama",
@@ -142,6 +143,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "kamakura-sta-hase",
+    bestMonths: [7, 8],
   },
   {
     id: "kamakura-chikara-mochiya",

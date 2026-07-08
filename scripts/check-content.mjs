@@ -110,6 +110,13 @@ for (const p of ALL_POIS) {
   if (!hubIds.has(p.nearHub)) err(`${tag}: nearHub "${p.nearHub}" 不存在`);
   else if (!p.nearHub.startsWith(`${p.city}-`)) err(`${tag}: nearHub 不屬於 ${p.city}`);
   if (p.closedDays && p.closedDays.some((d) => d < 0 || d > 6)) err(`${tag}: closedDays 需為 0–6`);
+  for (const f of ["months", "bestMonths"]) {
+    if (p[f] !== undefined) {
+      if (!Array.isArray(p[f]) || p[f].length === 0 || p[f].some((m) => m < 1 || m > 12))
+        err(`${tag}: ${f} 需為 1–12 的非空陣列`);
+    }
+  }
+  if (p.months && p.months.length === 12) warn.push(`${tag}: months 全年 12 個月,直接省略即可`);
 }
 
 // --- 城際交通表:同地區內每對城市都要有真實時刻(避免 fallback 公式低估) ---

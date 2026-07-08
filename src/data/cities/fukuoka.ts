@@ -174,6 +174,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 3,
     nearHub: "fukuoka-sta-ohorikoen",
+    bestMonths: [3, 4],
   },
   {
     id: "fukuoka-nagahama-ramen",
@@ -237,6 +238,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "fukuoka-sta-dazaifu",
     tips: "本殿大改修期間改在屋頂長著森林的「仮殿」參拜,本身就成了話題景點。",
+    bestMonths: [2, 3],
   },
   {
     id: "fukuoka-dazaifu-sando",

@@ -1,6 +1,14 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { cityById, poiById, regionById } from "../data";
-import { buildPlan, fmtTime, WEEKDAY_CHAR, type Plan } from "../lib/planner";
+import {
+  fmtTime,
+  removeSlot,
+  replaceSlot,
+  rerollUnlocked,
+  WEEKDAY_CHAR,
+  type Plan,
+} from "../lib/planner";
+import { planShareUrl } from "../lib/share";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
@@ -22,6 +30,14 @@ export function JResult({
   const [dayIdx, setDayIdx] = useState(0);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
+  const [lockedDays, setLockedDays] = useState<Set<number>>(new Set());
+
+  const dirty = () => {
+    setSaved(false);
+    setCopied(false);
+    setShared(false);
+  };
   const savePlan = useAppStore((s) => s.savePlan);
   const region = regionById(plan.input.regionId);
   const day = plan.days[dayIdx];
@@ -44,12 +60,36 @@ export function JResult({
   }, [plan, dayIdx]);
 
   const reroll = () => {
-    setDayIdx(0);
-    setSaved(false);
-    setCopied(false);
+    dirty();
     onReplace(
-      buildPlan({ ...plan.input, seed: Math.floor(Math.random() * 1e9) }),
+      rerollUnlocked(plan, lockedDays, Math.floor(Math.random() * 1e9)),
     );
+  };
+
+  const toggleLock = (dayNo: number) =>
+    setLockedDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(dayNo)) next.delete(dayNo);
+      else next.add(dayNo);
+      return next;
+    });
+
+  const doReplace = (slotIdx: number) => {
+    const next = replaceSlot(plan, dayIdx, slotIdx, Math.floor(Math.random() * 1e9));
+    if (next) {
+      dirty();
+      onReplace(next);
+    }
+  };
+
+  const doRemove = (slotIdx: number) => {
+    dirty();
+    onReplace(removeSlot(plan, dayIdx, slotIdx));
+  };
+
+  const share = async () => {
+    await navigator.clipboard.writeText(planShareUrl(plan));
+    setShared(true);
   };
 
   // 全程行程轉純文字,貼 LINE 給旅伴用
@@ -90,6 +130,9 @@ export function JResult({
         <button className={copied ? "selected" : "ghost"} onClick={copyText}>
           {copied ? "✓ 已複製" : "📋 複製"}
         </button>
+        <button className={shared ? "selected" : "ghost"} onClick={share}>
+          {shared ? "✓ 連結已複製" : "🔗 分享"}
+        </button>
         <button
           className={saved ? "selected" : ""}
           onClick={() => {
@@ -106,19 +149,34 @@ export function JResult({
           <button
             key={d.day}
             className={i === dayIdx ? "selected" : ""}
-            onClick={() => setDayIdx(i)}
+            onClick={() => {
+              setDayIdx(i);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
           >
-            Day {d.day}
+            {lockedDays.has(d.day) ? "🔒 " : ""}Day {d.day}
             {d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : ""} ·{" "}
             {cityById(d.cityId)?.name}
           </button>
         ))}
       </div>
 
-      <p className="muted small">
-        {cityById(day.cityId)?.emoji} {cityById(day.cityId)?.name} —{" "}
-        {day.areas.join("、")}
-      </p>
+      <div className="row">
+        <p className="muted small" style={{ margin: 0 }}>
+          {cityById(day.cityId)?.emoji} {cityById(day.cityId)?.name} —{" "}
+          {day.areas.join("、")} ·{" "}
+          {day.slots.filter((s) => s.kind === "poi").length} 個點
+          {day.slots.some((s) => s.kind === "cafe") ? " ·☕" : ""}
+        </p>
+        <span className="spacer" />
+        <button
+          className={`ghost small${lockedDays.has(day.day) ? " selected" : ""}`}
+          title="鎖住這天,重骰時不動它"
+          onClick={() => toggleLock(day.day)}
+        >
+          {lockedDays.has(day.day) ? "🔒 已鎖定" : "🔓 鎖住這天"}
+        </button>
+      </div>
 
       <Suspense fallback={<div className="map-box" />}>
         <DayMap points={mapPoints} connect />
@@ -162,6 +220,14 @@ export function JResult({
                         : []
                   }
                 />
+                <div className="slot-actions">
+                  <button className="ghost small" onClick={() => doReplace(i)}>
+                    🔁 換一個
+                  </button>
+                  <button className="ghost small" onClick={() => doRemove(i)}>
+                    ✕ 不去
+                  </button>
+                </div>
               </div>
             </div>
           );

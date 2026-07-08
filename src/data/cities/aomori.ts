@@ -115,6 +115,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "aomori-sta-hirosaki",
     tips: "櫻花季約 4 月下旬,護城河花筏與夜櫻點燈最經典;非花季遊客少反而清幽。",
+    bestMonths: [4, 5],
   },
   {
     id: "aomori-hirosaki-park",
@@ -130,6 +131,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "aomori-sta-hirosaki",
+    bestMonths: [4, 5],
   },
   {
     id: "aomori-yokan-gai",
@@ -209,6 +211,7 @@ export const pois: POI[] = [
     priority: 1,
     nearHub: "aomori-towadako-yasumiya",
     tips: "大眾運輸只有 JR 巴士みずうみ號且班次少,建議租車或事先排好巴士時刻;精華段是石ヶ戸到銚子大瀧,新綠 5-6 月、紅葉 10 月下旬最美。",
+    bestMonths: [5, 10, 11],
   },
   {
     id: "aomori-towadako",

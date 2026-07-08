@@ -191,6 +191,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "yokohama-sta-motomachi",
     tips: "從元町・中華街站搭巴士約 15 分;早櫻、紅葉季節最美。",
+    bestMonths: [3, 4, 11, 12],
   },
   {
     id: "yokohama-ramen-museum",

@@ -127,6 +127,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 1,
     nearHub: "hakodate-sta-goryokaku",
+    bestMonths: [4, 5],
   },
   {
     id: "hakodate-goryokaku-tower",

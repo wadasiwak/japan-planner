@@ -136,6 +136,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "kyoto-sta-arashiyama",
+    bestMonths: [3, 4, 11, 12],
   },
   {
     id: "kyoto-tenryuji",
@@ -217,6 +218,7 @@ export const pois: POI[] = [
     indoor: false,
     priority: 2,
     nearHub: "kyoto-sta-kitano-hakubaicho",
+    bestMonths: [2, 3],
   },
   {
     id: "kyoto-toyoukechaya",
@@ -267,6 +269,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "kyoto-sta-fushimi-inari",
     tips: "紅葉季(11 月底)人潮恐怖,平日一早去;淡季反而清幽好逛。",
+    bestMonths: [11, 12],
   },
   {
     id: "kyoto-inari-sando",
@@ -444,6 +447,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "kyoto-sta-kawaramachi",
     tips: "5–9 月限定且熱門店要訂位;預算有限可選午間床席,便宜不少。",
+    months: [5, 6, 7, 8, 9],
   },
   {
     id: "kyoto-pontocho",
@@ -492,6 +496,7 @@ export const pois: POI[] = [
     priority: 2,
     nearHub: "kyoto-sta-demachiyanagi",
     tips: "從銀閣寺一路散步到南禪寺約 40 分鐘,是東山北段最好的串接動線。",
+    bestMonths: [3, 4],
   },
   {
     id: "kyoto-nanzenji",
@@ -573,6 +578,7 @@ export const pois: POI[] = [
     priority: 3,
     nearHub: "kyoto-sta-demachiyanagi",
     tips: "只在 5–9 月營業,假日領號碼牌常等 1–2 小時,平日一早去領牌最省時。",
+    months: [5, 6, 7, 8, 9],
   },
 
   // ── 餐廳與咖啡廳擴充 ──

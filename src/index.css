@@ -71,6 +71,11 @@ button.ghost {
 button.selected {
   border-color: var(--accent);
   background: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent), 0 2px 12px #e8590c33;
+}
+button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 button:disabled {
   opacity: 0.4;
@@ -107,6 +112,11 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s;
+}
+.mode-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px #00000055;
 }
 .mode-card .mode-title {
   font-size: 1.2rem;
@@ -166,7 +176,15 @@ button:disabled {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 6px 0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: linear-gradient(var(--bg) 85%, transparent);
+  scrollbar-width: none;
+}
+.day-tabs::-webkit-scrollbar {
+  display: none;
 }
 .day-tabs button {
   white-space: nowrap;
@@ -188,6 +206,12 @@ button:disabled {
   font-size: 0.85rem;
   min-width: 84px;
   padding-top: 14px;
+  border-right: 2px solid var(--border);
+  padding-right: 10px;
+}
+.slot.transit .time,
+.slot.meal-free .time {
+  border-right-color: transparent;
 }
 .slot .body {
   flex: 1;
@@ -338,4 +362,17 @@ a.tag.maplink {
   min-width: 48px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+.slot-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.slot-actions button,
+button.small {
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  border-radius: 8px;
 }
