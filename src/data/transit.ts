@@ -36,6 +36,13 @@ export const INTERCITY: IntercityLeg[] = [
   { cities: ["nagasaki", "beppu"], min: 220, via: "經博多轉特急,建議一早出發" },
   // ---- 沖繩 ----
   { cities: ["naha", "okinawa-north"], min: 100, via: "沖繩自動車道自駕(或高速巴士)" },
+  // ---- 東北 ----
+  { cities: ["sendai", "yamagata"], min: 105, via: "JR仙山線快速" },
+  { cities: ["sendai", "hiraizumi"], min: 90, via: "東北新幹線(一ノ関轉東北本線)" },
+  { cities: ["sendai", "aomori"], min: 130, via: "東北新幹線はやぶさ(新青森)" },
+  { cities: ["yamagata", "hiraizumi"], min: 170, via: "經仙台轉東北新幹線" },
+  { cities: ["yamagata", "aomori"], min: 220, via: "經仙台轉東北新幹線,建議一早出發" },
+  { cities: ["hiraizumi", "aomori"], min: 130, via: "東北新幹線(一ノ関發)" },
   // ---- 中部北陸 ----
   { cities: ["nagoya", "kanazawa"], min: 180, via: "特急しらさぎ+北陸新幹線(敦賀轉乘)" },
   { cities: ["nagoya", "takayama"], min: 170, via: "JR特急ひだ" },

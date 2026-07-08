@@ -1,13 +1,24 @@
 import { useState } from "react";
-import { REGIONS, poisByCity } from "../data";
+import { REGIONS, regionById, poisByCity } from "../data";
 import type { Pace } from "../data/types";
 import { buildPlan, type Plan } from "../lib/planner";
+
+/** 這個地區的內容最多值得排幾天(各城 maxDays 加總,封頂 10)。 */
+const regionCapacity = (regionId: string): number => {
+  const r = regionById(regionId);
+  if (!r) return 10;
+  return Math.min(
+    10,
+    r.cities.reduce((s, c) => s + c.maxDays, 0),
+  );
+};
 
 export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [regionId, setRegionId] = useState<string | null>(null);
   const [days, setDays] = useState(4);
   const [pace, setPace] = useState<Pace>("relaxed");
   const [startDate, setStartDate] = useState("");
+  const cap = regionId ? regionCapacity(regionId) : 10;
 
   const go = () => {
     if (!regionId) return;
@@ -32,7 +43,10 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
             <button
               key={r.id}
               className={regionId === r.id ? "selected" : ""}
-              onClick={() => setRegionId(r.id)}
+              onClick={() => {
+                setRegionId(r.id);
+                setDays((d) => Math.min(d, regionCapacity(r.id)));
+              }}
             >
               {r.emoji} {r.name}
               <span className="muted small"> · {n} 個景點</span>
@@ -45,8 +59,18 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
       <div className="stepper">
         <button onClick={() => setDays((d) => Math.max(1, d - 1))}>−</button>
         <span className="num">{days} 天</span>
-        <button onClick={() => setDays((d) => Math.min(10, d + 1))}>＋</button>
+        <button
+          disabled={days >= cap}
+          onClick={() => setDays((d) => Math.min(cap, d + 1))}
+        >
+          ＋
+        </button>
       </div>
+      {regionId && (
+        <p className="muted small" style={{ textAlign: "center", margin: 0 }}>
+          這個地區的內容約可排 {cap} 天
+        </p>
+      )}
 
       <p className="section-label">遊玩節奏?</p>
       <div className="choice-grid">

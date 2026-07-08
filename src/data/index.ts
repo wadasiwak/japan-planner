@@ -21,6 +21,9 @@ import * as kanazawa from "./cities/kanazawa";
 import * as takayama from "./cities/takayama";
 import * as hiroshima from "./cities/hiroshima";
 import * as sendai from "./cities/sendai";
+import * as yamagata from "./cities/yamagata";
+import * as hiraizumi from "./cities/hiraizumi";
+import * as aomori from "./cities/aomori";
 
 // 城市模組:每個 exports `city: CityDef` 與 `pois: POI[]`。
 // 新增城市 → cities/<id>.ts + 在這裡 import + 掛進 CITY_MODULES。
@@ -46,6 +49,9 @@ const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [
   takayama,
   hiroshima,
   sendai,
+  yamagata,
+  hiraizumi,
+  aomori,
 ];
 
 export const CITIES: CityDef[] = CITY_MODULES.map((m) => m.city);

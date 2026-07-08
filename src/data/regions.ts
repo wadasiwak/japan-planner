@@ -64,7 +64,8 @@ export const REGION_META: RegionMeta[] = [
     id: "tohoku",
     name: "東北",
     emoji: "🌾",
-    blurb: "仙台牛舌、松島灣百島、藏王樹冰,人少景美的一線。",
-    cityIds: ["sendai"],
+    blurb: "仙台牛舌、松島百島、山寺藏王、平泉金色堂、青森奧入瀨,人少景美的大東北。",
+    // 旅行順序:仙台進 → 山形一日 → 平泉 → 一路北上青森(城際移動總量最小)
+    cityIds: ["sendai", "yamagata", "hiraizumi", "aomori"],
   },
 ];
