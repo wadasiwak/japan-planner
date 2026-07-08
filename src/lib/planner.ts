@@ -1,5 +1,6 @@
 import type { CityDef, POI, Pace } from "../data/types";
 import { regionById, poisByCity } from "../data";
+import { intercityLeg } from "../data/transit";
 import { haversineKm, transitMinutes, intercityMinutes, fmtDuration } from "./geo";
 import { mulberry32, gumbelScore } from "./rng";
 
@@ -278,14 +279,19 @@ export function buildPlan(input: PlanInput): Plan {
     // 換城市的第一天,行程從城際移動之後才開始(以各城第一個 hub 為錨)
     let intercity: PlanSlot | null = null;
     if (prevCity) {
-      const from = prevCity.hubs[0];
-      const to = city.hubs[0];
-      const min = intercityMinutes(haversineKm(from.center, to.center));
+      // 優先查真實交通表(含路線建議),沒有的配對才用距離公式估
+      const leg = intercityLeg(prevCity.id, city.id);
+      const min =
+        leg?.min ??
+        intercityMinutes(
+          haversineKm(prevCity.hubs[0].center, city.hubs[0].center),
+        );
+      const via = leg ? `・${leg.via}` : "";
       intercity = {
         kind: "transit",
         start: cfg.dayStart,
         end: cfg.dayStart + min,
-        note: `🚄 從${prevCity.name}移動到${city.name}(約 ${fmtDuration(min)},含拉行李)`,
+        note: `🚄 從${prevCity.name}移動到${city.name}(約 ${fmtDuration(min)},含拉行李)${via}`,
       };
     }
 

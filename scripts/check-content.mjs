@@ -112,6 +112,21 @@ for (const p of ALL_POIS) {
   if (p.closedDays && p.closedDays.some((d) => d < 0 || d > 6)) err(`${tag}: closedDays 需為 0–6`);
 }
 
+// --- 城際交通表:同地區內每對城市都要有真實時刻(避免 fallback 公式低估) ---
+if (!singleFile && mod.intercityLeg) {
+  for (const r of REGIONS) {
+    for (let i = 0; i < r.cities.length; i++) {
+      for (let j = i + 1; j < r.cities.length; j++) {
+        const [a, b] = [r.cities[i].id, r.cities[j].id];
+        const leg = mod.intercityLeg(a, b);
+        if (!leg) err(`transit: ${r.id} 缺 ${a} ↔ ${b} 的城際交通`);
+        else if (leg.min < 20 || leg.min > 420)
+          err(`transit: ${a}↔${b} 時間不合理 (${leg.min} 分)`);
+      }
+    }
+  }
+}
+
 // --- 每城市內容量統計 ---
 console.log("📊 內容統計");
 for (const r of REGIONS) {

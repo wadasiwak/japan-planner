@@ -84,3 +84,5 @@ export const poisByCity = (cityId: string): POI[] =>
   poisByCityIndex.get(cityId) ?? [];
 export const regionById = (id: string): RegionDef | undefined =>
   REGIONS.find((r) => r.id === id);
+
+export { INTERCITY, intercityLeg } from "./transit";
