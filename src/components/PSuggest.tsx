@@ -48,6 +48,8 @@ export function PSuggest() {
   const [hoursLeft, setHoursLeft] = useState(4);
   const [pace, setPace] = useState<Pace>("relaxed");
   const [rain, setRain] = useState(false);
+  // 前一天晚上規劃隔天:tomorrow = 明早 9:00 起算
+  const [when, setWhen] = useState<"now" | "tomorrow">("now");
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const visited = useAppStore((s) => s.visited);
@@ -58,22 +60,24 @@ export function PSuggest() {
 
   const { results, closedNow } = useMemo(() => {
     if (!cityId || !hubId) return { results: [], closedNow: 0 };
-    const now = new Date();
+    const base = new Date();
+    if (when === "tomorrow") base.setDate(base.getDate() + 1);
     const input: SuggestInput = {
       cityId,
       hubId,
-      nowMinutes: now.getHours() * 60 + now.getMinutes(),
+      nowMinutes:
+        when === "tomorrow" ? 9 * 60 : base.getHours() * 60 + base.getMinutes(),
       hoursLeft,
       pace,
-      weekday: now.getDay(),
-      month: now.getMonth() + 1,
+      weekday: base.getDay(),
+      month: base.getMonth() + 1,
       rain,
       visited: new Set(Object.keys(visited)),
       excludeIds: excluded,
       seed,
     };
     return { results: suggest(input), closedNow: closedNowCount(input) };
-  }, [cityId, hubId, hoursLeft, pace, rain, seed, excluded, visited]);
+  }, [cityId, hubId, hoursLeft, pace, rain, seed, excluded, visited, when]);
 
   const mapPoints = useMemo<MapPoint[]>(() => {
     const hub = hubId ? hubById(hubId) : undefined;
@@ -180,6 +184,23 @@ export function PSuggest() {
       {hubId && (
         <>
           <div className="row wrap">
+            <button
+              className={when === "now" ? "selected" : "ghost"}
+              onClick={() => setWhen("now")}
+            >
+              {t("when_now", lang)}
+            </button>
+            <button
+              className={when === "tomorrow" ? "selected" : "ghost"}
+              onClick={() => {
+                setWhen("tomorrow");
+                setHoursLeft((h) => Math.max(h, 8));
+              }}
+            >
+              {t("when_tomorrow", lang)}
+            </button>
+          </div>
+          <div className="row wrap">
             <span className="section-label">{t("want_hours", lang)}</span>
             <div className="row">
               <button onClick={() => setHoursLeft((h) => Math.max(1, h - 1))}>−</button>
@@ -207,7 +228,9 @@ export function PSuggest() {
               <Suspense fallback={<div className="map-box" />}>
                 <DayMap points={mapPoints} />
               </Suspense>
-              <p className="muted small">{t("next_up", lang)}</p>
+              <p className="muted small">
+                {t(when === "tomorrow" ? "next_up_tomorrow" : "next_up", lang)}
+              </p>
               {results.map((r) => (
                 <PoiCard
                   key={r.poi.id}
