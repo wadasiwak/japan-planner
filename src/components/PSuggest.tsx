@@ -183,15 +183,16 @@ export function PSuggest() {
 
       {hubId && (
         <>
-          <div className="row wrap">
+          <p className="section-label">{t("q_when", lang)}</p>
+          <div className="segmented">
             <button
-              className={when === "now" ? "selected" : "ghost"}
+              className={when === "now" ? "on" : ""}
               onClick={() => setWhen("now")}
             >
               {t("when_now", lang)}
             </button>
             <button
-              className={when === "tomorrow" ? "selected" : "ghost"}
+              className={when === "tomorrow" ? "on" : ""}
               onClick={() => {
                 setWhen("tomorrow");
                 setHoursLeft((h) => Math.max(h, 8));

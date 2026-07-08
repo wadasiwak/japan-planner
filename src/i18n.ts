@@ -232,6 +232,7 @@ const STRINGS = {
   hours_unit: { zh: "{0} 小時", en: "{0} h", ja: "{0} 時間" },
   march_mode: { zh: "🥾 行軍模式", en: "🥾 Power mode", ja: "🥾 弾丸モード" },
   rain_mode: { zh: "🌧️ 下雨了", en: "🌧️ It's raining", ja: "🌧️ 雨降ってきた" },
+  q_when: { zh: "什麼時候出發?", en: "When are you heading out?", ja: "いつ出発?" },
   when_now: { zh: "⚡ 現在", en: "⚡ Now", ja: "⚡ 今から" },
   when_tomorrow: { zh: "🌅 明天早上", en: "🌅 Tomorrow AM", ja: "🌅 明日の朝" },
   next_up: { zh: "等等可以去:", en: "Up next:", ja: "次はここ:" },
