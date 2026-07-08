@@ -1,6 +1,7 @@
 import type { POI, Pace } from "../data/types";
 import { poisByCity, hubById } from "../data";
 import { haversineKm, transitMinutes } from "./geo";
+import { latestEndMin } from "./hours";
 import { mulberry32, gumbelScore } from "./rng";
 
 export interface SuggestInput {
@@ -52,9 +53,11 @@ function candidates(input: SuggestInput, ignoreExclude: boolean): POI[] {
     // 硬性不合時段:早上限定的點傍晚後不推、晚上限定的點早上不推
     if (p.bestTime === "morning" && slot === "evening") return false;
     if (p.bestTime === "evening" && slot === "morning") return false;
-    // 剩餘時間要塞得下移動+停留
+    // 剩餘時間要塞得下移動+停留,而且到了之後不能已打烊(美術館晚上不推)
     const t = transitMinutes(haversineKm(hub.center, p.center));
-    return t + p.stayMin[input.pace] <= budgetMin;
+    const stay = p.stayMin[input.pace];
+    if (input.nowMinutes + t + stay > latestEndMin(p)) return false;
+    return t + stay <= budgetMin;
   });
 }
 

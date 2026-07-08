@@ -77,6 +77,10 @@ button:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
+button.excluded {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
 button:disabled {
   opacity: 0.4;
   cursor: not-allowed;

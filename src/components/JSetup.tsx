@@ -2,6 +2,7 @@ import { useState } from "react";
 import { REGIONS, regionById, poisByCity } from "../data";
 import type { Pace, Category } from "../data/types";
 import { buildPlan, type Plan } from "../lib/planner";
+import { useAppStore } from "../store/appStore";
 
 const PREF_OPTIONS: { cat: Category; label: string }[] = [
   { cat: "temple", label: "⛩️ 神社寺院" },
@@ -29,10 +30,39 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
   const [pace, setPace] = useState<Pace>("relaxed");
   const [startDate, setStartDate] = useState("");
   const [prefs, setPrefs] = useState<Category[]>([]);
-  const cap = regionId ? regionCapacity(regionId) : 10;
+  const [excluded, setExcluded] = useState<Set<string>>(new Set());
+  const [skipVisited, setSkipVisited] = useState(false);
+  const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
+  const region = regionId ? regionById(regionId) : undefined;
+  // 容量隨排除的城市縮減
+  const cap = region
+    ? Math.min(
+        10,
+        region.cities
+          .filter((c) => !excluded.has(c.id))
+          .reduce((s, c) => s + c.maxDays, 0),
+      )
+    : 10;
 
   const togglePref = (cat: Category) =>
     setPrefs((ps) => (ps.includes(cat) ? ps.filter((c) => c !== cat) : [...ps, cat]));
+
+  const toggleCity = (id: string) =>
+    setExcluded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else if (region && region.cities.length - next.size > 1) next.add(id); // 至少留一城
+      const newCap = region
+        ? Math.min(
+            10,
+            region.cities
+              .filter((c) => !next.has(c.id))
+              .reduce((s, c) => s + c.maxDays, 0),
+          )
+        : 10;
+      setDays((d) => Math.min(d, newCap));
+      return next;
+    });
 
   const go = () => {
     if (!regionId) return;
@@ -44,6 +74,8 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
         seed: Math.floor(Math.random() * 1e9),
         startDate: startDate || undefined,
         prefs: prefs.length ? prefs : undefined,
+        excludeCities: excluded.size ? [...excluded] : undefined,
+        skipVisited: skipVisited || undefined,
       }),
     );
   };
@@ -61,6 +93,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
               onClick={() => {
                 setRegionId(r.id);
                 setDays((d) => Math.min(d, regionCapacity(r.id)));
+                setExcluded(new Set());
               }}
             >
               {r.emoji} {r.name}
@@ -69,6 +102,33 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
           );
         })}
       </div>
+
+      {region && region.cities.length > 1 && (
+        <>
+          <p className="section-label">這些城市都去?(去過的可以點掉)</p>
+          <div className="choice-grid">
+            {region.cities.map((c) => (
+              <button
+                key={c.id}
+                className={excluded.has(c.id) ? "excluded" : "selected"}
+                style={{ minWidth: 0, flex: "0 1 auto" }}
+                onClick={() => toggleCity(c.id)}
+              >
+                {excluded.has(c.id) ? "✕ " : ""}
+                {c.emoji} {c.name}
+              </button>
+            ))}
+          </div>
+          {visitedCount > 0 && (
+            <button
+              className={skipVisited ? "selected" : "ghost"}
+              onClick={() => setSkipVisited((v) => !v)}
+            >
+              {skipVisited ? "✓" : ""} ⛔ 跳過我打過卡的 {visitedCount} 個點
+            </button>
+          )}
+        </>
+      )}
 
       <p className="section-label">玩幾天?</p>
       <div className="stepper">

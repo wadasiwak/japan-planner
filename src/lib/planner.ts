@@ -2,7 +2,9 @@ import type { CityDef, POI, Pace, Category } from "../data/types";
 import { regionById, poisByCity, poiById, cityById } from "../data";
 import { intercityLeg } from "../data/transit";
 import { haversineKm, transitMinutes, intercityMinutes, fmtDuration } from "./geo";
+import { latestEndMin } from "./hours";
 import { mulberry32, gumbelScore } from "./rng";
+import { useAppStore } from "../store/appStore";
 
 export interface PlanInput {
   regionId: string;
@@ -13,6 +15,10 @@ export interface PlanInput {
   startDate?: string;
   /** 興趣偏好:這些類別加權多排。 */
   prefs?: Category[];
+  /** 這些城市不去(去過了/沒興趣),天數分給其他城市。 */
+  excludeCities?: string[];
+  /** 跳過已打卡去過的點(讀本機足跡)。 */
+  skipVisited?: boolean;
 }
 
 export interface PlanSlot {
@@ -212,7 +218,14 @@ function planCityDay(
       if (closed(p)) continue;
       if (mustFit) {
         const stay = p.stayMin[pace];
-        if (cursor + stay > cfg.dayEnd || activity + stay > budget + 45) continue;
+        // 打烊時間:美術館別排到晚上八點;步行過去的時間也要算進去
+        const walk =
+          lastPoi && lastPoi.area === p.area
+            ? transitMinutes(haversineKm(lastPoi.center, p.center))
+            : 0;
+        const end = Math.min(cfg.dayEnd, latestEndMin(p));
+        if (cursor + walk + stay > end || activity + stay > budget + 45)
+          continue;
       }
       const s = score(p);
       if (s < bs) {
@@ -288,10 +301,12 @@ function planCityDay(
       const t = lastPoi
         ? transitMinutes(haversineKm(lastPoi.center, open[0].center))
         : 0;
-      const minStay = Math.min(...open.map((p) => p.stayMin[pace]));
-      return (
-        cursor + t + minStay <= cfg.dayEnd && activity + minStay <= budget + 45
-      );
+      // 至少要有一個點在「移動過去後、打烊/收工前」塞得下
+      return open.some((p) => {
+        const stay = p.stayMin[pace];
+        const end = Math.min(cfg.dayEnd, latestEndMin(p));
+        return cursor + t + stay <= end && activity + stay <= budget + 45;
+      });
     });
     if (!group) break;
     groups.splice(groups.indexOf(group), 1);
@@ -376,6 +391,14 @@ function planCityDay(
 const monthOf = (startDate?: string): number | undefined =>
   startDate ? new Date(`${startDate}T00:00:00`).getMonth() + 1 : undefined;
 
+/** 某城市可用的 POI:選項開啟時濾掉本機已打卡去過的。 */
+function cityPool(cityId: string, input: PlanInput): POI[] {
+  const pois = poisByCity(cityId);
+  if (!input.skipVisited) return pois;
+  const visited = useAppStore.getState().visited;
+  return pois.filter((p) => !visited[p.id]);
+}
+
 /** 換城市第一天開頭的城際移動時段。 */
 function intercitySlot(prev: CityDef, next: CityDef, pace: Pace): PlanSlot {
   const cfg = PACE_CFG[pace];
@@ -397,7 +420,14 @@ export function buildPlan(input: PlanInput): Plan {
   const region = regionById(input.regionId);
   if (!region) return { input, days: [] };
   const rnd = mulberry32(input.seed);
-  const alloc = allocateDays(region.cities, input.days, input.pace);
+  const cities = region.cities.filter(
+    (c) => !input.excludeCities?.includes(c.id),
+  );
+  const alloc = allocateDays(
+    cities.length ? cities : region.cities,
+    input.days,
+    input.pace,
+  );
   const month = monthOf(input.startDate);
   const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
 
@@ -414,7 +444,7 @@ export function buildPlan(input: PlanInput): Plan {
 
     // 這城市的 POI 一次建組,跨這幾天共用消耗,不會重複排
     const ctx: Ctx = { rnd, month, prefs };
-    const groups = buildAreaGroups(poisByCity(city.id), ctx);
+    const groups = buildAreaGroups(cityPool(city.id, input), ctx);
     for (let d = 0; d < n; d++) {
       // 公平分配:剩餘內容 ÷ 剩餘天數,內容不夠塞滿時每天分得平均
       const remainingStay = groups.reduce(
@@ -497,12 +527,14 @@ export function replaceSlot(
       : slot.kind === "cafe"
         ? p.category === "cafe"
         : p.category !== "food" && p.category !== "cafe";
-  const candidates = poisByCity(day.cityId).filter(
+  const candidates = cityPool(day.cityId, plan.input).filter(
     (p) =>
       !used.has(p.id) &&
       wantKind(p) &&
       seasonOk(p, month) &&
-      !(day.weekday != null && p.closedDays?.includes(day.weekday)),
+      !(day.weekday != null && p.closedDays?.includes(day.weekday)) &&
+      // 替補也不能是「這時段已打烊」的點
+      slot.start + p.stayMin[plan.input.pace] <= latestEndMin(p),
   );
   if (!candidates.length) return null;
   // 替補要讓「前一站→替補→後一站」繞路最少,而不是單純離舊點近 ——
@@ -572,7 +604,7 @@ export function rerollUnlocked(
     const city = cityById(cityId)!;
     const ctx: Ctx = { rnd, month, prefs };
     const groups = buildAreaGroups(
-      poisByCity(cityId).filter((p) => !usedInLocked.has(p.id)),
+      cityPool(cityId, input).filter((p) => !usedInLocked.has(p.id)),
       ctx,
     );
     const intercity =
