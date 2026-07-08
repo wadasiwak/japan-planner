@@ -7,6 +7,7 @@ const CATEGORY_LABEL: Record<POI["category"], string> = {
   nature: "🌿 自然",
   museum: "🖼️ 展館",
   food: "🍜 美食",
+  cafe: "☕ 咖啡甜點",
   shopping: "🛍️ 購物",
   nightlife: "🌃 夜生活",
   experience: "🎡 體驗",

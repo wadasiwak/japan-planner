@@ -52,7 +52,7 @@ const inBox = (c, b) =>
   c.lat >= b.minLat && c.lat <= b.maxLat && c.lng >= b.minLng && c.lng <= b.maxLng;
 
 const CATEGORIES = new Set([
-  "sight", "temple", "nature", "museum", "food", "shopping", "nightlife", "experience",
+  "sight", "temple", "nature", "museum", "food", "cafe", "shopping", "nightlife", "experience",
 ]);
 const BEST_TIMES = new Set(["morning", "afternoon", "evening", "any"]);
 

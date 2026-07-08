@@ -13,6 +13,7 @@ export type Category =
   | "nature" // 公園/山/海
   | "museum" // 博物館/美術館/水族館
   | "food" // 市場/名店/美食街 — 規劃器拿來當午晚餐槽
+  | "cafe" // 咖啡廳/喫茶店/甜點 — 輕鬆模式下午歇腳槽
   | "shopping" // 商店街/百貨/藥妝
   | "nightlife" // 夜景/居酒屋街/夜間限定
   | "experience"; // 溫泉/體驗/主題樂園

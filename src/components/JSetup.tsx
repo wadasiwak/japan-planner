@@ -55,7 +55,7 @@ export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
           onClick={() => setPace("relaxed")}
         >
           🍵 輕鬆
-          <span className="muted small"> · 一天約 6 小時,留白發呆</span>
+          <span className="muted small"> · 一天約 6 小時,含下午咖啡歇腳</span>
         </button>
         <button
           className={pace === "march" ? "selected" : ""}

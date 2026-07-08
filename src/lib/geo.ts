@@ -19,3 +19,20 @@ export function transitMinutes(km: number): number {
   // 電車:進出站緩衝 15 分 + 平均時速 30km
   return Math.round(15 + km * 2);
 }
+
+/**
+ * 城際移動時間(分),直線距離估算,含退房拉行李/進出站緩衝:
+ * 近郊電車 / 在來線特急 / 新幹線三段。
+ */
+export function intercityMinutes(km: number): number {
+  if (km <= 40) return Math.round(15 + km * 1.2);
+  if (km <= 150) return Math.round(30 + km * 0.9);
+  return Math.round(60 + km * 0.35);
+}
+
+export function fmtDuration(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = Math.round(min % 60);
+  if (h === 0) return `${m} 分`;
+  return m === 0 ? `${h} 小時` : `${h} 小時 ${m} 分`;
+}

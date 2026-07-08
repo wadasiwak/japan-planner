@@ -62,7 +62,8 @@ export default function App() {
             </span>
           </button>
           <p className="muted small" style={{ textAlign: "center" }}>
-            目前收錄 {REGIONS.length} 個地區、{ALL_POIS.length} 個景點,持續擴充中
+            目前收錄 {REGIONS.length} 個地區、{ALL_POIS.length} 個景點
+            (含 {ALL_POIS.filter((p) => p.category === "food" || p.category === "cafe").length} 家餐廳咖啡廳)
           </p>
         </div>
       )}

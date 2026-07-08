@@ -61,9 +61,12 @@ export function JResult({
       for (const s of d.slots) {
         const poi = s.poiId ? poiById(s.poiId) : undefined;
         if (poi) {
-          lines.push(`${fmtTime(s.start)} ${poi.name}(${poi.nameJa})${s.kind === "meal" ? " 🍽️" : ""}`);
+          const suffix = s.kind === "meal" ? " 🍽️" : s.kind === "cafe" ? " ☕" : "";
+          lines.push(`${fmtTime(s.start)} ${poi.name}(${poi.nameJa})${suffix}`);
         } else if (s.kind === "meal") {
           lines.push(`${fmtTime(s.start)} 🍽️ ${s.note}`);
+        } else if (s.kind === "transit" && s.note?.startsWith("🚄")) {
+          lines.push(`${fmtTime(s.start)} ${s.note}`);
         }
       }
     }
@@ -151,7 +154,13 @@ export function JResult({
               <div className="body">
                 <PoiCard
                   poi={poi}
-                  extraTags={slot.kind === "meal" ? ["🍽️ 用餐"] : []}
+                  extraTags={
+                    slot.kind === "meal"
+                      ? ["🍽️ 用餐"]
+                      : slot.kind === "cafe"
+                        ? ["☕ 歇腳"]
+                        : []
+                  }
                 />
               </div>
             </div>

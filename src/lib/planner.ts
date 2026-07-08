@@ -1,6 +1,6 @@
 import type { CityDef, POI, Pace } from "../data/types";
 import { regionById, poisByCity } from "../data";
-import { haversineKm, transitMinutes } from "./geo";
+import { haversineKm, transitMinutes, intercityMinutes, fmtDuration } from "./geo";
 import { mulberry32, gumbelScore } from "./rng";
 
 export interface PlanInput {
@@ -13,7 +13,7 @@ export interface PlanInput {
 }
 
 export interface PlanSlot {
-  kind: "poi" | "meal" | "transit";
+  kind: "poi" | "meal" | "cafe" | "transit";
   /** minutes from 00:00 */
   start: number;
   end: number;
@@ -102,8 +102,9 @@ export function allocateDays(
 
 interface AreaGroup {
   area: string;
-  main: POI[]; // 非 food,照排程順序
+  main: POI[]; // 非 food/cafe,照排程順序
   food: POI[];
+  cafe: POI[];
   score: number;
 }
 
@@ -125,8 +126,9 @@ function buildAreaGroups(pois: POI[], rnd: () => number): AreaGroup[] {
     const sorted = [...list].sort((a, b) => sortKey(a) - sortKey(b));
     groups.push({
       area,
-      main: sorted.filter((p) => p.category !== "food"),
+      main: sorted.filter((p) => p.category !== "food" && p.category !== "cafe"),
       food: sorted.filter((p) => p.category === "food"),
+      cafe: sorted.filter((p) => p.category === "cafe"),
       score: gumbelScore(base, rnd),
     });
   }
@@ -143,6 +145,7 @@ function planCityDay(
   groups: AreaGroup[],
   budgetCap: number,
   weekday?: number,
+  startCursor?: number,
 ): { areas: string[]; slots: PlanSlot[] } {
   const cfg = PACE_CFG[pace];
   const budget = Math.min(cfg.budget, budgetCap);
@@ -155,10 +158,11 @@ function planCityDay(
   };
   const slots: PlanSlot[] = [];
   const areas: string[] = [];
-  let cursor = cfg.dayStart;
+  let cursor = Math.max(cfg.dayStart, startCursor ?? 0);
   let activity = 0;
   let lunchDone = false;
   let dinnerDone = false;
+  let cafeDone = pace === "march"; // 行軍模式沒空喝咖啡
   let lastPoi: POI | null = null;
 
   const mealLen = pace === "relaxed" ? 60 : 45;
@@ -182,6 +186,18 @@ function planCityDay(
     if (food) lastPoi = food;
     if (wantLunch) lunchDone = true;
     else dinnerDone = true;
+  };
+
+  // 輕鬆模式:下午 14:00–16:30 之間找當前分區的咖啡廳歇腳一次
+  const tryCafe = (group: AreaGroup) => {
+    if (cafeDone || cursor < 14 * 60 || cursor > 16.5 * 60) return;
+    const cafe = takeOpen(group.cafe);
+    if (!cafe) return;
+    const len = cafe.stayMin[pace];
+    slots.push({ kind: "cafe", start: cursor, end: cursor + len, poiId: cafe.id });
+    cursor += len;
+    lastPoi = cafe;
+    cafeDone = true;
   };
 
   while (areas.length < cfg.maxAreas && cursor < cfg.dayEnd && activity < budget) {
@@ -211,6 +227,7 @@ function planCityDay(
 
     while (cursor < cfg.dayEnd && activity < budget) {
       tryMeal(group);
+      tryCafe(group);
       const poi = takeOpen(group.main);
       if (!poi) break;
       const stay = poi.stayMin[pace];
@@ -253,9 +270,25 @@ export function buildPlan(input: PlanInput): Plan {
     ? new Date(`${input.startDate}T00:00:00`).getDay()
     : undefined;
 
+  const cfg = PACE_CFG[input.pace];
   const days: PlanDay[] = [];
   let dayNo = 1;
+  let prevCity: CityDef | null = null;
   for (const { city, days: n } of alloc) {
+    // 換城市的第一天,行程從城際移動之後才開始(以各城第一個 hub 為錨)
+    let intercity: PlanSlot | null = null;
+    if (prevCity) {
+      const from = prevCity.hubs[0];
+      const to = city.hubs[0];
+      const min = intercityMinutes(haversineKm(from.center, to.center));
+      intercity = {
+        kind: "transit",
+        start: cfg.dayStart,
+        end: cfg.dayStart + min,
+        note: `🚄 從${prevCity.name}移動到${city.name}(約 ${fmtDuration(min)},含拉行李)`,
+      };
+    }
+
     // 這城市的 POI 一次建組,跨這幾天共用消耗,不會重複排
     const groups = buildAreaGroups(poisByCity(city.id), rnd);
     for (let d = 0; d < n; d++) {
@@ -267,9 +300,18 @@ export function buildPlan(input: PlanInput): Plan {
       const fairBudget = Math.ceil(remainingStay / (n - d));
       const weekday =
         startWeekday != null ? (startWeekday + dayNo - 1) % 7 : undefined;
-      const { areas, slots } = planCityDay(input.pace, groups, fairBudget, weekday);
+      const startCursor = d === 0 && intercity ? intercity.end : undefined;
+      const { areas, slots } = planCityDay(
+        input.pace,
+        groups,
+        fairBudget,
+        weekday,
+        startCursor,
+      );
+      if (d === 0 && intercity) slots.unshift(intercity);
       days.push({ day: dayNo++, cityId: city.id, weekday, areas, slots });
     }
+    prevCity = city;
   }
   return { input, days };
 }
