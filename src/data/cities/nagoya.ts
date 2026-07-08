@@ -264,7 +264,7 @@ export const pois: POI[] = [
     nameJa: "山本屋総本家 本家",
     city: "nagoya",
     area: "榮",
-    center: { lat: 35.1655, lng: 136.9058 },
+    center: { lat: 35.1663, lng: 136.9035 },
     category: "food",
     blurb: "味噌煮込烏龍麵的百年老舖,豆味噌湯頭在土鍋裡滾著上桌,到最後一口都燙。偏硬的麵芯是傳統,加名古屋交趾雞更豪華。",
     stayMin: { relaxed: 60, march: 40 },

@@ -1,4 +1,5 @@
 import type { POI } from "../data/types";
+import { cityById } from "../data";
 import { useAppStore } from "../store/appStore";
 
 const CATEGORY_LABEL: Record<POI["category"], string> = {
@@ -44,7 +45,12 @@ export function PoiCard({
         ))}
         <a
           className="tag maplink"
-          href={`https://www.google.com/maps/search/?api=1&query=${poi.center.lat},${poi.center.lng}`}
+          // 用日文店名+城市搜尋,pin 會吸到店家本體(還帶營業時間評論);
+          // 純座標差一點就會釘到隔壁棟
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            // 複合城市名(別府・由布院)取第一段就好,多餘詞反而干擾搜尋
+            `${poi.nameJa} ${(cityById(poi.city)?.nameJa ?? "").split("・")[0]}`.trim(),
+          )}`}
           target="_blank"
           rel="noopener noreferrer"
         >
