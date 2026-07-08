@@ -54,11 +54,20 @@ export const REGION_META: RegionMeta[] = [
     cityIds: ["nagoya", "kanazawa", "takayama"],
   },
   {
-    id: "hiroshima",
-    name: "廣島・宮島",
+    id: "chugoku",
+    name: "中國地方",
     emoji: "🦌",
-    blurb: "原爆圓頂的沉重與宮島海上鳥居的絕景,再配一份廣島燒。",
-    cityIds: ["hiroshima"],
+    blurb: "廣島宮島、倉敷美觀、出雲結緣、鳥取砂丘,山陽山陰一次走。",
+    // 旅行順序:廣島→岡山(山陽)→鳥取→出雲(山陰往西)
+    cityIds: ["hiroshima", "okayama", "tottori", "izumo"],
+  },
+  {
+    id: "shikoku",
+    name: "四國",
+    emoji: "🍜",
+    blurb: "高松烏龍麵配直島藝術、鳴門漩渦、高知炙鰹魚、道後溫泉泡湯。",
+    // 旅行順序:高松進(直飛)→德島→高知→松山出
+    cityIds: ["takamatsu", "tokushima", "kochi", "matsuyama"],
   },
   {
     id: "tohoku",

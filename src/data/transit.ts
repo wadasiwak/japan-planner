@@ -36,6 +36,20 @@ export const INTERCITY: IntercityLeg[] = [
   { cities: ["nagasaki", "beppu"], min: 220, via: "經博多轉特急,建議一早出發" },
   // ---- 沖繩 ----
   { cities: ["naha", "okinawa-north"], min: 100, via: "沖繩自動車道自駕(或高速巴士)" },
+  // ---- 中國地方 ----
+  { cities: ["hiroshima", "okayama"], min: 75, via: "山陽新幹線" },
+  { cities: ["hiroshima", "tottori"], min: 290, via: "經岡山轉特急,建議一早出發" },
+  { cities: ["hiroshima", "izumo"], min: 220, via: "高速巴士みこと號直達,建議一早出發" },
+  { cities: ["okayama", "tottori"], min: 140, via: "特急スーパーいなば" },
+  { cities: ["okayama", "izumo"], min: 210, via: "特急やくも,建議一早出發" },
+  { cities: ["tottori", "izumo"], min: 150, via: "山陰本線特急(經松江)" },
+  // ---- 四國 ----
+  { cities: ["takamatsu", "tokushima"], min: 100, via: "JR特急うずしお" },
+  { cities: ["takamatsu", "kochi"], min: 160, via: "JR特急しまんと" },
+  { cities: ["takamatsu", "matsuyama"], min: 175, via: "JR特急いしづち" },
+  { cities: ["tokushima", "kochi"], min: 200, via: "特急經阿波池田轉乘,建議一早出發" },
+  { cities: ["tokushima", "matsuyama"], min: 230, via: "高速巴士,建議一早出發" },
+  { cities: ["kochi", "matsuyama"], min: 180, via: "高速巴士なんごく號" },
   // ---- 東北 ----
   { cities: ["sendai", "yamagata"], min: 105, via: "JR仙山線快速" },
   { cities: ["sendai", "hiraizumi"], min: 90, via: "東北新幹線(一ノ関轉東北本線)" },
