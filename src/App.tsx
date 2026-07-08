@@ -58,6 +58,12 @@ export default function App() {
     };
   }, [lang, bumpDict]);
 
+  // 切換畫面回到頂端(設定頁捲到底按「排行程」,結果頁要從 Day 1 開始讀);
+  // 只看 screen.t:重骰/換一個仍停在原位
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen.t]);
+
   const ready = dictLang === lang;
 
   return (
