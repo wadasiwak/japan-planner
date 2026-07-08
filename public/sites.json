@@ -1,0 +1,47 @@
+{
+  "label": "🧰 作者的其他作品",
+  "sites": [
+    {
+      "id": "japan-planner",
+      "emoji": "🗾",
+      "name": "日本旅伴JP",
+      "desc": "J人排行程、P人隨走的日本自由行規劃",
+      "url": "https://wadasiwak.github.io/japan-planner/"
+    },
+    {
+      "id": "world-quest",
+      "emoji": "🗺️",
+      "name": "世界任務",
+      "desc": "答題收集世界 197 國",
+      "url": "https://wadasiwak.github.io/world-quest/"
+    },
+    {
+      "id": "recommenders",
+      "emoji": "🎬",
+      "name": "評分推薦",
+      "desc": "動畫/電影/影集評分與個人化推薦",
+      "url": "https://wadasiwak.github.io/recommenders/"
+    },
+    {
+      "id": "qianshi",
+      "emoji": "🎋",
+      "name": "解籤",
+      "desc": "天后宮/行天宮/明治神宮籤詩求解",
+      "url": "https://wadasiwak.github.io/qianshi/"
+    },
+    {
+      "id": "ziwei",
+      "emoji": "🔮",
+      "name": "紫微斗數",
+      "desc": "線上排盤與主星宮位解讀",
+      "url": "https://wadasiwak.github.io/ziwei/"
+    },
+    {
+      "id": "acupoint-map",
+      "emoji": "💆",
+      "name": "穴位急救包",
+      "desc": "36 種症狀對應穴位圖解",
+      "url": "https://wadasiwak.github.io/acupoint-map/"
+    }
+  ]
+}
