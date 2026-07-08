@@ -325,7 +325,22 @@ function planCityDay(
         );
       });
     });
-    if (!group) break;
+    if (!group) {
+      // 沒有分區可進場,可能只是大家都還沒開門(下午限定的美術館、
+      // 傍晚的溫泉)——快轉到最早的開門時間再試,別直接放棄整天
+      let nextOpen = Infinity;
+      for (const g of groups)
+        for (const p of g.main) {
+          if (closed(p)) continue;
+          const e = earliestStartMin(p);
+          if (e > cursor) nextOpen = Math.min(nextOpen, e);
+        }
+      if (nextOpen !== Infinity && nextOpen < cfg.dayEnd && activity < budget) {
+        cursor = nextOpen;
+        continue;
+      }
+      break;
+    }
     groups.splice(groups.indexOf(group), 1);
     picked.push(group);
     areas.push(group.area);
