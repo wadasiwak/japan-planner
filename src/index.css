@@ -7,6 +7,11 @@
   --muted: #98a2b3;
   --accent: #e8590c; /* 鳥居橘 */
   --accent-soft: #e8590c22;
+  /* J/P 雙色識別:J=計畫藍、P=隨走橘 */
+  --j: #6aa8ff;
+  --j-soft: #6aa8ff1f;
+  --p: #ff8e3c;
+  --p-soft: #ff8e3c1f;
   --gold: #e8b64c;
   --green: #4cc38a;
   --blue: #6aa8ff;
@@ -109,6 +114,79 @@ button:disabled {
   gap: 14px;
 }
 
+/* 首頁 hero */
+.hero {
+  text-align: center;
+  padding: 18px 0 6px;
+}
+.brand {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+.brand-jp {
+  font-size: 2.4rem;
+  font-style: italic;
+  margin-left: 4px;
+  letter-spacing: -0.03em;
+}
+.brand-jp .jj {
+  color: var(--j);
+  text-shadow: 0 0 18px #6aa8ff88;
+}
+.brand-jp .pp {
+  color: var(--p);
+  text-shadow: 0 0 18px #ff8e3c88;
+}
+.brand-flag {
+  font-size: 1.4rem;
+  margin-left: 6px;
+  vertical-align: 6px;
+}
+.slogan {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0 0;
+  flex-wrap: wrap;
+}
+.chip-j,
+.chip-p {
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 4px 14px;
+}
+.chip-j {
+  color: var(--j);
+  background: var(--j-soft);
+  border: 1px solid #6aa8ff55;
+}
+.chip-p {
+  color: var(--p);
+  background: var(--p-soft);
+  border: 1px solid #ff8e3c55;
+}
+
+.stats-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.stat-chip {
+  font-size: 0.8rem;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 3px 10px;
+  transform: rotate(-0.5deg);
+}
+.stat-chip:nth-child(2) {
+  transform: rotate(0.6deg);
+}
+
 /* 首頁大卡 */
 .mode-card {
   text-align: left;
@@ -117,6 +195,32 @@ button:disabled {
   flex-direction: column;
   gap: 4px;
   transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.mode-card::after {
+  position: absolute;
+  right: 6px;
+  bottom: -18px;
+  font-size: 4.6rem;
+  font-weight: 900;
+  font-style: italic;
+  opacity: 0.14;
+  pointer-events: none;
+}
+.mode-card.mode-j::after {
+  content: "J";
+  color: var(--j);
+}
+.mode-card.mode-p::after {
+  content: "P";
+  color: var(--p);
+}
+.mode-card.mode-j:hover {
+  border-color: var(--j);
+}
+.mode-card.mode-p:hover {
+  border-color: var(--p);
 }
 .mode-card:hover {
   transform: translateY(-1px);
@@ -212,10 +316,46 @@ button:disabled {
   padding-top: 14px;
   border-right: 2px solid var(--border);
   padding-right: 10px;
+  position: relative;
+}
+.slot .time::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--bg);
+}
+.slot-poi .time::after {
+  background: var(--j);
+}
+.slot-meal .time::after {
+  background: var(--gold);
+}
+.slot-cafe .time::after {
+  background: #c98a4b;
 }
 .slot.transit .time,
 .slot.meal-free .time {
   border-right-color: transparent;
+}
+.slot.transit .time::after,
+.slot.meal-free .time::after {
+  display: none;
+}
+
+/* 型態左框色:景點藍/用餐金/歇腳暖棕 */
+.slot-poi .poi-card {
+  border-left: 3px solid var(--j);
+}
+.slot-meal .poi-card {
+  border-left: 3px solid var(--gold);
+}
+.slot-cafe .poi-card {
+  border-left: 3px solid #c98a4b;
 }
 .slot .body {
   flex: 1;

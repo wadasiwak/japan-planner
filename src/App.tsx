@@ -16,7 +16,7 @@ type Screen =
   | { t: "codex" };
 
 const TITLES: Record<Screen["t"], string> = {
-  home: "日本旅圖 🗾",
+  home: "日本旅伴JP 🗾",
   "j-setup": "🗓️ J人規劃",
   "j-result": "🗓️ 你的行程",
   "p-suggest": "🎲 P人隨走",
@@ -34,27 +34,44 @@ export default function App() {
 
   return (
     <>
-      <header className="app-header">
-        {screen.t !== "home" && (
+      {screen.t !== "home" && (
+        <header className="app-header">
           <button className="back-btn ghost" onClick={() => setScreen({ t: "home" })}>
             ←
           </button>
-        )}
-        <h1>{TITLES[screen.t]}</h1>
-      </header>
+          <h1>{TITLES[screen.t]}</h1>
+        </header>
+      )}
 
       {screen.t === "home" && (
         <div className="screen">
-          <p className="muted">
-            日本自由行的兩種打開方式 —— 看你今天是 J 人還是 P 人。
-          </p>
-          <button className="mode-card" onClick={() => setScreen({ t: "j-setup" })}>
+          <div className="hero">
+            <h1 className="brand">
+              日本旅伴
+              <span className="brand-jp">
+                <span className="jj">J</span>
+                <span className="pp">P</span>
+              </span>
+              <span className="brand-flag">🗾</span>
+            </h1>
+            <p className="slogan">
+              <span className="chip-j">J 人排好排滿</span>
+              <span className="chip-p">P 人說走就走</span>
+            </p>
+          </div>
+          <button
+            className="mode-card mode-j"
+            onClick={() => setScreen({ t: "j-setup" })}
+          >
             <span className="mode-title">🗓️ J人規劃</span>
             <span className="mode-desc">
               選地區、天數、節奏,一鍵排出逐日行程。出發前就把每天安排得明明白白。
             </span>
           </button>
-          <button className="mode-card" onClick={() => setScreen({ t: "p-suggest" })}>
+          <button
+            className="mode-card mode-p"
+            onClick={() => setScreen({ t: "p-suggest" })}
+          >
             <span className="mode-title">🎲 P人隨走</span>
             <span className="mode-desc">
               「每天想明天去哪好累」—— 告訴我你現在在哪,馬上給你等等可以去的地方。
@@ -66,10 +83,14 @@ export default function App() {
               存好的行程 {planCount} 份 · 打卡足跡 {visitedCount} 處
             </span>
           </button>
-          <p className="muted small" style={{ textAlign: "center" }}>
-            目前收錄 {REGIONS.length} 個地區、{ALL_POIS.length} 個景點
-            (含 {ALL_POIS.filter((p) => p.category === "food" || p.category === "cafe").length} 家餐廳咖啡廳)
-          </p>
+          <div className="stats-row">
+            <span className="stat-chip">{REGIONS.length} 大地區</span>
+            <span className="stat-chip">{ALL_POIS.length} 個景點</span>
+            <span className="stat-chip">
+              {ALL_POIS.filter((p) => p.category === "food" || p.category === "cafe").length}{" "}
+              家餐廳咖啡廳
+            </span>
+          </div>
         </div>
       )}
 

@@ -100,7 +100,7 @@ export function JResult({
 
   // 全程行程轉純文字,貼 LINE 給旅伴用
   const copyText = async () => {
-    const lines: string[] = [`【${title}】日本旅圖 🗾`];
+    const lines: string[] = [`【${title}】日本旅伴JP 🗾`];
     for (const d of plan.days) {
       const wd = d.weekday != null ? `(${WEEKDAY_CHAR[d.weekday]})` : "";
       lines.push("", `Day ${d.day}${wd} ${cityById(d.cityId)?.name} — ${d.areas.join("、")}`);
@@ -233,7 +233,7 @@ export function JResult({
           }
           if (!poi) return null;
           return (
-            <div key={i} className="slot">
+            <div key={i} className={`slot slot-${slot.kind}`}>
               <span className="time">
                 {fmtTime(slot.start)}
                 <br />| {fmtTime(slot.end)}

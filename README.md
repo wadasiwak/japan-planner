@@ -1,4 +1,4 @@
-# 日本旅圖 🗾 japan-planner
+# 日本旅伴JP 🗾 japan-planner
 
 日本自由行的兩種打開方式 —— 看你今天是 J 人還是 P 人。
 
