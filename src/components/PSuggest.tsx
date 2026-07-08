@@ -1,7 +1,12 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { REGIONS, cityById, hubById } from "../data";
 import type { Pace } from "../data/types";
-import { suggest, type SuggestInput, type ReasonInfo } from "../lib/suggest";
+import {
+  suggest,
+  closedNowCount,
+  type SuggestInput,
+  type ReasonInfo,
+} from "../lib/suggest";
 import { useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
@@ -51,8 +56,8 @@ export function PSuggest() {
 
   const city = cityId ? cityById(cityId) : undefined;
 
-  const results = useMemo(() => {
-    if (!cityId || !hubId) return [];
+  const { results, closedNow } = useMemo(() => {
+    if (!cityId || !hubId) return { results: [], closedNow: 0 };
     const now = new Date();
     const input: SuggestInput = {
       cityId,
@@ -67,7 +72,7 @@ export function PSuggest() {
       excludeIds: excluded,
       seed,
     };
-    return suggest(input);
+    return { results: suggest(input), closedNow: closedNowCount(input) };
   }, [cityId, hubId, hoursLeft, pace, rain, seed, excluded, visited]);
 
   const mapPoints = useMemo<MapPoint[]>(() => {
@@ -212,6 +217,11 @@ export function PSuggest() {
                 />
               ))}
               <button onClick={nextBatch}>{t("next_batch", lang)}</button>
+              {closedNow > 0 && (
+                <p className="muted small" style={{ textAlign: "center" }}>
+                  {t("p_closed_hint", lang, closedNow)}
+                </p>
+              )}
             </>
           )}
         </>

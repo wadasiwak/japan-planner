@@ -234,6 +234,11 @@ const STRINGS = {
   rain_mode: { zh: "🌧️ 下雨了", en: "🌧️ It's raining", ja: "🌧️ 雨降ってきた" },
   next_up: { zh: "等等可以去:", en: "Up next:", ja: "次はここ:" },
   next_batch: { zh: "🔄 換一批", en: "🔄 More options", ja: "🔄 別の候補" },
+  p_closed_hint: {
+    zh: "🌙 另有 {0} 個景點這時間已打烊,明天早點來",
+    en: "🌙 {0} more spots are closed at this hour — try earlier tomorrow",
+    ja: "🌙 あと{0}スポットはこの時間は営業終了。また明日早めに",
+  },
   p_empty: {
     zh: "這個條件下找不到點了 —— 放寬時間或關掉雨天模式試試。",
     en: "Nothing fits — try more hours or turn off rain mode.",

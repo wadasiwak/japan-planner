@@ -47,6 +47,23 @@ function timeSlot(nowMinutes: number): "morning" | "afternoon" | "evening" {
 }
 
 
+/** 只因「這時間已打烊」被排除的點數(給 UI 解釋用,免得用戶納悶)。 */
+export function closedNowCount(input: SuggestInput): number {
+  const hub = hubById(input.hubId);
+  if (!hub) return 0;
+  return poisByCity(input.cityId).filter((p) => {
+    if (input.visited.has(p.id)) return false;
+    if (p.closedDays?.includes(input.weekday)) return false;
+    if (input.month && p.months && !p.months.includes(input.month)) return false;
+    if (input.rain && !p.indoor) return false;
+    const t = transitMinutes(haversineKm(hub.center, p.center));
+    const stay = p.stayMin[input.pace];
+    if (t + stay > input.hoursLeft * 60) return false;
+    // 其他條件都過,只敗在打烊
+    return input.nowMinutes + t + stay > latestEndMin(p);
+  }).length;
+}
+
 function candidates(input: SuggestInput, ignoreExclude: boolean): POI[] {
   const hub = hubById(input.hubId);
   if (!hub) return [];
