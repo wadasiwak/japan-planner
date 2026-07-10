@@ -63,6 +63,13 @@
       "name": "穴位急救包",
       "desc": "36 種症狀對應穴位圖解",
       "url": "https://wadasiwak.github.io/acupoint-map/"
+    },
+    {
+      "id": "tarot",
+      "emoji": "🃏",
+      "name": "日常塔羅",
+      "desc": "偉特 78 張線上抽牌與正逆位解讀",
+      "url": "https://wadasiwak.github.io/tarot/"
     }
   ]
 }
