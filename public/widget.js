@@ -2,17 +2,16 @@
 // 姊妹作導流小工具:在頁尾附上「作者的其他作品」。
 // 用法:<script src="https://wadasiwak.github.io/japan-planner/widget.js" data-site="<自己的 id>" defer></script>
 // 清單來自 sites.json,加新作品只要改那一個檔,全部站台同步更新。
-// 語言:預設跟隨 <html lang>(en 開頭顯示英文),也可用 data-lang="en" 強制。
+// 語言:跟隨 <html lang>(en 開頭顯示英文),SPA 切換語言(改 lang 屬性)會即時重繪;也可用 data-lang="en" 強制。
 (function () {
   var script = document.currentScript;
   // data-site 可逗號分隔多個 id(入口頁排除自己全部子站用)
   var current = ((script && script.dataset.site) || "").split(",");
-  var lang = (
-    (script && script.dataset.lang) ||
-    document.documentElement.lang ||
-    ""
-  ).toLowerCase();
-  var en = lang.indexOf("en") === 0;
+  var forcedLang = (script && script.dataset.lang) || "";
+  function isEn() {
+    var lang = (forcedLang || document.documentElement.lang || "").toLowerCase();
+    return lang.indexOf("en") === 0;
+  }
   fetch("https://wadasiwak.github.io/japan-planner/sites.json")
     .then(function (r) {
       return r.json();
@@ -29,21 +28,33 @@
         "padding:14px 16px 30px;text-align:center;font-size:12.5px;line-height:2.1;" +
         "opacity:.9;font-family:inherit;";
       var label = document.createElement("div");
-      label.textContent =
-        (en ? data.labelEn : data.label) || data.label || "🧰 更多作品";
       label.style.cssText =
         "margin-bottom:6px;opacity:.65;font-weight:700;letter-spacing:.05em;";
       wrap.appendChild(label);
+      var links = [];
       sites.forEach(function (s) {
         var a = document.createElement("a");
         a.href = s.url;
-        a.title = (en ? s.descEn : s.desc) || s.desc || "";
-        a.textContent = s.emoji + " " + ((en ? s.nameEn : s.name) || s.name);
         a.style.cssText =
           "display:inline-block;margin:2px 4px;padding:2px 12px;border-radius:99px;" +
           "border:1px solid rgba(128,136,150,.4);color:inherit;text-decoration:none;" +
           "opacity:.85;white-space:nowrap;";
+        links.push({ a: a, s: s });
         wrap.appendChild(a);
+      });
+      function render() {
+        var en = isEn();
+        label.textContent = (en ? data.labelEn : data.label) || data.label || "🧰 更多作品";
+        links.forEach(function (item) {
+          item.a.title = (en ? item.s.descEn : item.s.desc) || item.s.desc || "";
+          item.a.textContent = item.s.emoji + " " + ((en ? item.s.nameEn : item.s.name) || item.s.name);
+        });
+      }
+      render();
+      // SPA 語言切換(改 <html lang>)時即時重繪
+      new MutationObserver(render).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["lang"],
       });
       // 頁面若提供 #more-sites-slot 就放那裡(body 是 flex 版型時避免變成側欄)
       (document.getElementById("more-sites-slot") || document.body).appendChild(wrap);
