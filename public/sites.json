@@ -70,6 +70,13 @@
       "name": "日常塔羅",
       "desc": "偉特 78 張線上抽牌與正逆位解讀",
       "url": "https://wadasiwak.github.io/tarot/"
+    },
+    {
+      "id": "recipes",
+      "emoji": "🍳",
+      "name": "家常菜譜",
+      "desc": "120 道原創食譜，依菜系食材找、隨機抽一道",
+      "url": "https://wadasiwak.github.io/recipes/"
     }
   ]
 }
