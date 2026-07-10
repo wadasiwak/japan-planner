@@ -77,6 +77,13 @@
       "name": "家常菜譜",
       "desc": "120 道原創食譜，依菜系食材找、隨機抽一道",
       "url": "https://wadasiwak.github.io/recipes/"
+    },
+    {
+      "id": "nihongo-quest",
+      "emoji": "🎌",
+      "name": "日語道場",
+      "desc": "JLPT N5～N1 原創題庫與觀光商務會話",
+      "url": "https://wadasiwak.github.io/nihongo-quest/"
     }
   ]
 }
