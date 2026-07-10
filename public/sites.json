@@ -1,88 +1,113 @@
 {
   "label": "🧰 作者的其他作品",
+  "labelEn": "🧰 More by this author",
   "sites": [
     {
       "id": "japan-planner",
       "emoji": "🗾",
       "name": "日本旅伴JP",
+      "nameEn": "Japan TripMate",
       "desc": "J人排行程、P人隨走的日本自由行規劃",
+      "descEn": "Japan itineraries for planners and wanderers alike",
       "url": "https://wadasiwak.github.io/japan-planner/"
     },
     {
       "id": "world-quest",
       "emoji": "🗺️",
       "name": "世界任務",
+      "nameEn": "World Quest",
       "desc": "答題收集世界 197 國",
+      "descEn": "Quiz your way to collecting all 197 countries",
       "url": "https://wadasiwak.github.io/world-quest/"
     },
     {
       "id": "rec-anime",
       "emoji": "📺",
       "name": "動畫推薦",
+      "nameEn": "Anime Recommender",
       "desc": "AniList 人氣 2000 部評分+個人化推薦",
+      "descEn": "Rate AniList's top 2000 & get personal picks",
       "url": "https://wadasiwak.github.io/recommenders/anime/"
     },
     {
       "id": "rec-movie",
       "emoji": "🎞️",
       "name": "電影推薦",
+      "nameEn": "Movie Recommender",
       "desc": "TMDB 前 2000 部評分+個人化推薦",
+      "descEn": "Rate TMDB's top 2000 & get personal picks",
       "url": "https://wadasiwak.github.io/recommenders/movie/"
     },
     {
       "id": "rec-tv",
       "emoji": "📡",
       "name": "影集推薦",
+      "nameEn": "TV Recommender",
       "desc": "TMDB 前 2000 部評分+個人化推薦",
+      "descEn": "Rate TMDB's top 2000 & get personal picks",
       "url": "https://wadasiwak.github.io/recommenders/tv/"
     },
     {
       "id": "rec-art",
       "emoji": "🎨",
       "name": "藝術推薦",
+      "nameEn": "Art Recommender",
       "desc": "世界名作×台灣藝術家 評分+推薦",
+      "descEn": "World masterpieces × Taiwanese artists, rate & discover",
       "url": "https://wadasiwak.github.io/recommenders/art/"
     },
     {
       "id": "qianshi",
       "emoji": "🎋",
       "name": "解籤",
+      "nameEn": "Fortune Sticks",
       "desc": "天后宮/行天宮/明治神宮籤詩求解",
+      "descEn": "Taiwanese & Meiji Shrine oracle lots, drawn and explained",
       "url": "https://wadasiwak.github.io/qianshi/"
     },
     {
       "id": "ziwei",
       "emoji": "🔮",
       "name": "紫微斗數",
+      "nameEn": "Zi Wei Astrology",
       "desc": "線上排盤與主星宮位解讀",
+      "descEn": "Purple Star chart casting & palace readings",
       "url": "https://wadasiwak.github.io/ziwei/"
     },
     {
       "id": "acupoint-map",
       "emoji": "💆",
       "name": "穴位急救包",
+      "nameEn": "AcuKit",
       "desc": "36 種症狀對應穴位圖解",
+      "descEn": "Acupressure points for 36 symptoms, illustrated",
       "url": "https://wadasiwak.github.io/acupoint-map/"
     },
     {
       "id": "tarot",
       "emoji": "🃏",
       "name": "日常塔羅",
+      "nameEn": "Daily Tarot",
       "desc": "偉特 78 張線上抽牌與正逆位解讀",
+      "descEn": "78-card Rider-Waite draws with upright & reversed readings",
       "url": "https://wadasiwak.github.io/tarot/"
     },
     {
       "id": "recipes",
       "emoji": "🍳",
       "name": "家常菜譜",
+      "nameEn": "Home Cooking",
       "desc": "120 道原創食譜，依菜系食材找、隨機抽一道",
+      "descEn": "120 original recipes, browse by cuisine or draw one at random",
       "url": "https://wadasiwak.github.io/recipes/"
     },
     {
       "id": "nihongo-quest",
       "emoji": "🎌",
       "name": "日語道場",
+      "nameEn": "Nihongo Quest",
       "desc": "JLPT N5～N1 原創題庫與觀光商務會話",
+      "descEn": "Original JLPT N5–N1 drills plus travel & business Japanese",
       "url": "https://wadasiwak.github.io/nihongo-quest/"
     }
   ]
