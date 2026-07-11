@@ -48,6 +48,15 @@
       "url": "https://wadasiwak.github.io/recommenders/tv/"
     },
     {
+      "id": "rec-boardgame",
+      "emoji": "🎲",
+      "name": "桌遊推薦",
+      "nameEn": "Board Game Recommender",
+      "desc": "BGG 排名 2000 款評分+個人化推薦",
+      "descEn": "Rate BGG's top 2000 & get personal picks",
+      "url": "https://wadasiwak.github.io/recommenders/boardgame/"
+    },
+    {
       "id": "rec-art",
       "emoji": "🎨",
       "name": "藝術推薦",
