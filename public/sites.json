@@ -127,6 +127,15 @@
       "desc": "可疑帳號紅旗檢核、詐騙圖鑑與被騙應變 SOP",
       "descEn": "Red-flag checks for suspicious accounts, scam field guide & response SOP",
       "url": "https://wadasiwak.github.io/scam-radar/"
+    },
+    {
+      "id": "ielts-toefl-dojo",
+      "emoji": "🇬🇧",
+      "name": "英語考試道場",
+      "nameEn": "English Exam Dojo",
+      "desc": "IELTS・TOEFL・TOEIC 原創題庫與 AI 寫作口說批改",
+      "descEn": "Original IELTS · TOEFL · TOEIC drills with AI writing & speaking feedback",
+      "url": "https://wadasiwak.github.io/ielts-toefl-dojo/"
     }
   ]
 }
