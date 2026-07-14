@@ -136,6 +136,15 @@
       "desc": "IELTS・TOEFL・TOEIC 原創題庫與 AI 寫作口說批改",
       "descEn": "Original IELTS · TOEFL · TOEIC drills with AI writing & speaking feedback",
       "url": "https://wadasiwak.github.io/ielts-toefl-dojo/"
+    },
+    {
+      "id": "tw-food-atlas",
+      "emoji": "🍜",
+      "name": "台灣美食圖鑑",
+      "nameEn": "Taiwan Food Atlas",
+      "desc": "全台 12 城 295 家精選名店：地圖找店、口味評分與推薦、分享美食 Top 10",
+      "descEn": "295 curated eateries across 12 Taiwan cities: map, taste-based picks, share your Top 10",
+      "url": "https://wadasiwak.github.io/tw-food-atlas/"
     }
   ]
 }
