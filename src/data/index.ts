@@ -55,6 +55,11 @@ import * as yakushima from "./cities/yakushima";
 import * as shiretoko from "./cities/shiretoko";
 import * as aizu from "./cities/aizu";
 import * as kakunodate from "./cities/kakunodate";
+import * as morioka from "./cities/morioka";
+import * as akita from "./cities/akita";
+import * as hachinohe from "./cities/hachinohe";
+import * as tsuruoka from "./cities/tsuruoka";
+import * as fukushima from "./cities/fukushima";
 
 // 城市模組:每個 exports `city: CityDef` 與 `pois: POI[]`。
 // 新增城市 → cities/<id>.ts + 在這裡 import + 掛進 CITY_MODULES。
@@ -114,6 +119,11 @@ const CITY_MODULES: { city: CityDef; pois: POI[] }[] = [
   shiretoko,
   aizu,
   kakunodate,
+  morioka,
+  akita,
+  hachinohe,
+  tsuruoka,
+  fukushima,
 ];
 
 export const CITIES: CityDef[] = CITY_MODULES.map((m) => m.city);

@@ -1,6 +1,7 @@
 import type { CityTranslation } from "../types";
 
-// Tohoku 英文內容包:aizu / yamagata / sendai / hiraizumi / kakunodate / aomori。
+// Tohoku 英文內容包:aizu / fukushima / yamagata / tsuruoka / sendai / hiraizumi /
+// morioka / kakunodate / akita / hachinohe / aomori。
 export const cities: Record<string, CityTranslation> = {
   aizu: {
     name: "Aizu-Wakamatsu",
@@ -12,6 +13,7 @@ export const cities: Record<string, CityTranslation> = {
       "aizu-sta": "Aizu-Wakamatsu Station",
       "aizu-tsuruga": "Tsuruga Castle",
       "aizu-nanukamachi": "Nanukamachi",
+      "aizu-hetsuri-sta": "To-no-Hetsuri Station",
     },
     souvenirs: [
       "Akabeko (papier-mache red cow with a bobbing head, Aizu's beloved good-luck charm, sold in all sizes)",
@@ -76,6 +78,30 @@ export const cities: Record<string, CityTranslation> = {
         blurb:
           "Ouchi-juku's famed negi soba house: cold noodles eaten with a whole green onion as your chopstick, around a hearth in a thatched farmhouse.",
         tips: "Long queues on weekends: put your name on the list, explore the village, and return just in time for your seat.",
+      },
+      "aizu-oyakuen": {
+        name: "Oyakuen Garden",
+        blurb:
+          "The Aizu-Matsudaira lords' garden, its teahouse mirrored in a heart-shaped pond, with a medicinal herb garden of some 400 species planted to fight epidemics — still tended today. Autumn colors over the pond make it the city's most refined corner.",
+        tips: "Take the Haikara-san loop bus to the Oyakuen stop. Matcha at the pondside Ochaya-goten pavilion costs 600 yen, with a combo discount on the entry ticket.",
+      },
+      "aizu-higashiyama-onsen": {
+        name: "Higashiyama Onsen",
+        blurb:
+          "Aizu's 1,300-year-old back-parlor hot spring town, its ryokan stacked along the Yukawa gorge and once beloved by artist Takehisa Yumeji and poet Yosano Akiko. Stroll the river, soak in a foot bath or day-use onsen — best when autumn colors fill the gorge.",
+        tips: "About 15 minutes from downtown on the Machinaka loop bus, conveniently paired with the Aizu Samurai Residence. Most ryokan limit day-use bathing to daytime hours, so check ahead.",
+      },
+      "aizu-tonohetsuri": {
+        name: "To-no-Hetsuri",
+        blurb:
+          "Tower-like cliffs carved by a million years of erosion line the Okawa River, with a suspension bridge leading to galleries in the rock face — a National Natural Monument. From late October maples blanket the crags; it sits on the same Aizu Railway line as Ouchi-juku, perfect to combine.",
+        tips: "A 5-minute walk from Aizu Railway's To-no-Hetsuri Station. The suspension bridge closes for winter from mid-December to late March, when the cliffs can only be viewed from afar.",
+      },
+      "aizu-amidaji": {
+        name: "Amidaji Temple",
+        blurb:
+          "A Jodo-sect temple just off Nanukamachi-dori, where the Gosangai — a small turret relocated from Tsuruga Castle after the Boshin War — stands over the graves of a thousand fallen Aizu soldiers. Saito Hajime, captain of the Shinsengumi's third unit, is buried here too.",
+        tips: "Right outside Nanukamachi Station, an easy stop while browsing the old street. The Gosangai's interior is closed; admire it from outside.",
       },
     },
   },
@@ -176,6 +202,36 @@ export const cities: Record<string, CityTranslation> = {
         blurb:
           "A dim, wood-lined coffee salon at the street's entrance, pure Taisho-romantic mood, with riverside inn views made for idle afternoons.",
       },
+      "yamagata-bunshokan": {
+        name: "Bunshokan (Yamagata Prefectural Museum)",
+        blurb:
+          "The 1916 English-Renaissance former prefectural hall — red brick, a century-old working clock tower, and lavishly restored chambers, free to enter.",
+        tips: "Free admission, 9:00-16:30; closed the 1st and 3rd Monday (next day if a holiday) and over New Year.",
+      },
+      "yamagata-gotenzeki": {
+        name: "Nanukamachi Gotenzeki",
+        blurb:
+          "A 400-year-old irrigation canal reborn as a stone-lined waterside quarter, its machiya and storehouses hosting soba, tea and craft shops.",
+        tips: "A short walk from Bunshokan in the Nanukamachi area; Shojiya's ita-soba here is one of Yamagata's finest.",
+      },
+      "yamagata-sakaeya-honten": {
+        name: "Sakaeya Honten (Hiyashi Ramen)",
+        blurb:
+          "Birthplace of hiyashi ramen, invented in 1952 for customers craving cold noodles in summer — ice floats in a clear chilled broth that never clouds.",
+        tips: "Closed Wednesdays (next day if a holiday), irregular closures in January and August; expect summer lunch queues. Served year-round.",
+      },
+      "yamagata-tarumizu-iseki": {
+        name: "Tarumizu Ruins (Mine-no-Ura)",
+        blurb:
+          "A hidden sanctuary behind Yamadera: tiny torii and a Fudo shrine set into honeycomb-weathered cliffs, said to be where Yamadera's founder trained.",
+        tips: "About 15 minutes on foot from the Senjuin trailhead; the path is rougher than Yamadera's steps and slippery after rain. Avoid in snow season.",
+      },
+      "yamagata-omoshiroyama-keikoku": {
+        name: "Omoshiroyama Momijigawa Gorge",
+        blurb:
+          "A rugged 2 km gorge trail starting right at Omoshiroyama-Kogen Station, linking waterfalls and plank walks — a hidden foliage spot near Yamadera.",
+        tips: "Open roughly late May to early November; the narrow, slippery trail demands hiking shoes, and Senzan Line trains are infrequent — check timetables.",
+      },
     },
   },
 
@@ -184,11 +240,14 @@ export const cities: Record<string, CityTranslation> = {
     areas: {
       仙台市區: "Sendai City",
       松島: "Matsushima",
+      秋保: "Akiu Onsen",
+      鹽竈: "Shiogama",
     },
     hubs: {
       "sendai-sta-sendai": "Sendai Station",
       "sendai-kokubuncho": "Kokubuncho",
       "sendai-sta-matsushima-kaigan": "Matsushima-Kaigan Station",
+      "sendai-akiu-yumoto": "Akiu Onsen Yumoto",
     },
     souvenirs: [
       "Hagi no Tsuki (custard cream cakes by Sanzen, the undisputed No. 1 Sendai souvenir)",
@@ -291,6 +350,36 @@ export const cities: Record<string, CityTranslation> = {
           "A sweets shop whose upstairs cafe faces Godaido and the bay, serving house-made loaf cakes and pudding — the ideal post-cruise stop.",
         tips: "Window seats are few — avoid the mid-afternoon rush for a front-row bay view.",
       },
+      "sendai-osaki-hachimangu": {
+        name: "Osaki Hachimangu Shrine",
+        blurb:
+          "Sendai's guardian shrine built by Date Masamune in 1607 — a lacquered-black hall trimmed in gold, the oldest surviving gongen-zukuri and a National Treasure.",
+        tips: "It shares the Loople Sendai bus route with the castle ruins — a day pass covers both in one loop.",
+      },
+      "sendai-shiogama-jinja": {
+        name: "Shiogama Shrine",
+        blurb:
+          "The first shrine of old Mutsu province, guarding Shiogama's port for a millennium — climb the 202-step approach to vermilion gates and harbor views, with celebrated late-spring Shiogama cherries.",
+        tips: "Take the gentler east approach from Hon-Shiogama Station and save the 202 steps for the way down; it pairs neatly with Matsushima.",
+      },
+      "sendai-akiu-otaki": {
+        name: "Akiu Otaki Falls",
+        blurb:
+          "A 55-meter cascade thundering into the valley, counted among Japan's Top 100 Waterfalls and a national scenic spot — in foliage season the whole gorge blazes orange.",
+        tips: "Public transport is sparse — take a bus or taxi from Akiu Onsen; the stone steps down to the plunge pool are steep, so wear grippy shoes.",
+      },
+      "sendai-rairaikyo": {
+        name: "Rairaikyo Gorge",
+        blurb:
+          "A rocky gorge carved by the Natori River right at Akiu Onsen's doorstep, its crags and blue pools stretching about a kilometer around Nozoki Bridge — the heart-shaped pothole below is a lovers' spot.",
+        tips: "The riverside path drops in beside Nozoki Bridge and runs about 650 m downstream — finish the walk, then head back to the onsen street for a soak.",
+      },
+      "sendai-tenshukaku-park": {
+        name: "Tenshukaku Nature Park & Ichitaro-no-yu",
+        blurb:
+          "A Japanese garden and day-use onsen bath in one soothing Akiu compound — maples sway over the koi ponds, foot baths included, and the autumn night illuminations mirrored on the water are breathtaking.",
+        tips: "The autumn light-up ('Akiu Night Museum') runs roughly late Oct to late Nov — enter at dusk to catch day and night views; closed the 3rd Friday (except Aug and Oct).",
+      },
     },
   },
 
@@ -299,11 +388,13 @@ export const cities: Record<string, CityTranslation> = {
     areas: {
       平泉中心: "Central Hiraizumi",
       "嚴美溪・達谷窟": "Genbikei Gorge & Takkoku no Iwaya",
+      "一關・猊鼻溪": "Ichinoseki & Geibikei Gorge",
     },
     hubs: {
       "hiraizumi-sta-hiraizumi": "Hiraizumi Station",
       "hiraizumi-chusonji-sando": "Chusonji Approach (Tsukimizaka Entrance)",
       "hiraizumi-sta-ichinoseki": "Ichinoseki Station",
+      "hiraizumi-sta-geibikei": "Geibikei Station",
     },
     souvenirs: [
       "Kamome no Tamago (egg-shaped white-bean cakes by Saito Seika, Iwate's signature sweet)",
@@ -362,6 +453,30 @@ export const cities: Record<string, CityTranslation> = {
         blurb:
           "Put money in the basket and knock: dango and tea zip across the gorge by cable from the shop opposite — the famous 'flying dango'.",
         tips: "Open only until mid-afternoon and closes when the dango sells out — come in the morning for the cable ride.",
+      },
+      "hiraizumi-muryokoin-ato": {
+        name: "Muryokoin Temple Ruins",
+        blurb:
+          "Hidehira Fujiwara's temple modeled on — and built to outdo — Byodoin's Phoenix Hall in Uji; only foundation stones and the pond remain. A World Heritage component site, most solemn when the sun sets on Mt. Kinkeisan along its axis.",
+        tips: "Free and open at all times, right on the way from the station to Takadachi Gikeido — fold it into the walk.",
+      },
+      "hiraizumi-kanjizaioin-ato": {
+        name: "Kanjizaioin Temple Ruins",
+        blurb:
+          "A temple built by the wife of Motohira Fujiwara, its Pure Land garden around Maizuru Pond surviving almost intact — another World Heritage component. Right next to Motsuji yet free to enter, a perfect historic-park stroll.",
+        tips: "It sits just east of Motsuji — loop through on your way out; ten minutes or so is plenty.",
+      },
+      "hiraizumi-geibikei-funakudari": {
+        name: "Geibikei Gorge Boat Ride",
+        blurb:
+          "A boatman poles a flat-bottomed skiff up the Satetsu River between 100-meter limestone cliffs — two kilometers of gorge counted among Japan's 100 Views. The 90-minute round trip echoes with boat songs; in autumn the water mirrors a brocade of foliage.",
+        tips: "About 30 minutes from Ichinoseki on the Ofunato Line, then a 5-minute walk from Geibikei Station to the dock. Boats leave roughly hourly (first at 9:30 in winter), cancel in rough weather, and switch to kotatsu boats from December.",
+      },
+      "hiraizumi-fujisei": {
+        name: "Sansaikan Fujisei (Hitokuchi Mochi Zen)",
+        blurb:
+          "A mochi-cuisine institution two minutes from Ichinoseki Station's west exit. Its trademark Hitokuchi Mochi Zen serves bite-sized mochi in many flavors — red bean, zunda, walnut — with zoni soup: the perfect primer on Ichinoseki's mochi culture.",
+        tips: "Lunch only, 11:00–14:00, closed Mondays — easiest to slot in when changing trains at Ichinoseki after Geibikei or Genbikei.",
       },
     },
   },
@@ -439,6 +554,30 @@ export const cities: Record<string, CityTranslation> = {
           "A thatched teahouse by the Tatsuko statue, grilling miso-brushed kiritanpo and char over charcoal — the lake loop's tastiest supply stop.",
         tips: "Closed in winter, and circuit buses stop only briefly — drive or rent a car if you want to sit down and eat.",
       },
+      "kakunodate-dakigaeri": {
+        name: "Dakigaeri Gorge",
+        blurb:
+          "A primeval-forest gorge on the Tamagawa River, its lapis-blue water framed by cliffside maples — the 'Yabakei of Tohoku'. The 30-minute walk from the red Kaminoiwahashi bridge to Mikaeri Falls is the area's finest autumn stroll.",
+        tips: "The foliage festival runs roughly early October to early November. The trail beyond Mikaeri Falls is closed long-term due to rockfall, and heavy rain can close the whole path — check Semboku City's site before going. Bears are sighted here; make noise and don't walk alone. About 15 minutes by taxi from Kakunodate Station.",
+      },
+      "kakunodate-ando-jozo": {
+        name: "Ando Jozo Main Store",
+        blurb:
+          "A miso and soy-sauce brewery founded in 1853, whose Meiji-era brick kura-zashiki parlor — a designated town cultural property — is free to enter. Sample miso soup and pickles in the storehouse: the merchant-quarter side of Kakunodate at its best.",
+        tips: "Open daily 8:30–17:00. After tasting, take home their house soy sauce or kan-koji miso — more local than the souvenir shops on the samurai street.",
+      },
+      "kakunodate-shinchosha-bungakukan": {
+        name: "Shinchosha Memorial Literary Museum",
+        blurb:
+          "A museum honoring Kakunodate-born Giryo Sato, founder of publisher Shinchosha, tracing a century of its books alongside modern Japanese literature. A cultural anchor of the merchant 'Tomachi' quarter and a fine rainy-day fallback.",
+        tips: "Closed Mondays and over New Year (Dec 28–Jan 4); open until 17:00 April–November. Shares a building with the town library, a 3-minute walk from the Tamachi samurai houses.",
+      },
+      "kakunodate-kunimasu-miraikan": {
+        name: "Lake Tazawa Kunimasu Museum",
+        blurb:
+          "The kunimasu trout, endemic to Lake Tazawa, went extinct when acidic river water was diverted into the lake — then reappeared 70 years later in Lake Saiko near Mt. Fuji. Live kunimasu and the full extinction-and-revival story make this the lake loop's most worthwhile stop.",
+        tips: "Closed Tuesdays (or the next day if a holiday); hours are short at 9:00–16:00. It sits on the lakeside road along the south shore — an easy stop on the circuit bus or by car.",
+      },
     },
   },
 
@@ -448,12 +587,14 @@ export const cities: Record<string, CityTranslation> = {
       青森市區: "Aomori City",
       弘前: "Hirosaki",
       "奧入瀨・十和田": "Oirase & Towada",
+      八甲田: "Hakkoda",
     },
     hubs: {
       "aomori-sta-aomori": "Aomori Station",
       "aomori-sta-shin-aomori": "Shin-Aomori Station",
       "aomori-sta-hirosaki": "Hirosaki Station",
       "aomori-towadako-yasumiya": "Lake Towada (Yasumiya)",
+      "aomori-hakkoda-sanroku": "Hakkoda Ropeway Base Station",
     },
     souvenirs: [
       "Ki ni Naru Ringo (Ragueneau's whole syrup-soaked apple baked in pie — an Aomori icon)",
@@ -547,6 +688,488 @@ export const cities: Record<string, CityTranslation> = {
         name: "Tsukasa Barayaki Diner",
         blurb:
           "The standard-bearer for Towada barayaki: beef belly and heaps of onion seared until the sauce caramelizes, unbeatable over white rice.",
+      },
+      "aomori-sannai-maruyama": {
+        name: "Sannai-Maruyama Site",
+        blurb:
+          "A vast Jomon settlement from over 5,000 years ago, centerpiece of the World Heritage Jomon sites — reconstructed pit dwellings and the six-pillar tower rise over the plain, with the famous clay figurines inside the museum.",
+        tips: "Closed the 4th Monday of each month (next day if a holiday). It adjoins the Aomori Museum of Art on foot — pair them in one half-day. October to May it closes at 5 pm.",
+      },
+      "aomori-hirosaki-apple-park": {
+        name: "Hirosaki Apple Park",
+        blurb:
+          "An orchard park of 2,300 trees across some 80 varieties, where from August to late November you pick apples in season and pay by weight — apple country's signature view, with Mt. Iwaki behind the laden trees.",
+        tips: "Picking reception 9:00–16:00, varieties rotating through the season — November brings late croppers like Fuji. About 20 minutes from Hirosaki Station by the Tamenobu-go or Konan bus.",
+      },
+      "aomori-nakano-momijiyama": {
+        name: "Nakano Momijiyama",
+        blurb:
+          "A maple gorge planted from Kyoto saplings by the Hirosaki lords, its vermilion bridges, waterfalls and 200-year-old trees earning it the name 'Little Arashiyama of Tsugaru'. During the illumination the maples glow over the stream — dreamlike.",
+        tips: "Peak color late October to early November, with night illumination until 9 pm from around mid-October. Take the Konan Railway to Kuroishi then a Konan bus (about 30 min) — services are sparse, so check times or drive.",
+      },
+      "aomori-hakkoda-ropeway": {
+        name: "Hakkoda Ropeway",
+        blurb:
+          "Ten minutes up to 1,300-meter Mt. Tamoyachi, where a gourd-shaped trail loops the alpine marshes with sweeping views of the Hakkoda peaks, Aomori city and Mutsu Bay. In autumn the beech forest below the gondola turns a breathtaking sea of red and gold.",
+        tips: "Foliage descends from the summit from late September through mid-October. The ropeway stops several days each early November for annual inspection and suspends in strong wind — check the official site before going; expect first snow up top in November, so dress warmly.",
+      },
+      "aomori-sukayu-onsen": {
+        name: "Sukayu Onsen Sennin-buro",
+        blurb:
+          "A 300-year-old mountain therapeutic bathhouse whose all-hiba 'Thousand-Person Bath' spans its great hall without a single pillar, milky acidic sulfur water steaming within. Finish with the famous ginger-miso oden from the shop — mountain inn atmosphere complete.",
+        tips: "Day bathing 7:00–18:00 (the gender-separated Tama-no-yu 9:00–17:00). The big bath is mixed, with a women-only hour 8–9 am daily and bathing wear for rent. About 10 minutes by JR bus from the ropeway base station.",
+      },
+    },
+  },
+
+  morioka: {
+    name: "Morioka",
+    areas: {
+      "城跡・中之橋周邊": "Castle Park & Nakanohashi",
+      "盛岡站・材木町": "Morioka Station & Zaimokucho",
+      "小岩井近郊": "Koiwai Outskirts",
+    },
+    hubs: {
+      "morioka-sta": "Morioka Station",
+      "morioka-castle-park": "Morioka Castle Park / Nakanohashi",
+      "morioka-zaimokucho": "Zaimokucho",
+    },
+    souvenirs: [
+      "Nanbu senbei (baked sesame or peanut crackers; long-running makers like Iwateya each have loyal fans)",
+      "Fukuda Pan (koppe-pan rolls filled to order at the Nagatacho shop — Morioka's soul-food breakfast)",
+      "Kamome no Tamago (egg-shaped confection of white bean paste in cake, Iwate's signature sweet, sold at the station)",
+      "Nambu ironware (cast-iron wind chimes and teapots, crafts that grow lovelier with use)",
+      "Morioka reimen packs (vacuum-packed noodle kits from Todakyu and others — take the famous noodles home)",
+    ],
+    pois: {
+      "morioka-bank-red-brick": {
+        name: "Iwate Bank Red Brick Building",
+        blurb:
+          "A 1911 red-brick bank by Kingo Tatsuno, architect of Tokyo Station, that stayed in business until 2012. The lofty banking hall and old vault survive intact — Morioka's most photogenic landmark.",
+        tips: "Closed Tuesdays, open 10:00–17:00; the paid zone lets you walk into the old vault and bank interior.",
+      },
+      "morioka-castle-park": {
+        name: "Morioka Castle Site Park",
+        blurb:
+          "The ruins of the Nanbu clan's castle, with tier upon tier of granite ramparts among the finest in Tohoku. Cherry blossoms and autumn leaves set off the pale stone, and the honmaru terrace looks out to Mt. Iwate.",
+      },
+      "morioka-sakurayama-shrine": {
+        name: "Sakurayama Shrine",
+        blurb:
+          "Morioka's guardian shrine beside the castle ruins, backed by the Eboshi-iwa — a huge rock thrusting from the earth, revered as the city's protective charm since feudal times. The approach is lined with homey shops and eateries.",
+      },
+      "morioka-kogensha": {
+        name: "Kogensha & Zaimokucho",
+        blurb:
+          "The publisher of Kenji Miyazawa's only story collection released in his lifetime, now a folk-craft shop of lacquer and ceramics. In the courtyard, the Kohikan coffee house serves dark roasts with walnut sweets, as quiet as one of Kenji's tales.",
+        tips: "Closed on the 15th of each month (moved to a weekday if it falls on a weekend or holiday); the surrounding Zaimokucho shopping street is worth a stroll too.",
+      },
+      "morioka-azumaya-wanko": {
+        name: "Azumaya Honten (Wanko Soba)",
+        blurb:
+          "A wanko soba house founded in 1907, where servers cheer you on, tipping bite-sized portions into your bowl until you snap the lid shut. Clear 100 bowls and you earn a wooden plaque — Morioka's liveliest meal.",
+        tips: "The main branch closes on the first Wednesday each month (except Golden Week in May and August); book ahead if you plan to attempt wanko soba.",
+      },
+      "morioka-pairon-jajamen": {
+        name: "Pairon Honten (Jajamen)",
+        blurb:
+          "The birthplace of Morioka jajamen: flat udon-like noodles tossed with the house meat miso, cucumber and ginger, seasoned to taste with vinegar and chili oil. Finish by cracking an egg into the bowl for chiitantan soup — only then is it complete.",
+        tips: "Right on the Sakurayama Shrine approach; queues are the norm at meal peaks, so avoid high noon.",
+      },
+      "morioka-pyonpyonsha": {
+        name: "Pyonpyonsha (Morioka Reimen)",
+        blurb:
+          "The station-front branch of Morioka's reimen standard-bearer: chewy translucent noodles in beef-bone broth with kimchi and fruit, refreshing yet punchy. Perfect before or after the shinkansen, ideally with a round of yakiniku.",
+        tips: "Not keen on spice? Order 'betsukara' to get the kimchi on the side and tune the heat yourself.",
+      },
+      "morioka-fukuda-pan": {
+        name: "Fukuda Pan Nagatacho Honten",
+        blurb:
+          "A koppe-pan specialist since 1948: pick from dozens of fillings and they slather your roll on the spot. The signature an-butter — sweet bean paste with butter — is unforgettable, a breakfast locals grow up on.",
+        tips: "Doors open at 7:00; popular fillings often sell out by afternoon, so go early for the full lineup.",
+      },
+      "morioka-konyacho-banya": {
+        name: "Konyacho Banya",
+        blurb:
+          "A 1913 fire-brigade station crowned with a watchtower, this wooden Western-style building has been reborn as a cafe and craft shop. Settle in with a coffee and soak up the artisan spirit of Morioka's preserved streets.",
+        tips: "Opening hours and closures follow their official social media — check before you plan around it.",
+      },
+      "morioka-hachimangu": {
+        name: "Morioka Hachimangu",
+        blurb:
+          "Founded in 1680, this grandly carved vermilion shrine has been the spiritual heart of the region since the Nanbu domain. Its September grand festival with float parades is the city's biggest event; on ordinary days it is serene and stately.",
+      },
+      "morioka-kaiunbashi": {
+        name: "Kaiunbashi Bridge",
+        blurb:
+          "A white iron bridge over the Kitakami River, framing snow-capped Mt. Iwate on clear days — Morioka's signature view. Legend says newcomers cry crossing it on arrival and again when they leave, earning it the name 'bridge of two tears'.",
+        tips: "About a 5-minute walk from Morioka Station; Mt. Iwate only shows itself on crisp clear days.",
+      },
+      "morioka-koiwai-farm": {
+        name: "Koiwai Farm Makiba-en",
+        blurb:
+          "Japan's largest private farm, founded in 1891. The Makiba-en visitor area has sheep, horse riding and soft-serve made from fresh farm milk, all with Mt. Iwate as a backdrop — and a famed lone cherry tree blooming in late April.",
+        tips: "About 35 minutes by Iwate Kenpoku bus from Morioka Station; services are sparse, so check both outbound and return times.",
+      },
+    },
+  },
+
+  akita: {
+    name: "Akita",
+    areas: {
+      "千秋公園・中通": "Senshu Park & Nakadori",
+      "大町・川反": "Omachi & Kawabata",
+      "秋田駅周邊": "Around Akita Station",
+      "秋田港": "Akita Port",
+    },
+    hubs: {
+      "akita-sta": "Akita Station",
+      "akita-senshu-park": "Senshu Park",
+      "akita-kawabata": "Kawabata",
+    },
+    souvenirs: [
+      "Kingman (honey-cake rounds with white bean filling, Akita's teatime classic from a station-front institution)",
+      "Butter mochi (northern Akita's buttery rice cakes that stay soft for days — perfect with tea)",
+      "Inaniwa udon dried noodles (hand-stretched noodles from Sato Yoske and other old houses; restaurant-grade silkiness at home)",
+      "Iburigakko (hearth-smoked pickled daikon, smoky and crunchy — great with cheese or sake)",
+      "Akita sake (a famed brewing region: Aramasa No.6, Takashimizu and more, handy in small bottles)",
+    ],
+    pois: {
+      "akita-senshu-koen": {
+        name: "Senshu Park (Kubota Castle Ruins)",
+        blurb:
+          "The site of Kubota Castle, seat of the Satake lords, now a green oasis of moats and earthen ramparts. Around 700 cherry trees line the moat in spring, and autumn wraps the park in maple reds.",
+        tips: "Kubota Castle famously used earthworks instead of stone walls; the rebuilt Omote-mon gate and corner turret are the highlights, about 10 minutes on foot from Akita Station.",
+      },
+      "akita-osumi-yagura": {
+        name: "Kubota Castle Osumi Turret",
+        blurb:
+          "A reconstructed corner turret deep in Senshu Park, with Satake clan exhibits inside and a top-floor lookout over the city and Mt. Taihei. In foliage season the honmaru below turns brilliant orange.",
+        tips: "Closed in winter (December to March); pair it with Senshu Park in cherry-blossom or autumn-leaf season.",
+      },
+      "akita-museum-of-art": {
+        name: "Akita Museum of Art",
+        blurb:
+          "A Tadao Ando museum of bare concrete where the triangular skylight and floating spiral staircase are exhibits in themselves. The centerpiece is Tsuguharu Foujita's 20-meter mural 'Events in Akita', a single canvas capturing the region's festivals and snow-country life.",
+        tips: "The 2nd-floor cafe faces a water garden that visually merges with Senshu Park; closure days are irregular, so check the website before you go.",
+      },
+      "akita-inu-station": {
+        name: "Akita Inu Station",
+        blurb:
+          "A free meet-and-greet spot where real Akita dogs lounge behind glass, radiating pure healing energy. The shop is stocked with Akita-inu goods — a must for fans of the loyal breed.",
+        tips: "The dogs appear only in set sessions on Saturdays and Sundays (several from 11:00); weekdays it opens only Tuesday and Thursday, so check the official site first.",
+      },
+      "akita-honke-abeya": {
+        name: "Honke Abeya (Hinai Chicken Oyakodon)",
+        blurb:
+          "A specialty restaurant run by Hinai jidori chicken producers themselves — the signature oyakodon tops springy thigh meat with rich, half-set egg. It sits in the Area Nakaichi complex, right on your way out of the art museum.",
+      },
+      "akita-neburinagashi-kan": {
+        name: "Neburi Nagashi Kan (Kanto Festival Museum)",
+        blurb:
+          "A museum devoted to the Kanto Festival, its atrium filled with full-size kanto poles whose strings of lanterns reach for the ceiling. You can try hoisting a mini kanto yourself and feel the balancing art of forehead and hip.",
+        tips: "A combined ticket covers the Red Brick Folk Museum about 5 minutes away on foot — the two pair up nicely.",
+      },
+      "akita-akarenga-kan": {
+        name: "Red Brick Folk Museum (Akarenga-kan)",
+        blurb:
+          "The former Akita Bank head office from the Meiji era, an Important Cultural Property with a red-and-white brick facade and lavish Baroque-style interiors. Inside are local crafts and the woodblock prints of Katsuhira Tokushi.",
+      },
+      "akita-kawabata-nightlife": {
+        name: "Kawabata Entertainment District",
+        blurb:
+          "Akita's storied nightlife quarter stretching along the Asahi River, where izakaya, regional-cuisine spots and small bars light up Kawabata-dori. Order iburigakko pickles with a glass of Aramasa sake — that's when you've truly arrived in Akita.",
+      },
+      "akita-sato-yoske": {
+        name: "Inaniwa Udon Sato Yoske (Akita Branch)",
+        blurb:
+          "The Akita city branch of the century-old house behind Inaniwa udon, one of Japan's three great udon styles — hand-stretched noodles so fine they glow. The signature two-dip tempura set lets you try both soy and sesame-miso sauces.",
+        tips: "It's in the basement of the Seibu department store, about 4 minutes from the station; expect queues at lunch peak.",
+      },
+      "akita-kiritanpo-ya": {
+        name: "Akita Kiritanpo-ya (Kiritanpo Hot Pot)",
+        blurb:
+          "A regional-cuisine izakaya by the station famous for kiritanpo hot pot in Hinai chicken broth — the toasted rice skewers soak up the stock and get better the longer they simmer. Charcoal hearths and folk-craft decor set the mood.",
+        tips: "Opens at 4pm on weekdays; lunch is served only on Sundays and holidays.",
+      },
+      "akita-shimin-ichiba": {
+        name: "Akita Citizens' Market",
+        blurb:
+          "A workaday market five minutes from Akita Station where fresh fish, mountain vegetables and pickle stalls open early — 'Akita's kitchen' lives up to its name. The sushi bars and diners inside serve market-direct seafood, cheap and generous.",
+        tips: "Closed on Sundays — go on a weekday or Saturday morning.",
+      },
+      "akita-selion": {
+        name: "Port Tower Selion",
+        blurb:
+          "A 143-meter glass tower at Akita Port with a free observation deck at 100 meters, sweeping over the Sea of Japan, the Oga Peninsula and the city. It's most moving at dusk, watching the sun sink into the sea.",
+        tips: "About 20 minutes by bus from Akita Station toward Selion; the ground-floor roadside-station market is great for last-minute souvenirs.",
+      },
+    },
+  },
+
+  hachinohe: {
+    name: "Hachinohe",
+    areas: {
+      "陸奧湊港區": "Mutsu-Minato Harbor",
+      "八戶站周邊": "Around Hachinohe Station",
+      "中心街": "City Center",
+      "蕪島・種差海岸": "Kabushima & Tanesashi Coast",
+      "南郊(是川・櫛引)": "Southern Outskirts (Korekawa & Kushihiki)",
+    },
+    hubs: {
+      "hachinohe-sta": "Hachinohe Station",
+      "hachinohe-hon-hachinohe": "Hon-Hachinohe Station (City Center)",
+      "hachinohe-mutsu-minato": "Mutsu-Minato Station",
+      "hachinohe-same": "Same Station",
+    },
+    souvenirs: [
+      "Nanbu senbei (wheat crackers in classic sesame and peanut flavors — the soul snack of the Nanbu region)",
+      "Ichigo-ni canned soup (a luxurious clear broth of sea urchin and abalone, Hachinohe's signature local dish)",
+      "Hachinohe maesoki saba products (branded mackerel fattened in autumn seas; canned saba and shime-saba both travel well)",
+      "Mutsu Hassen sake (Hachinohe Shuzo's popular local brew — fruity ginjo styles that win over even non-sake drinkers)",
+      "Nanbu hishizashi goods (traditional geometric embroidery of southern Aomori; coasters and pouches are light and lovely)",
+    ],
+    pois: {
+      "hachinohe-tatehana-asaichi": {
+        name: "Tatehana Wharf Morning Market",
+        blurb:
+          "One of Japan's largest morning markets: some 300 stalls stretch 800 meters along the wharf, selling seafood, senbei soup, fresh coffee and more. It opens at sunrise and wraps up before nine — an early riser's reward.",
+        tips: "Held only on Sundays from mid-March to December, sunrise to about 9am; a 10-minute walk from Mutsu-Minato Station — arrive by 6–7am for peak buzz.",
+      },
+      "hachinohe-hasshoku-center": {
+        name: "Hasshoku Center",
+        blurb:
+          "A giant 170-meter market of about 60 shops selling fresh fish, dried goods, Aomori apples and souvenirs. Buy seafood and grill it yourself over charcoal at the Shichirin-mura corner — Hachinohe's one-stop food hall.",
+        tips: "The 100-yen Hasshoku bus from Hachinohe Station takes about 10 minutes; the market building closes Wednesdays. Buy your seafood inside first, then head to Shichirin-mura to grill.",
+      },
+      "hachinohe-miroku-yokocho": {
+        name: "Miroku Yokocho",
+        blurb:
+          "A yatai village linking Sanchome and Rokunichimachi streets: 26 tiny stalls seating eight or nine each, serving skewers, seafood, local saba and sake. Rubbing shoulders with owners and fellow travelers is the essence of Hachinohe's yokocho culture.",
+        tips: "Hours and closing days vary by stall; most open after 5pm. Bar-hopping stall to stall — hashigo-zake — is how the locals do it.",
+      },
+      "hachinohe-kabushima": {
+        name: "Kabushima Shrine (Kabushima)",
+        blurb:
+          "A Benzaiten shrine on a small hill whose entire island is a National Natural Monument breeding ground for black-tailed gulls — tens of thousands blanket it in spring and summer. Getting hit by droppings is considered lucky, and the shrine even lends umbrellas.",
+        tips: "The gulls arrive around March and leave in August; egg-laying and chick-rearing from April to July is the most spectacular. About 15 minutes on foot from Same Station on the JR Hachinohe Line.",
+      },
+      "hachinohe-tanesashi-kaigan": {
+        name: "Tanesashi Coast",
+        blurb:
+          "A natural grass lawn rolls right down to the breaking waves, weaving green meadows, pine groves and rock formations into a nationally designated scenic coastline. The signature landscape of Sanriku Fukko National Park — perfect for a summer picnic on the grass.",
+        tips: "The lawn is right outside Tanesashi-Kaigan Station on the JR Hachinohe Line; strong walkers can hike the coastal trail from Kabushima, about 2 hours one way.",
+      },
+      "hachinohe-korekawa-jomonkan": {
+        name: "Korekawa Jomon Museum",
+        blurb:
+          "An archaeology museum housing finds from the World Heritage Korekawa site, crowned by the National Treasure 'Praying Dogu' — a clay figure with hands clasped in prayer. Sleek, modern displays reveal the aesthetics of people millennia ago.",
+        tips: "Closed Mondays (open on holidays, closing the next weekday instead). Public transport is sparse — a 15-minute taxi from the city center is the efficient option.",
+      },
+      "hachinohe-kushihiki-hachimangu": {
+        name: "Kushihiki Hachimangu",
+        blurb:
+          "The 800-year-old guardian shrine of the Nanbu domain, its halls hushed among cedar groves. The treasure hall holds two National Treasure suits of armor — the red-laced and white-laced yoroi — pinnacles of Kamakura-era armor craft.",
+        tips: "The treasure hall opens 9:00–17:00 and closes Wednesdays and Thursdays (adults 400 yen); about 10 minutes by taxi from Hachinohe Station, as buses are infrequent.",
+      },
+      "hachinohe-mutsuminato-asaichi": {
+        name: "Mutsu-Minato Ekimae Morning Market",
+        blurb:
+          "A working-class fish market in front of Mutsu-Minato Station: buy sashimi from the famed 'isaba no kaccha' fishwives, add rice and miso soup, and build your own seafood bowl. A slice of weekday-morning local life, richer than any tourist market.",
+        tips: "Closed Sundays and the second Saturday of each month; the dining corner runs roughly 6:00–10:00, so come early to build your bowl.",
+      },
+      "hachinohe-shuzo": {
+        name: "Hachinohe Shuzo Brewery",
+        blurb:
+          "The brewery behind Mutsu Hassen and Mutsu Otokoyama, founded in 1775 — its red-brick and earthen storehouses are registered Tangible Cultural Properties. Tour the kura, then taste the popular Hassen lineup at the counter; a must for sake lovers.",
+        tips: "Tours are by reservation, with online booking prioritized (lunch break 12–13:00, last tour 15:00); tasting of three sakes costs 500 yen. About 5 minutes on foot from Mutsu-Minato Station.",
+      },
+      "hachinohe-hacchi": {
+        name: "Hachinohe Portal Museum Hacchi",
+        blurb:
+          "A free cultural gateway in the city center, condensing Hachinohe's festivals, morning markets and yokocho culture into five floors of exhibits, plus local craft shops and cafes. Great for a break mid-stroll or as a rainy-day refuge.",
+        tips: "Free entry, open until 21:00, closed Tuesdays (the next day if Tuesday is a holiday); drop in first to gather ideas before planning your day.",
+      },
+    },
+  },
+
+  tsuruoka: {
+    name: "Tsuruoka & Sakata",
+    areas: {
+      鶴岡市區: "Tsuruoka City",
+      羽黑山: "Mt. Haguro",
+      "加茂・湯野浜": "Kamo & Yunohama",
+      酒田: "Sakata",
+    },
+    hubs: {
+      "tsuruoka-sta": "Tsuruoka Station",
+      "tsuruoka-sta-sakata": "Sakata Station",
+      "tsuruoka-haguro-zuishinmon": "Mt. Haguro Zuishinmon Gate",
+      "tsuruoka-haguro-sancho": "Mt. Haguro Summit",
+      "tsuruoka-kamo": "Kamo Aquarium",
+    },
+    souvenirs: [
+      "Dadacha-mame sweets (treats made from Tsuruoka's famed edamame — richly nutty kintsuba, cookies and even ice cream)",
+      "Oranda senbei (Sakata Beika's thin salted rice crackers baked from Shonai rice — the local snack everyone grows up on)",
+      "Shonai-fu (flat baked wheat gluten, a local pantry staple for soups and simmered dishes; light and easy to pack)",
+      "Kiyokawaya White Pari Roll (cream roll cake in a crisp white-chocolate shell, Tsuruoka's favorite patisserie treat; keep chilled)",
+    ],
+    pois: {
+      "tsuruoka-haguro-pagoda": {
+        name: "Mt. Haguro Five-Story Pagoda & Cedar Avenue",
+        blurb:
+          "A National Treasure pagoda of bare, unpainted timber hidden among centuries-old cedars — often called Tohoku's most beautiful old tower. From Zuishinmon gate it's a 15-minute walk down stone steps and past a vermilion bridge; the cedar-lined path is a sight in itself.",
+        tips: "The shingled roof was fully restored in 2024. Continuing up all 2,446 stone steps to the summit takes about an hour; to save your legs, return to the gate and ride the bus to the top.",
+      },
+      "tsuruoka-haguro-sanjin": {
+        name: "Sanjin Gosaiden Shrine (Mt. Haguro Summit)",
+        blurb:
+          "The heart of Dewa Sanzan mountain worship, enshrining the deities of Gassan, Haguro and Yudono under one roof beneath a mighty thatched roof two meters thick. Mirror Pond and 500-year-old cedars surround the hall — the sacred atmosphere is palpable.",
+        tips: "Shonai Kotsu buses run from Tsuruoka Station to the summit in about 50 minutes, but departures are sparse — check the timetable first. 2026 is the once-in-twelve-years Year of the Horse pilgrimage year.",
+      },
+      "tsuruoka-kamo-aquarium": {
+        name: "Kamo Aquarium",
+        blurb:
+          "A world-famous jellyfish aquarium with some 80 species on display; in the five-meter round Jellyfish Dream Theater tank, thousands of moon jellies drift like a dream. Its comeback story — from near-closure to jellyfish-powered fame — is a legend in itself.",
+        tips: "Open year-round 9:00–17:00 (last entry 16:00). Check the website for jellyfish talk times; the restaurant serves jellyfish ramen.",
+      },
+      "tsuruoka-chido-museum": {
+        name: "Chido Museum",
+        blurb:
+          "An open-air museum on the former retainer estate of the Sakai lords, where Meiji-era Western buildings like the old Nishitagawa District Office and a massive thatched farmhouse were relocated whole. The Sakai clan garden, a national scenic site, is here too.",
+        tips: "Closed Wednesdays. The pale-blue former Tsuruoka Police Station building is the most photogenic spot.",
+      },
+      "tsuruoka-park-taihokan": {
+        name: "Tsuruoka Park & Taihokan Hall",
+        blurb:
+          "A civic park on the site of Tsurugaoka Castle, where moats and old pines recall the Sakai clan's castle town; in spring its 700 cherry trees rank among Japan's top 100 blossom spots. The red-domed Taisho-era Taihokan hall inside honors Tsuruoka's notable figures, free of charge.",
+        tips: "Taihokan is closed Wednesdays and free to enter. Cherry blossoms peak around mid-April — the moat reflections are the best view.",
+      },
+      "tsuruoka-shonai-bussankan": {
+        name: "Shonai Tourist Product Center",
+        blurb:
+          "A one-stop souvenir emporium by the Tsuruoka IC — dadacha-mame sweets, Shonai-fu, local sake and fresh seafood all in one place, freshly renovated in spring 2026. The food court serves Shonai seafood bowls, handy for a restock between sights.",
+        tips: "Open 9:00–18:00 every day of the year. Local buses to Yunohama Onsen stop here, so shopping on the way back is easy.",
+      },
+      "tsuruoka-sankyo-soko": {
+        name: "Sankyo Rice Warehouses",
+        blurb:
+          "A row of black-walled rice warehouses built in 1893 along the Niida River, backed by a famous zelkova avenue — Sakata's signature view and a filming location for the NHK drama Oshin. The information center in warehouse 12 tells the story of the kitamaebune trade and Shonai rice.",
+        tips: "The Yume no Kura shop moved to Iroha-kura Park in 2025. From November 2026 to March 2027 the zelkova path is closed for preservation work — view the warehouses from the front instead.",
+      },
+      "tsuruoka-homma-hontei": {
+        name: "Former Homma Family Residence",
+        blurb:
+          "The mansion of the Homma family, once Japan's wealthiest landowners, built in 1768 to receive shogunate inspectors — a rare blend of samurai shoin-zukuri and merchant architecture under one roof. The timberwork and garden exude a magnate's understated luxury.",
+        tips: "Closed for winter from mid-December to late January. The annex shop across the street preserves the original storefront — visit both.",
+      },
+      "tsuruoka-somaro": {
+        name: "Somaro Maiko Teahouse",
+        blurb:
+          "A vermilion-walled former luxury restaurant from the kitamaebune era, where Sakata maiko perform dances in the upstairs grand hall every afternoon, reviving the port town's refined age. The attached Takehisa Yumeji museum pairs beauty paintings with the maiko world.",
+        tips: "Closed Wednesdays. The maiko performance starts at 14:00 and requires advance booking; the plan with tea and sweets is the best value.",
+      },
+      "tsuruoka-hiyoriyama": {
+        name: "Hiyoriyama Park",
+        blurb:
+          "A hilltop park overlooking Sakata port, with a wooden hexagonal lighthouse and a half-scale kitamaebune trading ship recalling the port's golden age. At dusk the sun sinks into the Sea of Japan — Sakata's classic sunset spot.",
+        tips: "In late April cherry blossoms frame the lighthouse. After sunset, it's a pleasant walk back to the old quarter near Somaro for dinner.",
+      },
+      "tsuruoka-nezameya-hanbee": {
+        name: "Nezameya Hanbee (Mugikiri Noodles)",
+        blurb:
+          "A 150-year-old shop for mugikiri, Shonai's thin white wheat noodles, chilled in ice water until springy and slick, served with a simple dipping sauce. The aimori combo of mugikiri and soba side by side is the connoisseur's order.",
+        tips: "Closed Wednesdays and the second Tuesday of each month; open 10:00–15:00 only, so plan it as lunch.",
+      },
+      "tsuruoka-yunohama-onsen": {
+        name: "Yunohama Onsen",
+        blurb:
+          "A thousand-year-old hot spring town facing the Sea of Japan — a swimming beach in summer, and at dusk the whole street faces the setting sun. Day-trippers can use ryokan day baths or the communal bathhouse, then watch the sun melt into the sea.",
+        tips: "About 40 minutes by bus from Tsuruoka Station. The communal baths are kept by locals and run hot — bring your own towel.",
+      },
+    },
+  },
+
+  fukushima: {
+    name: "Fukushima",
+    areas: {
+      福島市區: "Fukushima City",
+      飯坂溫泉: "Iizaka Onsen",
+      磐梯吾妻: "Bandai-Azuma",
+      吾妻山麓: "Azuma Foothills",
+    },
+    hubs: {
+      "fukushima-sta": "Fukushima Station",
+      "fukushima-sta-iizaka-onsen": "Iizaka Onsen Station",
+      "fukushima-jododaira": "Jododaira",
+    },
+    souvenirs: [
+      "Mamador (Sanmangoku's milky bean-paste cakes, the very definition of a Fukushima sweet)",
+      "Usukawa manju (Kashiwaya's thin-skinned red-bean buns since 1852, one of Japan's three great manju)",
+      "Ika ninjin (Fukushima's homey staple of shredded squid and carrot — great with rice or sake)",
+      "Peach treats (juices, jellies and dried fruit from Japan's peach kingdom — summer in a jar)",
+      "Radium eggs (Iizaka Onsen's famous hot-spring eggs, sold at old shops like Aburau)",
+    ],
+    pois: {
+      "fukushima-hanamiyama": {
+        name: "Hanamiyama Park",
+        blurb:
+          "A private flower hill opened free to all by its farming family: plum, cherry, forsythia and peach blossoms erupt together each spring — photographer Shotaro Akiyama called it 'Fukushima's Shangri-La'.",
+        tips: "In blossom season (late Mar–mid Apr) shuttle buses run from Fukushima Station; the one-way loop trail calls for comfortable shoes.",
+      },
+      "fukushima-jododaira-skyline": {
+        name: "Bandai-Azuma Skyline & Jododaira",
+        blurb:
+          "A volcanic sightseeing road at 1,600m crossing barren lava fields to Jododaira, facing the vast crater of Mt. Azuma-kofuji. In autumn the whole route blazes with foliage — one of Tohoku's great drives.",
+        tips: "Walking the Azuma-kofuji crater rim takes about an hour — dress for wind. The road closes mid-Nov to mid/late Apr and often at night in spring and autumn; check Fukushima Prefecture road updates first.",
+      },
+      "fukushima-sabakoyu": {
+        name: "Sabakoyu Bathhouse (Iizaka Onsen)",
+        blurb:
+          "Iizaka Onsen's oldest communal bath, where even Matsuo Basho is said to have soaked. For 400 yen the retro cypress bathhouse offers a slice of local sento life — silky water, but hot.",
+        tips: "The water often sits around 45°C — ladle some over yourself before easing in. Bring or buy towels and soap; closed Mondays (open if a holiday).",
+      },
+      "fukushima-terui": {
+        name: "Terui (Enban Gyoza)",
+        blurb:
+          "The definitive shop for Fukushima's enban gyoza: 22 dumplings pan-fried into one golden disc, crisp-skinned and juicy. Evenings only — locals pair it with beer as a matter of course.",
+        tips: "Opens at 17:00 and closes when the gyoza run out — join the queue before opening to be safe. Closed Wednesdays.",
+      },
+      "fukushima-kyu-horikiritei": {
+        name: "Former Horikiri Residence",
+        blurb:
+          "The estate of the Horikiri merchant-farmer family, with the prefecture's largest and oldest storehouse and a graceful main house — free to enter. Free-flowing hot-spring foot and hand baths sit by the garden.",
+        tips: "Free entry and open until 21:00 year-round — a foot bath before or after dinner slots in perfectly.",
+      },
+      "fukushima-nakano-fudoson": {
+        name: "Nakano Fudoson Temple",
+        blurb:
+          "A mountain temple over 800 years old, counted among Japan's three great Fudo sites. Vermilion halls cling to the gorge cliffs, a cave circuit enshrines 36 attendants, and the 'undying flame' still burns.",
+        tips: "About 10 minutes by taxi from Iizaka Onsen, or take the Nakano-bound bus from Fukushima Station. Open until 17:00 (16:00 from mid-Oct through Dec).",
+      },
+      "fukushima-shinobuyama": {
+        name: "Mt. Shinobu Karasugasaki Deck",
+        blurb:
+          "Mt. Shinobu rises straight from central Fukushima; its western Karasugasaki deck sweeps in the city, the shinkansen viaduct and the Azuma range — one of Japan's Top 100 night-view mountains.",
+        tips: "About a 7-minute walk from Tsukiyama parking lot; there are no streetlights, so bring a flashlight for night views.",
+      },
+      "fukushima-kenbi": {
+        name: "Fukushima Prefectural Museum of Art",
+        blurb:
+          "A serene museum in greenery at the foot of Mt. Shinobu, known for its Andrew Wyeth and Ben Shahn collections plus Fukushima-born painters like Shoji Sekine. A first-choice rainy-day plan.",
+        tips: "Closed Mondays (open on holiday Mondays, closing the next weekday instead); the Bijutsukan-Toshokan-mae stop on the Iizaka Line is right outside.",
+      },
+      "fukushima-azuma-icho": {
+        name: "Azuma Sports Park Ginkgo Avenue",
+        blurb:
+          "116 ginkgo trees line the park's central promenade in a 520-meter golden tunnel — Fukushima's signature autumn scene. At peak season the avenue is lit up after dusk, turning dreamlike.",
+        tips: "Peak color runs late Oct to mid-Nov with evening illumination; driving is easiest, or take a bus about 30 minutes from Fukushima Station.",
+      },
+      "fukushima-fruit-line": {
+        name: "Fruit Line Orchard Picking",
+        blurb:
+          "Along 14km of road at the foot of the Azuma range, orchards offer all-you-can-eat picking from June cherries through early-December apples. From July, peaches — the pride of Japan's peach kingdom — take over.",
+        tips: "Each orchard's crops and season differ, so check websites first; there's no public transport along the route — drive or taxi from Fukushima Station.",
       },
     },
   },

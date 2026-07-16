@@ -78,7 +78,7 @@ export const REGION_META: RegionMeta[] = [
     name: "東北",
     emoji: "🌾",
     blurb: "仙台牛舌、松島百島、山寺藏王、平泉金色堂、青森奧入瀨,人少景美的大東北。",
-    // 旅行順序:仙台進 → 山形一日 → 平泉 → 一路北上青森(城際移動總量最小)
-    cityIds: ["aizu", "yamagata", "sendai", "hiraizumi", "kakunodate", "aomori"],
+    // 旅行順序:南進北出——會津福島(南)→山形庄內→仙台→平泉盛岡→秋田內陸→八戶青森(北)
+    cityIds: ["aizu", "fukushima", "yamagata", "tsuruoka", "sendai", "hiraizumi", "morioka", "kakunodate", "akita", "hachinohe", "aomori"],
   },
 ];
