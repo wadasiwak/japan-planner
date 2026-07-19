@@ -125,6 +125,52 @@ try {
     "圖鑑:選地區後列出 POI",
     (await page.locator(".poi-card").count()) > beforeBrowse,
   );
+
+  // --- PWA:manifest + SW 註冊 + 離線可用 ---
+  const manifestOk = await page.evaluate(async () => {
+    const link = document.querySelector('link[rel="manifest"]');
+    if (!link) return false;
+    const m = await fetch(link.href).then((r) => r.json());
+    return m.display === "standalone" && m.icons.length >= 3 && m.start_url === "./";
+  });
+  check("PWA:manifest 存在且合規", manifestOk);
+
+  const swActive = await page.evaluate(async () => {
+    if (!("serviceWorker" in navigator)) return false;
+    const reg = await navigator.serviceWorker.ready;
+    return !!reg.active;
+  });
+  check("PWA:service worker 已啟用", swActive);
+
+  await page.getByText("←").click(); // 回首頁再斷網,reload 才落在首頁
+  await page.context().setOffline(true);
+  await page.reload({ waitUntil: "load" });
+  await page.waitForTimeout(500);
+  check("PWA:離線 reload 後 app 可開", (await page.getByText("J人規劃").count()) > 0);
+
+  // 離線切英文:lazy 字典 chunk 已 precache
+  await page.getByRole("button", { name: "EN" }).click();
+  await page.waitForTimeout(800);
+  check(
+    "PWA:離線切英文(lazy 字典)",
+    (await page.getByText("J-mode Planner").count()) > 0,
+  );
+  await page.getByRole("button", { name: "中", exact: true }).click();
+  await page.waitForTimeout(400);
+
+  // 離線開存檔行程 → 行程可看、地圖顯示降級文案
+  await page.getByText("我的收藏").click();
+  await page.getByText("打開").first().click();
+  await page.waitForTimeout(800);
+  check(
+    "PWA:離線開存檔行程",
+    (await page.locator(".day-tabs button").count()) >= 1,
+  );
+  check(
+    "PWA:離線地圖降級文案",
+    (await page.getByText("地圖暫不可用").count()) >= 1,
+  );
+  await page.context().setOffline(false);
 } catch (e) {
   console.error("❌ e2e 例外:", e.message);
   failed++;

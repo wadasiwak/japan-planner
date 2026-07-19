@@ -9,6 +9,7 @@ import { Codex } from "./components/Codex";
 import { PoiSearch } from "./components/PoiSearch";
 import { useAppStore, type ScreenId } from "./store/appStore";
 import { t, LANGS, loadContent, setContent, type StringKey } from "./i18n";
+import { onUpdateReady, applyUpdate } from "./pwa";
 
 const TITLE_KEY: Record<Exclude<ScreenId, "home">, StringKey> = {
   "j-setup": "title_jsetup",
@@ -44,6 +45,11 @@ export default function App() {
   const bumpDict = useAppStore((s) => s.bumpDict);
   // 內容字典載好後 bump 訊號讓元件原地重繪(不重掛,畫面狀態保留)
   const [dictLang, setDictLang] = useState<string>("zh");
+  // PWA:新版 SW 待命時亮更新 toast,點了 SKIP_WAITING → controllerchange reload
+  const [updateReady, setUpdateReady] = useState(false);
+  useEffect(() => {
+    onUpdateReady(() => setUpdateReady(true));
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -160,6 +166,12 @@ export default function App() {
       {screen === "codex" && <Codex onOpenPlan={(sp) => openPlan(sp.plan)} />}
 
       <footer className="footer">© 2026 wadasiwak. All rights reserved.</footer>
+
+      {updateReady && (
+        <button className="sw-toast" onClick={applyUpdate}>
+          {t("update_ready", lang)}
+        </button>
+      )}
     </div>
   );
 }

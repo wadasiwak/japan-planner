@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LatLng } from "../data/types";
+import { useAppStore } from "../store/appStore";
+import { t } from "../i18n";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/dark";
 
@@ -48,10 +50,26 @@ function markerEl(p: MapPoint): HTMLElement {
 /** 一張小地圖:標出點位,connect=true 時照 order 畫路線。 */
 export function DayMap({ points, connect = false }: { points: MapPoint[]; connect?: boolean }) {
   const boxRef = useRef<HTMLDivElement>(null);
+  const lang = useAppStore((s) => s.lang);
+  // 離線降級:地圖磚只有線上才有(SW 不快取),斷線時顯示訊息而不是破圖
+  const [mapDown, setMapDown] = useState(
+    typeof navigator !== "undefined" && !navigator.onLine,
+  );
+
+  useEffect(() => {
+    const online = () => setMapDown(false); // 回到線上 → 重掛地圖
+    const offline = () => setMapDown(true);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offline);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offline);
+    };
+  }, []);
 
   useEffect(() => {
     const box = boxRef.current;
-    if (!box || points.length === 0 || !hasWebGL()) return;
+    if (mapDown || !box || points.length === 0 || !hasWebGL()) return;
 
     const bounds = new maplibregl.LngLatBounds();
     for (const p of points) bounds.extend([p.center.lng, p.center.lat]);
@@ -64,6 +82,15 @@ export function DayMap({ points, connect = false }: { points: MapPoint[]; connec
       attributionControl: { compact: true },
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+
+    // style 還沒載成功前就出錯(通常是斷網抓不到 style/磚)→ 切降級訊息
+    let styleLoaded = false;
+    map.on("load", () => {
+      styleLoaded = true;
+    });
+    map.on("error", () => {
+      if (!styleLoaded && !map.isStyleLoaded()) setMapDown(true);
+    });
 
     const markers = points.map((p) =>
       new maplibregl.Marker({ element: markerEl(p) })
@@ -106,8 +133,10 @@ export function DayMap({ points, connect = false }: { points: MapPoint[]; connec
       for (const m of markers) m.remove();
       map.remove();
     };
-  }, [points, connect]);
+  }, [points, connect, mapDown]);
 
   if (!points.length) return null;
+  if (mapDown)
+    return <div className="map-box map-box-down">{t("map_offline", lang)}</div>;
   return <div className="map-box" ref={boxRef} />;
 }

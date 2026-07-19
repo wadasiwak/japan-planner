@@ -342,6 +342,17 @@ const STRINGS = {
   },
   // 語言包載入中(不擋操作的局部指示)
   lang_loading: { zh: "載入語言包…", en: "Loading language…", ja: "言語パック読込中…" },
+  // PWA
+  update_ready: {
+    zh: "🆕 有新版本,點一下更新",
+    en: "🆕 New version available — tap to update",
+    ja: "🆕 新しいバージョンがあります。タップで更新",
+  },
+  map_offline: {
+    zh: "📡 離線中,地圖暫不可用(行程照常可看)",
+    en: "📡 Offline — map unavailable (your plan still works)",
+    ja: "📡 オフライン中のため地図は表示できません(プランは見られます)",
+  },
 } satisfies Record<string, S>;
 
 export type StringKey = keyof typeof STRINGS;

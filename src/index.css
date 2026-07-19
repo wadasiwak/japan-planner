@@ -499,6 +499,32 @@ button:disabled {
   border: 1px solid var(--border);
   overflow: hidden;
 }
+/* 離線/載入失敗時的地圖降級:同尺寸的置中訊息,不破版 */
+.map-box-down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: var(--panel);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 0 20px;
+}
+
+/* PWA 版本更新 toast */
+.sw-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 60;
+  background: var(--panel-2);
+  border: 1px solid var(--accent);
+  border-radius: 99px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+  font-weight: 700;
+  white-space: nowrap;
+}
 
 .empty {
   text-align: center;
