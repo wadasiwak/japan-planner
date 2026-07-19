@@ -6,29 +6,37 @@ import { JSetup } from "./components/JSetup";
 import { JResult } from "./components/JResult";
 import { PSuggest } from "./components/PSuggest";
 import { Codex } from "./components/Codex";
-import { useAppStore } from "./store/appStore";
+import { PoiSearch } from "./components/PoiSearch";
+import { useAppStore, type ScreenId } from "./store/appStore";
 import { t, LANGS, loadContent, setContent, type StringKey } from "./i18n";
 
-type Screen =
-  | { t: "home" }
-  | { t: "j-setup" }
-  | { t: "j-result"; plan: Plan }
-  | { t: "p-suggest" }
-  | { t: "codex" };
-
-const TITLE_KEY: Record<Exclude<Screen["t"], "home">, StringKey> = {
+const TITLE_KEY: Record<Exclude<ScreenId, "home">, StringKey> = {
   "j-setup": "title_jsetup",
   "j-result": "title_jresult",
   "p-suggest": "title_psuggest",
   codex: "title_codex",
 };
 
+// 分享連結:#p=... 直接開行程(模組載入時處理一次,store 已同步 hydrate)
+{
+  const shared = planFromHash();
+  if (shared) {
+    const st = useAppStore.getState();
+    st.setCurrentPlan(shared);
+    st.setLockedDays([]);
+    st.setScreen("j-result");
+  }
+}
+
 export default function App() {
-  // 分享連結:#p=... 直接開行程
-  const [screen, setScreen] = useState<Screen>(() => {
-    const shared = planFromHash();
-    return shared ? { t: "j-result", plan: shared } : { t: "home" };
-  });
+  // 畫面與目前行程都在 store(persist):reload 回到原畫面並還原行程
+  const storedScreen = useAppStore((s) => s.screen);
+  const plan = useAppStore((s) => s.currentPlan);
+  const setScreen = useAppStore((s) => s.setScreen);
+  const setCurrentPlan = useAppStore((s) => s.setCurrentPlan);
+  const setLockedDays = useAppStore((s) => s.setLockedDays);
+  const screen: ScreenId =
+    storedScreen === "j-result" && !plan ? "home" : storedScreen;
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
   const planCount = useAppStore((s) => s.savedPlans.length);
   const lang = useAppStore((s) => s.lang);
@@ -59,16 +67,25 @@ export default function App() {
   }, [lang, bumpDict]);
 
   // 切換畫面回到頂端(設定頁捲到底按「排行程」,結果頁要從 Day 1 開始讀);
-  // 只看 screen.t:重骰/換一個仍停在原位
+  // 只看 screen:重骰/換一個仍停在原位
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [screen.t]);
+  }, [screen]);
 
   const ready = dictLang === lang;
 
+  /** 開新行程(J 排出/打開存檔):換行程時清掉舊的鎖日。 */
+  const openPlan = (p: Plan) => {
+    setCurrentPlan(p);
+    setLockedDays([]);
+    setScreen("j-result");
+  };
+
   return (
-    <div style={ready ? undefined : { opacity: 0.5 }}>
+    <div>
       <div className="lang-switch">
+        {/* 語言包 lazy 載入中:不擋操作的局部指示(內容先以繁中顯示,載好原地換) */}
+        {!ready && <span className="lang-loading">{t("lang_loading", lang)}</span>}
         {LANGS.map((l) => (
           <button
             key={l.id}
@@ -80,16 +97,16 @@ export default function App() {
         ))}
       </div>
 
-      {screen.t !== "home" && (
+      {screen !== "home" && (
         <header className="app-header">
-          <button className="back-btn ghost" onClick={() => setScreen({ t: "home" })}>
+          <button className="back-btn ghost" onClick={() => setScreen("home")}>
             ←
           </button>
-          <h1>{t(TITLE_KEY[screen.t], lang)}</h1>
+          <h1>{t(TITLE_KEY[screen], lang)}</h1>
         </header>
       )}
 
-      {screen.t === "home" && (
+      {screen === "home" && (
         <div className="screen">
           <div className="hero">
             <h1 className="brand">
@@ -105,20 +122,21 @@ export default function App() {
               <span className="chip-p">{t("slogan_p", lang)}</span>
             </p>
           </div>
-          <button className="mode-card mode-j" onClick={() => setScreen({ t: "j-setup" })}>
+          <button className="mode-card mode-j" onClick={() => setScreen("j-setup")}>
             <span className="mode-title">{t("mode_j", lang)}</span>
             <span className="mode-desc">{t("mode_j_desc", lang)}</span>
           </button>
-          <button className="mode-card mode-p" onClick={() => setScreen({ t: "p-suggest" })}>
+          <button className="mode-card mode-p" onClick={() => setScreen("p-suggest")}>
             <span className="mode-title">{t("mode_p", lang)}</span>
             <span className="mode-desc">{t("mode_p_desc", lang)}</span>
           </button>
-          <button className="mode-card" onClick={() => setScreen({ t: "codex" })}>
+          <button className="mode-card" onClick={() => setScreen("codex")}>
             <span className="mode-title">{t("mode_codex", lang)}</span>
             <span className="mode-desc">
               {t("codex_stat", lang, planCount, visitedCount)}
             </span>
           </button>
+          <PoiSearch />
           <div className="stats-row">
             <span className="stat-chip">{t("stat_regions", lang, REGIONS.length)}</span>
             <span className="stat-chip">{t("stat_pois", lang, ALL_POIS.length)}</span>
@@ -134,19 +152,12 @@ export default function App() {
         </div>
       )}
 
-      {screen.t === "j-setup" && (
-        <JSetup onPlan={(plan) => setScreen({ t: "j-result", plan })} />
+      {screen === "j-setup" && <JSetup onPlan={openPlan} />}
+      {screen === "j-result" && plan && (
+        <JResult plan={plan} onReplace={(p) => setCurrentPlan(p)} />
       )}
-      {screen.t === "j-result" && (
-        <JResult
-          plan={screen.plan}
-          onReplace={(plan) => setScreen({ t: "j-result", plan })}
-        />
-      )}
-      {screen.t === "p-suggest" && <PSuggest />}
-      {screen.t === "codex" && (
-        <Codex onOpenPlan={(sp) => setScreen({ t: "j-result", plan: sp.plan })} />
-      )}
+      {screen === "p-suggest" && <PSuggest />}
+      {screen === "codex" && <Codex onOpenPlan={(sp) => openPlan(sp.plan)} />}
 
       <footer className="footer">© 2026 wadasiwak. All rights reserved.</footer>
     </div>

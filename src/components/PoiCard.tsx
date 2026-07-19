@@ -1,31 +1,29 @@
 import type { POI } from "../data/types";
 import { cityById } from "../data";
 import { useAppStore } from "../store/appStore";
-import { t, tPoiName, tPoiBlurb, tPoiTips, tArea, type StringKey } from "../i18n";
+import { t, tPoiName, tPoiBlurb, tPoiTips, tArea, CATEGORY_KEY } from "../i18n";
 
-const CATEGORY_KEY: Record<POI["category"], StringKey> = {
-  sight: "cat_sight",
-  temple: "cat_temple",
-  nature: "cat_nature",
-  museum: "cat_museum",
-  food: "cat_food",
-  cafe: "cat_cafe",
-  shopping: "cat_shopping",
-  nightlife: "cat_nightlife",
-  experience: "cat_experience",
-};
+const toggleStyle = (pushRight: boolean) => ({
+  marginLeft: pushRight ? ("auto" as const) : undefined,
+  padding: "2px 12px",
+  fontSize: "0.8rem",
+});
 
 export function PoiCard({
   poi,
   extraTags = [],
   showVisitToggle = false,
+  showWishToggle = false,
 }: {
   poi: POI;
   extraTags?: string[];
   showVisitToggle?: boolean;
+  showWishToggle?: boolean;
 }) {
   const visited = useAppStore((s) => !!s.visited[poi.id]);
+  const wished = useAppStore((s) => !!s.wishlist[poi.id]);
   const toggleVisited = useAppStore((s) => s.toggleVisited);
+  const toggleWish = useAppStore((s) => s.toggleWish);
   const lang = useAppStore((s) => s.lang);
   useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
   const tips = tPoiTips(poi);
@@ -59,10 +57,19 @@ export function PoiCard({
         >
           {t("navigate", lang)}
         </a>
+        {showWishToggle && (
+          <button
+            className={`ghost${wished ? " selected" : ""}`}
+            style={toggleStyle(true)}
+            onClick={() => toggleWish(poi.id)}
+          >
+            {wished ? t("wished", lang) : t("wish_add", lang)}
+          </button>
+        )}
         {showVisitToggle && (
           <button
             className={`ghost${visited ? " selected" : ""}`}
-            style={{ marginLeft: "auto", padding: "2px 12px", fontSize: "0.8rem" }}
+            style={toggleStyle(!showWishToggle)}
             onClick={() => toggleVisited(poi.id)}
           >
             {visited ? t("visited", lang) : t("check_in", lang)}

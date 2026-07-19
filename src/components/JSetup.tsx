@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { REGIONS, regionById, poisByCity } from "../data";
 import type { Pace, Category } from "../data/types";
 import { buildPlan, type Plan } from "../lib/planner";
@@ -26,16 +26,39 @@ const regionCapacity = (regionId: string): number => {
 };
 
 export function JSetup({ onPlan }: { onPlan: (plan: Plan) => void }) {
-  const [regionId, setRegionId] = useState<string | null>(null);
-  const [days, setDays] = useState(4);
-  const [pace, setPace] = useState<Pace>("relaxed");
-  const [startDate, setStartDate] = useState("");
-  const [prefs, setPrefs] = useState<Category[]>([]);
-  const [excluded, setExcluded] = useState<Set<string>>(new Set());
-  const [skipVisited, setSkipVisited] = useState(false);
+  // 進行中的表單狀態存 store(persist),reload 後原樣還原。
+  // 初始化只讀一次(getState,不訂閱),之後單向寫回,不會自迴圈。
+  const draft = useAppStore.getState().jDraft;
+  const draftRegion = draft?.regionId && regionById(draft.regionId) ? draft.regionId : null;
+  const [regionId, setRegionId] = useState<string | null>(draftRegion);
+  const [days, setDays] = useState(
+    draftRegion && draft
+      ? Math.min(Math.max(1, draft.days), regionCapacity(draftRegion))
+      : (draft?.days ?? 4),
+  );
+  const [pace, setPace] = useState<Pace>(draft?.pace ?? "relaxed");
+  const [startDate, setStartDate] = useState(draft?.startDate ?? "");
+  const [prefs, setPrefs] = useState<Category[]>(draft?.prefs ?? []);
+  const [excluded, setExcluded] = useState<Set<string>>(
+    new Set(draftRegion ? (draft?.excluded ?? []) : []),
+  );
+  const [skipVisited, setSkipVisited] = useState(draft?.skipVisited ?? false);
+  const setJDraft = useAppStore((s) => s.setJDraft);
   const visitedCount = useAppStore((s) => Object.keys(s.visited).length);
   const lang = useAppStore((s) => s.lang);
   useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
+
+  useEffect(() => {
+    setJDraft({
+      regionId,
+      days,
+      pace,
+      startDate,
+      prefs,
+      excluded: [...excluded],
+      skipVisited,
+    });
+  }, [regionId, days, pace, startDate, prefs, excluded, skipVisited, setJDraft]);
   const region = regionId ? regionById(regionId) : undefined;
   // 容量隨排除的城市縮減
   const cap = region

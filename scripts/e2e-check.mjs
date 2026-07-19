@@ -39,6 +39,15 @@ try {
   await page.goto(base, { waitUntil: "networkidle" });
   check("首頁載入", (await page.getByText("J人規劃").count()) > 0);
 
+  // --- 全站搜尋 + ⭐收藏 ---
+  await page.locator(".search-input").fill("淺草寺");
+  await page.waitForTimeout(300);
+  check("搜尋:找到淺草寺", (await page.locator(".poi-card").count()) >= 1);
+  await page.locator(".poi-card").first().getByText("收藏").click();
+  check("搜尋:加入收藏", (await page.getByText("已收藏").count()) >= 1);
+  await page.locator(".search-input").fill("");
+  await page.waitForTimeout(200);
+
   // --- J 人流程:選第一個地區、5 天、行軍 ---
   await page.getByText("J人規劃").click();
   const regionBtns = page.locator(".choice-grid button");
@@ -61,6 +70,20 @@ try {
   // 存檔
   await page.getByText("存起來").click();
   check("J:存檔成功", (await page.getByText("已存").count()) > 0);
+
+  // .ics 行事曆匯出
+  const dlPromise = page.waitForEvent("download", { timeout: 10000 });
+  await page.getByText("行事曆").click();
+  const dl = await dlPromise;
+  check("J:.ics 匯出", dl.suggestedFilename() === "japan-planner.ics");
+
+  // 進行中狀態持久化:reload 後回到行程畫面、行程還原
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForTimeout(400);
+  check(
+    "持久化:reload 後回到行程",
+    (await page.locator(".day-tabs button").count()) >= 1,
+  );
 
   // --- P 人流程 ---
   await page.getByText("←").click();
@@ -88,6 +111,19 @@ try {
   check(
     "收藏:打卡足跡出現",
     (await page.locator(".poi-card").count()) >= 1,
+  );
+  check("收藏:wishlist 清單出現", (await page.getByText("收藏清單").count()) >= 1);
+  check("收藏:wishlist 有星點", (await page.getByText("⭐ 已收藏").count()) >= 1);
+
+  // 圖鑑瀏覽器:選第一個地區,列出 POI
+  await page.getByText("景點圖鑑").scrollIntoViewIfNeeded();
+  const beforeBrowse = await page.locator(".poi-card").count();
+  const browseGrid = page.locator(".choice-grid").first();
+  await browseGrid.locator("button").first().click();
+  await page.waitForTimeout(300);
+  check(
+    "圖鑑:選地區後列出 POI",
+    (await page.locator(".poi-card").count()) > beforeBrowse,
   );
 } catch (e) {
   console.error("❌ e2e 例外:", e.message);

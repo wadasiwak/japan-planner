@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { REGIONS, cityById, hubById } from "../data";
 import type { Pace } from "../data/types";
 import {
@@ -43,18 +43,31 @@ const reasonText = (r: ReasonInfo, lang: Lang): string => {
 };
 
 export function PSuggest() {
-  const [cityId, setCityId] = useState<string | null>(null);
-  const [hubId, setHubId] = useState<string | null>(null);
-  const [hoursLeft, setHoursLeft] = useState(4);
-  const [pace, setPace] = useState<Pace>("relaxed");
-  const [rain, setRain] = useState(false);
+  // 設定存 store(persist),reload 後原樣還原;seed/換一批排除是一次性的不存。
+  // 初始化只讀一次(getState,不訂閱),之後單向寫回,不會自迴圈。
+  const draft = useAppStore.getState().pDraft;
+  const draftCity = draft?.cityId && cityById(draft.cityId) ? draft.cityId : null;
+  const draftHub =
+    draftCity && draft?.hubId && cityById(draftCity)?.hubs.some((h) => h.id === draft.hubId)
+      ? draft.hubId
+      : null;
+  const [cityId, setCityId] = useState<string | null>(draftCity);
+  const [hubId, setHubId] = useState<string | null>(draftHub);
+  const [hoursLeft, setHoursLeft] = useState(draft?.hoursLeft ?? 4);
+  const [pace, setPace] = useState<Pace>(draft?.pace ?? "relaxed");
+  const [rain, setRain] = useState(draft?.rain ?? false);
   // 前一天晚上規劃隔天:tomorrow = 明早 9:00 起算
-  const [when, setWhen] = useState<"now" | "tomorrow">("now");
+  const [when, setWhen] = useState<"now" | "tomorrow">(draft?.when ?? "now");
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
+  const setPDraft = useAppStore((s) => s.setPDraft);
   const visited = useAppStore((s) => s.visited);
   const lang = useAppStore((s) => s.lang);
   useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
+
+  useEffect(() => {
+    setPDraft({ cityId, hubId, hoursLeft, pace, rain, when });
+  }, [cityId, hubId, hoursLeft, pace, rain, when, setPDraft]);
 
   const city = cityId ? cityById(cityId) : undefined;
 

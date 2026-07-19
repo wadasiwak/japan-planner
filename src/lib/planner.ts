@@ -68,13 +68,21 @@ const PACE_CFG = {
 const LUNCH = 12 * 60;
 const DINNER = 18 * 60;
 
-/** 排程上下文:亂數、星期、月份(季節)、偏好。 */
+/** 排程上下文:亂數、星期、月份(季節)、偏好、⭐收藏。 */
 interface Ctx {
   rnd: () => number;
   weekday?: number;
   month?: number;
   prefs?: Set<Category>;
+  /** ⭐收藏的 POI id:同條件下優先排入(加權,不改排程規則)。 */
+  wish?: Set<string>;
   startCursor?: number;
+}
+
+/** 本機 ⭐收藏(wishlist):有收藏才回 Set,沒有就 undefined 走原邏輯。 */
+function wishSet(): Set<string> | undefined {
+  const ids = Object.keys(useAppStore.getState().wishlist);
+  return ids.length ? new Set(ids) : undefined;
 }
 
 /** 季節硬過濾:有 months 且不含當月就不排。月份未知(沒填出發日)一律通過。 */
@@ -178,13 +186,14 @@ function buildAreaGroups(pois: POI[], ctx: Ctx): AreaGroup[] {
   }
   const groups: AreaGroup[] = [];
   for (const [area, list] of byArea) {
-    // 分區份量:優先度+偏好類別+當季加分。
+    // 分區份量:優先度+偏好類別+當季+⭐收藏加分。
     // 偏好權重要大到能翻轉分區選擇(組成由選哪些分區決定,分區內只是順序)。
     const base = list.reduce(
       (s, p) =>
         s +
         PRIORITY_W[p.priority] +
         (ctx.prefs?.has(p.category) ? 2.5 : 0) +
+        (ctx.wish?.has(p.id) ? 2.5 : 0) +
         (inSeasonBoost(p, ctx.month) ? 1.5 : 0),
       0,
     );
@@ -385,6 +394,7 @@ function planCityDay(
         (p) => {
           let s = distFrom(p) + (p.priority - 1) * 0.6 + ctx.rnd() * 0.4;
           if (ctx.prefs?.has(p.category)) s -= 1.2;
+          if (ctx.wish?.has(p.id)) s -= 1.5; // ⭐收藏:同條件下優先
           if (inSeasonBoost(p, ctx.month)) s -= 1.5;
           if (p.bestTime === "evening" && cursor < 16 * 60) s += 5;
           if (p.bestTime === "morning" && cursor >= 13 * 60) s += 2;
@@ -469,6 +479,7 @@ export function buildPlan(input: PlanInput): Plan {
   );
   const month = monthOf(input.startDate);
   const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
+  const wish = wishSet();
 
   // 有出發日就算出每天星期幾,排程避開當天公休
   const startWeekday = input.startDate
@@ -482,7 +493,7 @@ export function buildPlan(input: PlanInput): Plan {
     const intercity = prevCity ? intercitySlot(prevCity, city, input.pace) : null;
 
     // 這城市的 POI 一次建組,跨這幾天共用消耗,不會重複排
-    const ctx: Ctx = { rnd, month, prefs };
+    const ctx: Ctx = { rnd, month, prefs, wish };
     const groups = buildAreaGroups(cityPool(city.id, input), ctx);
     for (let d = 0; d < n; d++) {
       // 走廊城市(箱根黃金循環等):照走廊順序走,不用分數/最近鄰;
@@ -628,6 +639,7 @@ export function rerollUnlocked(
   const rnd = mulberry32(seed);
   const month = monthOf(input.startDate);
   const prefs = input.prefs?.length ? new Set(input.prefs) : undefined;
+  const wish = wishSet();
   const usedInLocked = new Set(
     plan.days
       .filter((d) => lockedDays.has(d.day))
@@ -645,7 +657,7 @@ export function rerollUnlocked(
     while (i < plan.days.length && plan.days[i].cityId === cityId)
       cityDays.push({ ...plan.days[i++] });
     const city = cityById(cityId)!;
-    const ctx: Ctx = { rnd, month, prefs };
+    const ctx: Ctx = { rnd, month, prefs, wish };
     const groups = buildAreaGroups(
       cityPool(cityId, input).filter((p) => !usedInLocked.has(p.id)),
       ctx,

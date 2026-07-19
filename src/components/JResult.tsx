@@ -9,8 +9,9 @@ import {
   type PlanSlot,
 } from "../lib/planner";
 import { planShareUrl } from "../lib/share";
+import { downloadIcs } from "../lib/ics";
 import { matchPasses } from "../data/passes";
-import { useAppStore } from "../store/appStore";
+import { MAX_SAVED_PLANS, useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
 import type { MapPoint } from "./DayMap";
 import {
@@ -47,7 +48,11 @@ export function JResult({
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
-  const [lockedDays, setLockedDays] = useState<Set<number>>(new Set());
+  // 鎖日狀態存 store(persist),reload 後跟行程一起還原
+  const lockedArr = useAppStore((s) => s.lockedDays);
+  const setLockedArr = useAppStore((s) => s.setLockedDays);
+  const lockedDays = useMemo(() => new Set(lockedArr), [lockedArr]);
+  const savedPlans = useAppStore((s) => s.savedPlans);
   const lang = useAppStore((s) => s.lang);
   useAppStore((s) => s.dictTick); // 語言包載入完成時原地重繪
   const WD = WEEKDAY_BY_LANG[lang];
@@ -89,13 +94,12 @@ export function JResult({
     onReplace(rerollUnlocked(plan, lockedDays, Math.floor(Math.random() * 1e9)));
   };
 
-  const toggleLock = (dayNo: number) =>
-    setLockedDays((prev) => {
-      const next = new Set(prev);
-      if (next.has(dayNo)) next.delete(dayNo);
-      else next.add(dayNo);
-      return next;
-    });
+  const toggleLock = (dayNo: number) => {
+    const next = new Set(lockedDays);
+    if (next.has(dayNo)) next.delete(dayNo);
+    else next.add(dayNo);
+    setLockedArr([...next]);
+  };
 
   const doReplace = (slotIdx: number) => {
     const next = replaceSlot(plan, dayIdx, slotIdx, Math.floor(Math.random() * 1e9));
@@ -195,7 +199,8 @@ export function JResult({
 
   return (
     <div className="screen">
-      <div className="row">
+      {/* 工具列鍵多(重骰/複製/分享/PDF/行事曆/存),窄螢幕要能換行 */}
+      <div className="row wrap">
         <strong>{title}</strong>
         <span className="spacer" />
         <button className="ghost" onClick={reroll}>
@@ -214,8 +219,21 @@ export function JResult({
           {t("download_pdf", lang)}
         </button>
         <button
+          className="ghost"
+          title={t("ics_hint", lang)}
+          onClick={() => downloadIcs(plan, lang)}
+        >
+          {t("ics_export", lang)}
+        </button>
+        <button
           className={saved ? "selected" : ""}
           onClick={() => {
+            // 存滿上限時明確提示會丟最舊的一份
+            if (
+              savedPlans.length >= MAX_SAVED_PLANS &&
+              !window.confirm(t("save_limit_confirm", lang, MAX_SAVED_PLANS))
+            )
+              return;
             savePlan(title, plan);
             setSaved(true);
           }}

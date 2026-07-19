@@ -117,6 +117,7 @@ button:disabled {
 .lang-switch {
   display: flex;
   gap: 4px;
+  align-items: center;
   justify-content: flex-end;
   padding: 2px 0 6px;
 }
@@ -124,6 +125,36 @@ button:disabled {
   padding: 2px 10px;
   font-size: 0.78rem;
   border-radius: 8px;
+}
+/* 語言包 lazy 載入中的局部指示:不擋操作,載好原地換字 */
+.lang-loading {
+  font-size: 0.72rem;
+  color: var(--muted);
+  animation: lang-pulse 1s ease-in-out infinite;
+}
+@keyframes lang-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 全站 POI 搜尋框 */
+.search-input {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  width: 100%;
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 /* 首頁 hero */

@@ -1,4 +1,4 @@
-import type { POI, CityDef, Hub, RegionDef } from "./data/types";
+import type { POI, CityDef, Hub, RegionDef, Category } from "./data/types";
 import type { ContentDict } from "./data/i18n/types";
 import type { SlotInfo } from "./lib/planner";
 import { cityById, ALL_POIS } from "./data";
@@ -289,6 +289,59 @@ const STRINGS = {
   cat_shopping: { zh: "🛍️ 購物", en: "🛍️ Shopping", ja: "🛍️ 買い物" },
   cat_nightlife: { zh: "🌃 夜生活", en: "🌃 Nightlife", ja: "🌃 ナイト" },
   cat_experience: { zh: "🎡 體驗", en: "🎡 Experience", ja: "🎡 体験" },
+  // 全站搜尋
+  search_placeholder: {
+    zh: "🔍 搜景點/城市/分類…",
+    en: "🔍 Search spots, cities, categories…",
+    ja: "🔍 スポット・都市・カテゴリを検索…",
+  },
+  search_results: { zh: "找到 {0} 個點", en: "{0} matches", ja: "{0} 件ヒット" },
+  search_none: {
+    zh: "沒有符合的景點,換個關鍵字試試。",
+    en: "No matching spots — try another keyword.",
+    ja: "見つからない——別のキーワードで試してみて。",
+  },
+  search_more: {
+    zh: "…還有 {0} 個,輸入更精確的關鍵字",
+    en: "…and {0} more — refine your search",
+    ja: "…他 {0} 件。キーワードを絞ってみて",
+  },
+  // 收藏(wishlist)
+  wish_add: { zh: "☆ 收藏", en: "☆ Wishlist", ja: "☆ お気に入り" },
+  wished: { zh: "⭐ 已收藏", en: "⭐ Wishlisted", ja: "⭐ 登録済み" },
+  wishlist_head: {
+    zh: "⭐ 收藏清單({0})",
+    en: "⭐ Wishlist ({0})",
+    ja: "⭐ お気に入り({0})",
+  },
+  wishlist_hint: {
+    zh: "收藏的景點在「J人規劃」排程時會優先排入。",
+    en: "Wishlisted spots get priority when J-mode builds your itinerary.",
+    ja: "お気に入りはJ型プランナーで優先的に組み込まれます。",
+  },
+  // Codex 圖鑑瀏覽器
+  browse_head: { zh: "🗾 景點圖鑑", en: "🗾 Browse all spots", ja: "🗾 スポット図鑑" },
+  browse_hint: {
+    zh: "選個地區開始逛,把想去的加 ⭐收藏。",
+    en: "Pick a region to browse, and star the spots you want to visit.",
+    ja: "エリアを選んで眺めて、行きたい所に⭐を。",
+  },
+  browse_all: { zh: "全部", en: "All", ja: "すべて" },
+  // .ics 行事曆匯出
+  ics_export: { zh: "📅 行事曆", en: "📅 Calendar", ja: "📅 カレンダー" },
+  ics_hint: {
+    zh: "匯出 .ics 行事曆檔;沒設出發日就從今天起算(Day 1 = 今天)",
+    en: "Export .ics calendar — without a start date, Day 1 counts from today",
+    ja: ".ics を書き出し。出発日未設定なら Day 1 = 今日として計算",
+  },
+  // 存檔上限
+  save_limit_confirm: {
+    zh: "已存滿 {0} 份行程,再存會刪掉最舊的一份。繼續?",
+    en: "You already have {0} saved plans (the max) — saving will drop the oldest. Continue?",
+    ja: "保存は{0}件まで。いちばん古いプランを削除して保存する?",
+  },
+  // 語言包載入中(不擋操作的局部指示)
+  lang_loading: { zh: "載入語言包…", en: "Loading language…", ja: "言語パック読込中…" },
 } satisfies Record<string, S>;
 
 export type StringKey = keyof typeof STRINGS;
@@ -347,4 +400,37 @@ export function fmtDurationLang(min: number, lang: Lang): string {
   const m = Math.round(min % 60);
   if (h === 0) return t("dur_m", lang, m);
   return m === 0 ? t("dur_h", lang, h) : t("dur_hm", lang, h, m);
+}
+
+/** POI 分類 → UI 字串 key(PoiCard 標籤與搜尋共用)。 */
+export const CATEGORY_KEY: Record<Category, StringKey> = {
+  sight: "cat_sight",
+  temple: "cat_temple",
+  nature: "cat_nature",
+  museum: "cat_museum",
+  food: "cat_food",
+  cafe: "cat_cafe",
+  shopping: "cat_shopping",
+  nightlife: "cat_nightlife",
+  experience: "cat_experience",
+};
+
+/**
+ * 全站搜尋的比對文字:POI 名(繁中+日文原名+已載入字典的譯名)、
+ * 城市名(三語)、分類標籤(三語,UI 字串是 bundle 進來的,不用等 lazy 字典)。
+ * en/ja 內容字典 lazy 載入,載好後 dictTick 重繪、這裡自然涵蓋該語言。
+ */
+export function poiSearchText(p: POI): string {
+  const parts = [p.name, p.nameJa];
+  const tr = cityT(p.city)?.pois[p.id]?.name;
+  if (tr) parts.push(tr);
+  const c = cityById(p.city);
+  if (c) {
+    parts.push(c.name, c.nameJa);
+    const cn = cityT(c.id)?.name;
+    if (cn) parts.push(cn);
+  }
+  const cat = STRINGS[CATEGORY_KEY[p.category]];
+  parts.push(cat.zh, cat.en, cat.ja);
+  return parts.join("\n").toLowerCase();
 }
