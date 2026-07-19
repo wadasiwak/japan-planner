@@ -14,11 +14,14 @@ export function PoiCard({
   extraTags = [],
   showVisitToggle = false,
   showWishToggle = false,
+  action,
 }: {
   poi: POI;
   extraTags?: string[];
   showVisitToggle?: boolean;
   showWishToggle?: boolean;
+  /** 自訂動作鍵(如「＋ 加到 Day N」),顯示在 meta 列最右。 */
+  action?: { label: string; onClick: () => void };
 }) {
   const visited = useAppStore((s) => !!s.visited[poi.id]);
   const wished = useAppStore((s) => !!s.wishlist[poi.id]);
@@ -57,6 +60,11 @@ export function PoiCard({
         >
           {t("navigate", lang)}
         </a>
+        {action && (
+          <button className="ghost" style={toggleStyle(true)} onClick={action.onClick}>
+            {action.label}
+          </button>
+        )}
         {showWishToggle && (
           <button
             className={`ghost${wished ? " selected" : ""}`}

@@ -334,6 +334,30 @@ const STRINGS = {
     en: "Export .ics calendar — without a start date, Day 1 counts from today",
     ja: ".ics を書き出し。出発日未設定なら Day 1 = 今日として計算",
   },
+  // 行程手動編輯
+  move_up: { zh: "↑ 上移", en: "↑ Up", ja: "↑ 上へ" },
+  move_down: { zh: "↓ 下移", en: "↓ Down", ja: "↓ 下へ" },
+  move_to_day: { zh: "⇄ 移到", en: "⇄ Move to", ja: "⇄ 移動" },
+  add_poi: { zh: "＋ 加入景點", en: "＋ Add a spot", ja: "＋ スポットを追加" },
+  add_poi_close: { zh: "✕ 收起", en: "✕ Close", ja: "✕ 閉じる" },
+  add_poi_hint: {
+    zh: "搜尋任何景點,插進 Day {0} 順路的位置。",
+    en: "Search any spot — it'll slot into Day {0} along the route.",
+    ja: "スポットを検索して Day {0} のルート上に追加。",
+  },
+  add_to_day: { zh: "＋ 加到 Day {0}", en: "＋ Add to Day {0}", ja: "＋ Day {0} に追加" },
+  edited_day: { zh: "✍️ 已手動調整", en: "✍️ Edited", ja: "✍️ 手動調整済み" },
+  reroll_edited_confirm: {
+    zh: "有 {0} 天已手動調整,重骰會蓋掉這些調整(鎖住的天不動)。繼續?",
+    en: "{0} day(s) have manual edits — rerolling will overwrite them (locked days stay). Continue?",
+    ja: "手動調整した日が {0} 日あります。振り直すと上書きされます(固定した日はそのまま)。続けますか?",
+  },
+  // 天氣預報
+  rain_hint: {
+    zh: "🌧️ 這天可能下雨,室內點優先",
+    en: "🌧️ Rain likely this day — favor indoor spots",
+    ja: "🌧️ この日は雨かも。屋内スポット優先で",
+  },
   // 存檔上限
   save_limit_confirm: {
     zh: "已存滿 {0} 份行程,再存會刪掉最舊的一份。繼續?",

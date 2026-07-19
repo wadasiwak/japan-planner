@@ -731,6 +731,7 @@ a.tag.maplink {
   display: flex;
   gap: 6px;
   justify-content: flex-end;
+  flex-wrap: wrap; /* 編輯鍵多(↑↓/移到/換/不去),窄螢幕要能換行 */
   margin-top: 4px;
 }
 .slot-actions button,
@@ -738,4 +739,43 @@ button.small {
   padding: 3px 10px;
   font-size: 0.8rem;
   border-radius: 8px;
+}
+/* 「⇄ 移到 Day N」下拉:外觀對齊 ghost small 按鈕 */
+.slot-move-select {
+  font: inherit;
+  font-size: 0.8rem;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px 6px;
+  cursor: pointer;
+}
+.slot-move-select:hover {
+  border-color: var(--accent);
+}
+.slot-move-select option {
+  background: var(--panel);
+  color: var(--text);
+}
+
+/* 手動加點區(J-result 時間軸下方) */
+.add-poi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* 天氣:日標題列的 emoji+高低溫;雨天提示一行 */
+.wx-chip {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.rain-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gold);
 }

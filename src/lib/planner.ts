@@ -48,6 +48,12 @@ export interface PlanDay {
   weekday?: number;
   areas: string[];
   slots: PlanSlot[];
+  /**
+   * 這天被手動調整過(排序/跨天移動/加點/換點/移除)。
+   * 重骰前 UI 會先確認,避免手調心血被骰掉。optional:舊資料/舊分享連結沒有
+   * 這欄位,缺省視為未編輯,向後相容。
+   */
+  edited?: boolean;
 }
 
 export interface Plan {
@@ -521,39 +527,193 @@ export function buildPlan(input: PlanInput): Plan {
 }
 
 // ---------------------------------------------------------------------------
-// 行程編輯:單點替換 / 不去 / 鎖定日重骰
+// 行程編輯:單點替換 / 不去 / 手動排序 / 跨天移動 / 手動加點 / 鎖定日重骰
 // ---------------------------------------------------------------------------
 
-/** 重排一天的時間軸:保留順序與型態,重新累計時間(含同分區步行)。 */
-export function retimeDay(day: PlanDay, pace: Pace): PlanDay {
+/** 市內移動列(mv):手動編輯後位置/時間都不可信,重建時砍掉重長。 */
+const isMvSlot = (s: PlanSlot): boolean => s.kind === "transit" && s.info?.t === "mv";
+
+/**
+ * 重建一天的時間軸:市內移動列全部依新順序重長(跨分區才顯示一列),
+ * 城際移動(ic)照原時長接在一天開頭。POI 開始時間 clamp 到合理時段
+ * (夜生活手動移到早上也不會顯示 09:00),分區清單同步重算,
+ * 讓標題/複製文字/.ics 都如實反映編輯後的行程。
+ */
+export function rebuildDay(day: PlanDay, pace: Pace): PlanDay {
   const cfg = PACE_CFG[pace];
   const mealLen = pace === "relaxed" ? 60 : 45;
-  let cursor = day.slots[0]?.start ?? cfg.dayStart;
+  const content = day.slots.filter((s) => !isMvSlot(s));
+  const slots: PlanSlot[] = [];
+  const areas: string[] = [];
+  let cursor = cfg.dayStart;
   let prevPoi: POI | undefined;
-  const slots = day.slots.map((s) => {
+  for (const s of content) {
+    if (s.kind === "transit") {
+      // 城際移動:時長照舊,從一天開頭接續
+      const dur = s.end - s.start;
+      slots.push({ ...s, start: cursor, end: cursor + dur });
+      cursor += dur;
+      continue;
+    }
     const poi = s.poiId ? poiById(s.poiId) : undefined;
-    let dur = s.end - s.start;
-    if (poi) dur = poi.stayMin[pace];
-    else if (s.kind === "meal") dur = mealLen;
-    // 兩個相鄰景點間補步行時間(原本 transit slot 的照舊)
-    if (poi && prevPoi && s.kind !== "transit")
-      cursor += transitMinutes(haversineKm(prevPoi.center, poi.center)) - 10 > 0
-        ? transitMinutes(haversineKm(prevPoi.center, poi.center))
-        : 10;
-    const out = { ...s, start: cursor, end: cursor + dur };
+    if (poi) {
+      if (prevPoi) {
+        const walk = transitMinutes(haversineKm(prevPoi.center, poi.center));
+        // 跨分區補一列「移動到X」;同分區只默默加步行時間(與排程器一致)
+        if (poi.area !== prevPoi.area)
+          slots.push({
+            kind: "transit",
+            start: cursor,
+            end: cursor + walk,
+            info: { t: "mv", area: poi.area, min: walk },
+          });
+        cursor += walk;
+      }
+      cursor = Math.max(cursor, earliestStartMin(poi));
+      if (!areas.includes(poi.area)) areas.push(poi.area);
+    }
+    const dur = poi ? poi.stayMin[pace] : s.kind === "meal" ? mealLen : s.end - s.start;
+    slots.push({ ...s, start: cursor, end: cursor + dur });
     cursor += dur;
     if (poi) prevPoi = poi;
-    return out;
-  });
-  return { ...day, slots };
+  }
+  return { ...day, areas: areas.length ? areas : day.areas, slots };
 }
 
 /** 把某一格從行程拿掉(不去了),當天時間軸重排。 */
 export function removeSlot(plan: Plan, dayIdx: number, slotIdx: number): Plan {
   const days = plan.days.map((d, i) =>
     i === dayIdx
-      ? retimeDay({ ...d, slots: d.slots.filter((_, j) => j !== slotIdx) }, plan.input.pace)
+      ? rebuildDay(
+          { ...d, edited: true, slots: d.slots.filter((_, j) => j !== slotIdx) },
+          plan.input.pace,
+        )
       : d,
+  );
+  return { ...plan, days };
+}
+
+/** 這一格能不能在當天內上移/下移(跳過移動列;不能移過開頭的城際移動)。 */
+export function canMoveSlot(
+  plan: Plan,
+  dayIdx: number,
+  slotIdx: number,
+  dir: -1 | 1,
+): boolean {
+  const day = plan.days[dayIdx];
+  const slot = day?.slots[slotIdx];
+  if (!day || !slot || slot.kind === "transit") return false;
+  const content = day.slots.filter((s) => !isMvSlot(s));
+  const j = content.indexOf(slot) + dir;
+  return j >= 0 && j < content.length && content[j].kind !== "transit";
+}
+
+/** 當日內把某格上移/下移一格,時間軸與移動列重排。 */
+export function moveSlot(
+  plan: Plan,
+  dayIdx: number,
+  slotIdx: number,
+  dir: -1 | 1,
+): Plan | null {
+  if (!canMoveSlot(plan, dayIdx, slotIdx, dir)) return null;
+  const day = plan.days[dayIdx];
+  const slot = day.slots[slotIdx];
+  const content = day.slots.filter((s) => !isMvSlot(s));
+  const i = content.indexOf(slot);
+  const next = [...content];
+  [next[i], next[i + dir]] = [next[i + dir], next[i]];
+  const days = plan.days.map((d, k) =>
+    k === dayIdx ? rebuildDay({ ...d, edited: true, slots: next }, plan.input.pace) : d,
+  );
+  return { ...plan, days };
+}
+
+/**
+ * 把一格插進某天的最佳位置:每個可插位置(城際移動之後)都試排一次,
+ * 以「前後鄰點繞路距離+打烊/收工違和」評分取最小 —— 重用排程器的
+ * 距離/時段工具,不重跑排程器。
+ */
+function insertSlotBest(day: PlanDay, slot: PlanSlot, pace: Pace): PlanDay {
+  const poi = slot.poiId ? poiById(slot.poiId) : undefined;
+  const content = day.slots.filter((s) => !isMvSlot(s));
+  const firstContent = content.findIndex((s) => s.kind !== "transit");
+  const lo = firstContent === -1 ? content.length : firstContent;
+  let best: PlanDay | null = null;
+  let bestScore = Infinity;
+  for (let at = lo; at <= content.length; at++) {
+    const rebuilt = rebuildDay(
+      { ...day, slots: [...content.slice(0, at), slot, ...content.slice(at)] },
+      pace,
+    );
+    let score = 0;
+    if (poi) {
+      const prev = content
+        .slice(0, at)
+        .reverse()
+        .map((s) => (s.poiId ? poiById(s.poiId) : undefined))
+        .find(Boolean);
+      const nxt = content
+        .slice(at)
+        .map((s) => (s.poiId ? poiById(s.poiId) : undefined))
+        .find(Boolean);
+      // 地理就近:插進去多繞的路愈少愈好
+      if (prev) score += haversineKm(prev.center, poi.center);
+      if (nxt) score += haversineKm(poi.center, nxt.center);
+      if (prev && nxt) score -= haversineKm(prev.center, nxt.center);
+      // 時段合理:排到打烊後/一天收工後的重罰
+      const placed = rebuilt.slots.find((s) => s.poiId === poi.id);
+      if (placed && placed.end > latestEndMin(poi)) score += 100;
+      if (placed && placed.end > PACE_CFG[pace].dayEnd) score += 100;
+    }
+    if (best === null || score < bestScore) {
+      best = rebuilt;
+      bestScore = score;
+    }
+  }
+  return best ?? day;
+}
+
+/** 跨天移動:從某天拿掉一格,插到目標天照時段/地理就近的位置。 */
+export function moveSlotToDay(
+  plan: Plan,
+  dayIdx: number,
+  slotIdx: number,
+  targetDayIdx: number,
+): Plan | null {
+  const day = plan.days[dayIdx];
+  const slot = day?.slots[slotIdx];
+  if (
+    !day ||
+    !slot ||
+    !plan.days[targetDayIdx] ||
+    targetDayIdx === dayIdx ||
+    slot.kind === "transit" ||
+    !slot.poiId
+  )
+    return null;
+  const days = plan.days.map((d, i) => {
+    if (i === dayIdx)
+      return rebuildDay(
+        { ...d, edited: true, slots: d.slots.filter((_, j) => j !== slotIdx) },
+        plan.input.pace,
+      );
+    if (i === targetDayIdx)
+      return { ...insertSlotBest(d, slot, plan.input.pace), edited: true };
+    return d;
+  });
+  return { ...plan, days };
+}
+
+/** 手動加點:任意 POI 插入指定天(已在行程中的不重複加)。 */
+export function addPoiToDay(plan: Plan, dayIdx: number, poiId: string): Plan | null {
+  const poi = poiById(poiId);
+  if (!poi || !plan.days[dayIdx]) return null;
+  if (plan.days.some((d) => d.slots.some((s) => s.poiId === poiId))) return null;
+  const kind: PlanSlot["kind"] =
+    poi.category === "food" ? "meal" : poi.category === "cafe" ? "cafe" : "poi";
+  const slot: PlanSlot = { kind, start: 0, end: poi.stayMin[plan.input.pace], poiId };
+  const days = plan.days.map((d, i) =>
+    i === dayIdx ? { ...insertSlotBest(d, slot, plan.input.pace), edited: true } : d,
   );
   return { ...plan, days };
 }
@@ -614,9 +774,10 @@ export function replaceSlot(
     .sort((a, b) => a.s - b.s)[0].p;
   const days = plan.days.map((d, i) =>
     i === dayIdx
-      ? retimeDay(
+      ? rebuildDay(
           {
             ...d,
+            edited: true,
             slots: d.slots.map((s, j) =>
               j === slotIdx ? { ...s, poiId: best.id, note: undefined } : s,
             ),
@@ -676,6 +837,7 @@ export function rerollUnlocked(
           weekday: d.weekday,
           areas: d.areas,
           slots: d.slots,
+          edited: d.edited, // 鎖住的天原封不動,手動編輯標記一起保留
         });
         d.done = true;
         continue;

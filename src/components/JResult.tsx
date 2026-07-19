@@ -1,18 +1,31 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { cityById, poiById, regionById } from "../data";
 import {
+  addPoiToDay,
+  canMoveSlot,
   fmtTime,
+  moveSlot,
+  moveSlotToDay,
   removeSlot,
   replaceSlot,
   rerollUnlocked,
   type Plan,
+  type PlanDay,
   type PlanSlot,
 } from "../lib/planner";
 import { planShareUrl } from "../lib/share";
 import { downloadIcs } from "../lib/ics";
+import {
+  addDaysISO,
+  fetchDayWeathers,
+  weatherEmoji,
+  RAIN_HINT_PROB,
+  type DayWeather,
+} from "../lib/weather";
 import { matchPasses } from "../data/passes";
 import { MAX_SAVED_PLANS, useAppStore } from "../store/appStore";
 import { PoiCard } from "./PoiCard";
+import { PoiSearch } from "./PoiSearch";
 import type { MapPoint } from "./DayMap";
 import {
   t,
@@ -89,7 +102,41 @@ export function JResult({
       });
   }, [plan, dayIdx, lang]);
 
+  // -- 天氣:有出發日且在 16 天預報內才抓;離線/失敗整段安靜隱藏 --
+  const [wx, setWx] = useState<Map<string, DayWeather>>(new Map());
+  useEffect(() => {
+    const sd = plan.input.startDate;
+    if (!sd) {
+      setWx(new Map());
+      return;
+    }
+    let alive = true;
+    const reqs = plan.days.flatMap((d) => {
+      const center = cityById(d.cityId)?.hubs[0]?.center;
+      return center ? [{ date: addDaysISO(sd, d.day - 1), center }] : [];
+    });
+    fetchDayWeathers(reqs).then((m) => {
+      if (alive) setWx(m);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [plan]);
+  const wxOf = (d: PlanDay): DayWeather | undefined =>
+    plan.input.startDate
+      ? wx.get(addDaysISO(plan.input.startDate, d.day - 1))
+      : undefined;
+
   const reroll = () => {
+    // 手動調整過的天(沒鎖住的)會被骰掉:先確認,避免手調心血付諸流水
+    const editedCount = plan.days.filter(
+      (d) => d.edited && !lockedDays.has(d.day),
+    ).length;
+    if (
+      editedCount > 0 &&
+      !window.confirm(t("reroll_edited_confirm", lang, editedCount))
+    )
+      return;
     dirty();
     onReplace(rerollUnlocked(plan, lockedDays, Math.floor(Math.random() * 1e9)));
   };
@@ -112,6 +159,41 @@ export function JResult({
   const doRemove = (slotIdx: number) => {
     dirty();
     onReplace(removeSlot(plan, dayIdx, slotIdx));
+  };
+
+  const doMove = (slotIdx: number, dir: -1 | 1) => {
+    const next = moveSlot(plan, dayIdx, slotIdx, dir);
+    if (next) {
+      dirty();
+      onReplace(next);
+    }
+  };
+
+  const doMoveToDay = (slotIdx: number, targetDayIdx: number) => {
+    const next = moveSlotToDay(plan, dayIdx, slotIdx, targetDayIdx);
+    if (next) {
+      dirty();
+      onReplace(next);
+    }
+  };
+
+  // 手動加點:重用全站搜尋,把任意 POI 插進這一天(已在行程中的先濾掉)
+  const [addOpen, setAddOpen] = useState(false);
+  const usedPoiIds = useMemo(
+    () =>
+      new Set(
+        plan.days.flatMap((d) =>
+          d.slots.map((s) => s.poiId).filter((x): x is string => !!x),
+        ),
+      ),
+    [plan],
+  );
+  const doAdd = (poiId: string) => {
+    const next = addPoiToDay(plan, dayIdx, poiId);
+    if (next) {
+      dirty();
+      onReplace(next);
+    }
   };
 
   const [shareOpen, setShareOpen] = useState(false);
@@ -302,11 +384,16 @@ export function JResult({
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            {lockedDays.has(d.day) ? "🔒 " : ""}Day {d.day}
+            {lockedDays.has(d.day) ? "🔒 " : ""}
+            {d.edited ? "✍️ " : ""}Day {d.day}
             {d.weekday != null ? `(${WD[d.weekday]})` : ""} ·{" "}
             {(() => {
               const c = cityById(d.cityId);
               return c ? tCityName(c) : d.cityId;
+            })()}
+            {(() => {
+              const w = wxOf(d);
+              return w ? ` ${weatherEmoji(w.code)}` : "";
             })()}
           </button>
         ))}
@@ -323,8 +410,21 @@ export function JResult({
               {t(`transport_${dayCity.transport}`, lang)}
             </span>
           )}
+          {day.edited && (
+            <span className="tag hot" style={{ marginLeft: 6 }}>
+              {t("edited_day", lang)}
+            </span>
+          )}
         </p>
         <span className="spacer" />
+        {(() => {
+          const w = wxOf(day);
+          return w ? (
+            <span className="wx-chip">
+              {weatherEmoji(w.code)} {w.max}°/{w.min}°
+            </span>
+          ) : null;
+        })()}
         <button
           className={`ghost small${lockedDays.has(day.day) ? " selected" : ""}`}
           onClick={() => toggleLock(day.day)}
@@ -332,6 +432,14 @@ export function JResult({
           {lockedDays.has(day.day) ? t("locked_day", lang) : t("lock_day", lang)}
         </button>
       </div>
+
+      {(() => {
+        // 雨天提示:降雨機率高的天給一行溫和提示(純提示,不動行程)
+        const w = wxOf(day);
+        return w && w.rain >= RAIN_HINT_PROB ? (
+          <p className="rain-hint">{t("rain_hint", lang)}</p>
+        ) : null;
+      })()}
 
       <Suspense fallback={<div className="map-box" />}>
         <DayMap points={mapPoints} connect />
@@ -449,6 +557,42 @@ export function JResult({
                   }
                 />
                 <div className="slot-actions">
+                  <button
+                    className="ghost small"
+                    disabled={!canMoveSlot(plan, dayIdx, i, -1)}
+                    title={t("move_up", lang)}
+                    onClick={() => doMove(i, -1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="ghost small"
+                    disabled={!canMoveSlot(plan, dayIdx, i, 1)}
+                    title={t("move_down", lang)}
+                    onClick={() => doMove(i, 1)}
+                  >
+                    ↓
+                  </button>
+                  {plan.days.length > 1 && (
+                    <select
+                      className="slot-move-select"
+                      value=""
+                      aria-label={t("move_to_day", lang)}
+                      onChange={(e) => {
+                        if (e.target.value !== "")
+                          doMoveToDay(i, Number(e.target.value));
+                      }}
+                    >
+                      <option value="">{t("move_to_day", lang)}</option>
+                      {plan.days.map((d, di) =>
+                        di === dayIdx ? null : (
+                          <option key={d.day} value={di}>
+                            Day {d.day}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  )}
                   <button className="ghost small" onClick={() => doReplace(i)}>
                     {t("swap", lang)}
                   </button>
@@ -460,6 +604,28 @@ export function JResult({
             </div>
           );
         })}
+      </div>
+
+      {/* 手動加點:搜尋任意 POI 插進這一天(照地理/時段就近的位置) */}
+      <div className="add-poi">
+        <button
+          className={addOpen ? "" : "ghost"}
+          onClick={() => setAddOpen((o) => !o)}
+        >
+          {addOpen ? t("add_poi_close", lang) : t("add_poi", lang)}
+        </button>
+        {addOpen && (
+          <>
+            <p className="muted small" style={{ margin: 0 }}>
+              {t("add_poi_hint", lang, day.day)}
+            </p>
+            <PoiSearch
+              onPick={(p) => doAdd(p.id)}
+              pickLabel={t("add_to_day", lang, day.day)}
+              excludeIds={usedPoiIds}
+            />
+          </>
+        )}
       </div>
     </div>
   );

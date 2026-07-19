@@ -85,6 +85,81 @@ try {
     (await page.locator(".day-tabs button").count()) >= 1,
   );
 
+  // --- 行程手動編輯 ---
+  // 沒設出發日:不該有天氣列
+  check("天氣:未設出發日不顯示", (await page.locator(".wx-chip").count()) === 0);
+
+  const dayNames = () =>
+    page.locator(".timeline .poi-card .poi-name").allTextContents();
+
+  // 1) 當日內下移:找兩張相鄰的 poi 卡(中間沒有移動/自由覓食列)交換
+  const adjIdx = await page.evaluate(() => {
+    const slots = [...document.querySelectorAll(".timeline > .slot")];
+    for (let i = 0; i + 1 < slots.length; i++) {
+      if (slots[i].querySelector(".poi-card") && slots[i + 1].querySelector(".poi-card"))
+        return i;
+    }
+    return -1;
+  });
+  check("編輯:找得到相鄰兩張 poi 卡", adjIdx >= 0);
+  const beforeNames = await dayNames();
+  await page
+    .locator(".timeline > .slot")
+    .nth(adjIdx)
+    .locator('.slot-actions button[title*="下移"]')
+    .click();
+  await page.waitForTimeout(300);
+  const afterNames = await dayNames();
+  const swapAt = beforeNames.findIndex((n, i) => n !== afterNames[i]);
+  check(
+    "編輯:下移改變順序",
+    swapAt >= 0 &&
+      beforeNames[swapAt] === afterNames[swapAt + 1] &&
+      beforeNames[swapAt + 1] === afterNames[swapAt],
+  );
+  check("編輯:已手動調整標示出現", (await page.getByText("已手動調整").count()) >= 1);
+
+  // 2) 跨天移動:第一張 poi 卡移到 Day 2,去 Day 2 找得到
+  const movedName = await page
+    .locator(".timeline .poi-card .poi-name")
+    .first()
+    .textContent();
+  await page.locator(".slot-move-select").first().selectOption({ label: "Day 2" });
+  await page.waitForTimeout(300);
+  check(
+    "編輯:跨天移動後原天已不見",
+    !(await dayNames()).includes(movedName),
+  );
+  await page.locator(".day-tabs button").nth(1).click();
+  await page.waitForTimeout(300);
+  check("編輯:跨天移動出現在 Day 2", (await dayNames()).includes(movedName));
+
+  // 3) 手動加點:搜一個別的地區的點加進 Day 2(北海道點,不會撞關東行程)
+  await page.getByText("加入景點").click();
+  await page.locator(".search-input").fill("小樽運河");
+  await page.waitForTimeout(400);
+  await page.getByText("加到 Day 2").first().click();
+  await page.waitForTimeout(300);
+  check(
+    "編輯:手動加點插入 Day 2",
+    (await dayNames()).some((n) => n.includes("小樽運河")),
+  );
+
+  // 4) 手調過的天重骰前要確認;確認後編輯標示清掉
+  let rerollConfirmed = false;
+  page.once("dialog", (d) => {
+    rerollConfirmed = true;
+    d.accept();
+  });
+  await page.getByText("重骰").click();
+  await page.waitForTimeout(500);
+  check("編輯:重骰前跳確認", rerollConfirmed);
+  check(
+    "編輯:重骰後編輯標示清除",
+    (await page.getByText("已手動調整").count()) === 0,
+  );
+  check("編輯:重骰後仍有內容", (await page.locator(".poi-card").count()) >= 1);
+
   // --- P 人流程 ---
   await page.getByText("←").click();
   await page.getByText("P人隨走").click();
@@ -171,6 +246,77 @@ try {
     (await page.getByText("地圖暫不可用").count()) >= 1,
   );
   await page.context().setOffline(false);
+
+  // --- 天氣預報(Open-Meteo 全程 mock,不打真網路;開新 context 擋 SW 讓 route 生效) ---
+  const fmtD = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+  const wxCtx = await browser.newContext({
+    viewport: { width: 420, height: 900 },
+    serviceWorkers: "block",
+  });
+  const wp = await wxCtx.newPage();
+  let wxCalls = 0;
+  await wp.route("**/api.open-meteo.com/**", (route) => {
+    wxCalls++;
+    const u = new URL(route.request().url());
+    const end = u.searchParams.get("end_date");
+    const dates = [];
+    const cur = new Date(`${u.searchParams.get("start_date")}T00:00:00`);
+    for (let g = 0; g < 20; g++) {
+      dates.push(fmtD(cur));
+      if (fmtD(cur) === end) break;
+      cur.setDate(cur.getDate() + 1);
+    }
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        daily: {
+          time: dates,
+          weather_code: dates.map(() => 61), // 雨
+          temperature_2m_max: dates.map(() => 26.4),
+          temperature_2m_min: dates.map(() => 18.2),
+          precipitation_probability_max: dates.map(() => 80),
+        },
+      }),
+    });
+  });
+  await wp.goto(base, { waitUntil: "networkidle" });
+  await wp.getByText("J人規劃").click();
+  await wp.locator(".choice-grid button").first().click();
+  await wp.locator('input[type="date"]').fill(fmtD(new Date())); // 今天出發 → 16 天內
+  await wp.getByText("排出我的行程").click();
+  await wp.waitForTimeout(800);
+  check("天氣:mock API 有被打到", wxCalls > 0);
+  const chipText = (await wp.locator(".wx-chip").first().textContent()) ?? "";
+  check(
+    `天氣:日標題顯示 emoji+高低溫(${chipText.trim()})`,
+    (await wp.locator(".wx-chip").count()) >= 1 && /26°\/18°/.test(chipText),
+  );
+  check("天氣:雨天提示出現", (await wp.getByText("可能下雨").count()) >= 1);
+
+  // 同座標同日快取:reload 後照樣顯示,且不再打 API(sessionStorage 命中)
+  const callsBefore = wxCalls;
+  await wp.reload({ waitUntil: "networkidle" });
+  await wp.waitForTimeout(600);
+  check(
+    "天氣:sessionStorage 快取生效(reload 不重打)",
+    wxCalls === callsBefore && (await wp.locator(".wx-chip").count()) >= 1,
+  );
+
+  // fetch 失敗:整段安靜隱藏、行程不破版
+  await wp.unroute("**/api.open-meteo.com/**");
+  await wp.route("**/api.open-meteo.com/**", (route) => route.abort());
+  await wp.evaluate(() => sessionStorage.clear());
+  await wp.reload({ waitUntil: "networkidle" });
+  await wp.waitForTimeout(600);
+  check(
+    "天氣:抓不到時安靜隱藏不破版",
+    (await wp.locator(".day-tabs button").count()) >= 1 &&
+      (await wp.locator(".wx-chip").count()) === 0,
+  );
+  await wxCtx.close();
 } catch (e) {
   console.error("❌ e2e 例外:", e.message);
   failed++;

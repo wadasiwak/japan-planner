@@ -12,6 +12,8 @@ interface Packed {
     c: string; // cityId
     w?: number; // weekday
     a: string[]; // areas
+    /** 手動編輯過的天。optional:舊連結沒有,缺省=未編輯(向後相容,免升版)。 */
+    e?: 1;
     s: [number, number, number, string?, string?, SlotInfo?][]; // [kindIdx,start,end,poiId?,note?,info?]
   }[];
 }
@@ -35,6 +37,7 @@ export function encodePlan(plan: Plan): string {
       c: d.cityId,
       w: d.weekday,
       a: d.areas,
+      ...(d.edited ? { e: 1 as const } : {}),
       s: d.slots.map((s) => {
         const out: Packed["d"][0]["s"][0] = [
           KINDS.indexOf(s.kind),
@@ -62,6 +65,7 @@ export function decodePlan(code: string): Plan | null {
         cityId: d.c,
         weekday: d.w,
         areas: d.a ?? [],
+        ...(d.e ? { edited: true } : {}),
         slots: d.s.map(([k, start, end, poiId, note, info]): PlanSlot => {
           const slot: PlanSlot = { kind: KINDS[k] ?? "poi", start, end };
           // JSON 陣列空洞會變 null,要濾掉才能和原行程完全一致
