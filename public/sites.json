@@ -145,6 +145,15 @@
       "desc": "全台 13 城近 500 家精選名店：搜尋、地圖找店、口味評分推薦、分享美食 Top 10",
       "descEn": "Nearly 500 curated eateries in 13 Taiwan cities: search, map, taste-based picks, share your Top 10",
       "url": "https://wadasiwak.github.io/tw-food-atlas/"
+    },
+    {
+      "id": "ldl-diet",
+      "emoji": "🥗",
+      "name": "降脂食記",
+      "nameEn": "LDL Diet Log",
+      "desc": "拍照記三餐，顧好膽固醇",
+      "descEn": "Snap your meals, track cholesterol-friendly eating",
+      "url": "https://wadasiwak.github.io/ldl-diet/"
     }
   ]
 }
